@@ -1,0 +1,112 @@
+import type { RegisterOptions, UseFormGetValues } from 'react-hook-form'
+import * as yup from 'yup'
+type Rules = { [key in 'name' | 'phone' | 'email' | 'password' | 'confirm_password']?: RegisterOptions }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getRules = (getValues?: UseFormGetValues<any>): Rules => ({
+  name: {
+    required: {
+      value: true,
+      message: 'Họ tên không được để trống'
+    }
+  },
+  phone: {
+    required: {
+      value: true,
+      message: 'Số điện thoại không được để trống'
+    },
+    pattern: {
+      value: /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/,
+      message: 'Số điện thoại không hợp lệ'
+    },
+    maxLength: {
+      value: 10,
+      message: 'Số điện thoại không hợp lệ'
+    },
+    minLength: {
+      value: 10,
+      message: 'Số điện thoại không hợp lệ'
+    }
+  },
+  email: {
+    required: {
+      value: true,
+      message: 'Email không được để trống'
+    },
+    pattern: {
+      value: /^\S+@\S+\.\S+$/,
+      message: 'Email không đúng định dạng'
+    },
+    maxLength: {
+      value: 160,
+      message: 'Độ dài từ 5 đến 160 ký tự'
+    },
+    minLength: {
+      value: 5,
+      message: 'Độ dài từ 5 đến 160 ký tự'
+    }
+  },
+  password: {
+    required: {
+      value: true,
+      message: 'Password không được để trống'
+    },
+    pattern: {
+      value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
+      message: 'Password không hợp lệ'
+    },
+    minLength: {
+      value: 8,
+      message: 'Password từ 8 đến 20 ký tự'
+    },
+    maxLength: {
+      value: 20,
+      message: 'Password từ 8 đến 20 ký tự'
+    }
+  },
+  confirm_password: {
+    required: {
+      value: true,
+      message: 'Password không được để trống'
+    },
+    validate:
+      typeof getValues === 'function' ? (value) => value === getValues('password') || 'Mật khẩu không khớp' : undefined
+  }
+})
+
+const handleConfirmPasswordYup = (refString: string) => {
+  return yup
+    .string()
+    .required('Xác nhận mật khẩu không được để trống')
+    .min(6, 'Độ dài từ 6 - 160 ký tự')
+    .max(160, 'Độ dài từ 6 - 160 ký tự')
+    .oneOf([yup.ref(refString)], 'Xác nhận mật khẩu không khớp')
+}
+export const schema = yup.object({
+  name: yup.string().required('Họ tên không được để trống'),
+  phone: yup
+    .string()
+    .required('Số điện thoại không được để trống')
+    .matches(/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/, 'Số điện thoại không hợp lệ')
+    .min(10, 'Số điện thoại không hợp lệ')
+    .max(10, 'Số điện thoại không hợp lệ'),
+  email: yup
+    .string()
+    .required('Email không được để trống')
+    .email('Email không đúng định dạng')
+    .matches(/^\S+@\S+\.\S+$/, 'Email không đúng định dạng')
+    .min(5, 'Độ dài từ 5 đến 160 ký tự')
+    .max(160, 'Độ dài từ 5 đến 160 ký tự'),
+  password: yup
+    .string()
+    .required('Password không được để trống')
+    .matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, 'Password không hợp lệ')
+    .min(8, 'Password từ 8 đến 20 ký tự')
+    .max(20, 'Password từ 8 đến 20 ký tự'),
+  confirm_password: handleConfirmPasswordYup('password')
+})
+
+//Sử dụng omit để loại bỏ các trường không cần thiết
+export const loginSchema = schema.omit(['name', 'phone', 'confirm_password'])
+
+export type Schema = yup.InferType<typeof schema>
