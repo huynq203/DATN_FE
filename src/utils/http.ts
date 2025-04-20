@@ -4,7 +4,7 @@ import { HttpStatusCode } from 'src/constants/httpStatusCode'
 import { toast } from 'react-toastify'
 import { SuccessResponseApi } from 'src/types/utils.type'
 import { AuthRespone } from 'src/types/auth.type'
-import { clearAccessToken, saveAccessToken } from './auth'
+import { clearAccessToken, getAccessTokenFromLS, saveAccessToken } from './auth'
 
 export enum ContentType {
   JSON = 'application/json',
@@ -14,9 +14,10 @@ export enum ContentType {
 
 class Http {
   instance: AxiosInstance
-  private accessToken!: string
+  private accessToken: string
 
   constructor() {
+    this.accessToken = getAccessTokenFromLS()
     this.instance = axios.create({
       baseURL: Constants.Api.BASE_URL,
       timeout: Constants.Api.TIMEOUT,
@@ -24,16 +25,25 @@ class Http {
         'Content-type': ContentType.JSON
       }
     })
-    // Add a response interceptor
+    this.instance.interceptors.request.use(
+      (config) => {
+        if (this.accessToken && config.headers) {
+          config.headers.authorization = this.accessToken
+          return config
+        }
+        return config
+      },
+      (error) => {
+        return Promise.reject(error)
+      }
+    )
+
     this.instance.interceptors.response.use(
       (response) => {
         console.log(response)
-
         const { url } = response.config
         if (url === Constants.ApiPath.CUSTOMER_LOGIN || url === Constants.ApiPath.CUSTOMER_REGISTER) {
           this.accessToken = (response.data as AuthRespone).result?.access_token
-          console.log(this.accessToken)
-
           saveAccessToken(this.accessToken)
         } else if (url === Constants.ApiPath.CUSTOMER_LOGOUT) {
           this.accessToken = ''

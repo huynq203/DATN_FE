@@ -1,6 +1,11 @@
 export const saveAccessToken = (access_token: string) => {
   localStorage.setItem('access_token', access_token)
 }
+
+export const saveRefreshToken = (refresh_token: string) => {
+  localStorage.setItem('refresh_token', refresh_token)
+}
+
 export const saveProfile = (profile: object) => {
   localStorage.setItem('profile', JSON.stringify(profile))
 }
