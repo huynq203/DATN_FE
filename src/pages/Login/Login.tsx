@@ -75,7 +75,7 @@ export default function Login() {
         <meta name='description' content='Đăng nhập tài khoản YOYO Store' />
         <link rel='icon' type='image/svg+xml' href={Resources.Images.THUMBNAIL} />
       </Helmet>
-      <div className='max-w-7xl mx-auto px-4'>
+      <div className='container px-4'>
         <div className='grid grid-cols-1 lg:grid-cols-5 lg:py-10 lg:pr-10 gap-4'>
           {/* IMAGE */}
           <div className='lg:col-span-3 flex justify-center pt-5'>

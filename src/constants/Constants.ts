@@ -17,6 +17,8 @@ const Constants = {
     AUTH_LOGOUT: '/auth/logout',
     HOME: '/',
     PROFILE: '/profile',
+    CART: '/cart',
+    CHANGE_PASSWORD: '/change-password',
     ADMIN_DASHBOARD: '/admin'
   }
 }

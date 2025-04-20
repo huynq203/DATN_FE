@@ -8,18 +8,22 @@ import authApi from 'src/apis/auth.api'
 import { toast } from 'react-toastify'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
+import { useMutation } from '@tanstack/react-query'
 export default function Header() {
-  const navigate = useNavigate()
   const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
   const toggleMobileMenu = () => {}
   const customer = localStorage.getItem('profile')
   const profile = JSON.parse(customer || '{}')
-  const Clicklogout = () => {
-    const refresh_token = localStorage.getItem('refresh_token') || ''
-    authApi.logoutCustomer({ refresh_token }).then((res) => {
+  const refresh_token = localStorage.getItem('refresh_token') || ''
+  const logoutMutation = useMutation({
+    mutationFn: () => authApi.logoutCustomer({ refresh_token }),
+    onSuccess: (res) => {
       toast.success(res.data.message)
       setIsAuthenticated(false)
-    })
+    }
+  })
+  const handleLogout = () => {
+    logoutMutation.mutate()
   }
   return (
     <>
@@ -29,10 +33,10 @@ export default function Header() {
             <div className='flex justify-between items-center  text-white'>
               <div className=' items-center text-sm '>
                 <div className='flex gap-x-2'>
-                  <FaFacebookF className='hover:text-red-500 cursor-pointer text-lg' />
-                  <FaYoutube className='hover:text-red-500 cursor-pointer text-lg' />
-                  <FaInstagram className='hover:text-red-500 cursor-pointer text-lg' />
-                  <MdMail className='hover:text-red-500 cursor-pointer text-lg' />
+                  <FaFacebookF className='capitalize hover:text-red-500 cursor-pointer text-lg' />
+                  <FaYoutube className='capitalize hover:text-red-500 cursor-pointer text-lg' />
+                  <FaInstagram className='capitalize hover:text-red-500 cursor-pointer text-lg' />
+                  <MdMail className='capitalize hover:text-red-500 cursor-pointer text-lg' />
                 </div>
               </div>
               <div className=' items-center py-2 m-2 mr-14'>
@@ -42,7 +46,7 @@ export default function Header() {
               </div>
               <div className='flex'>
                 <Popover
-                  className='flex items-center py-2 m-1 mr-3 hover:text-red-500 cursor-pointer h-full'
+                  className='flex items-center py-2 m-1 mr-3 hover:text-gray-300 cursor-pointer h-full'
                   classNameSpan='border-x-transparent border-t-transparent border-b-white border-[11px] absolute z-10 -translate-y-6 '
                   children={
                     <>
@@ -74,21 +78,21 @@ export default function Header() {
                     </>
                   }
                   renderPopover={
-                    <div className='bg-white relative shadow-md rounded-sm border border-gray-200 -translate-x-10 -mt-1'>
+                    <div className='bg-white relative shadow-md rounded-sm border text-gray-500 border-gray-200 -translate-x-10 -mt-1'>
                       <div className='flex flex-col '>
-                        <button className='py-3 px-10 hover:text-red-500 border-b-2  text-left font-sans'>
+                        <button className='py-3 px-10 hover:text-black border-b-2  text-left font-sans'>
                           Tiếng Việt
                         </button>
                       </div>
                       <div className='flex flex-col'>
-                        <button className='py-3 px-10 hover:text-red-500  text-left font-sans'>English</button>
+                        <button className='py-3 px-10 hover:text-black  text-left font-sans'>English</button>
                       </div>
                     </div>
                   }
                 />
                 {isAuthenticated ? (
                   <Popover
-                    className='flex items-center hover:text-red-500 cursor-pointer'
+                    className='flex items-center hover:text-gray-300 cursor-pointer'
                     classNameSpan='border-x-transparent border-t-transparent border-b-white border-[11px] absolute z-10 -translate-y-7 '
                     children={
                       <>
@@ -105,23 +109,32 @@ export default function Header() {
                     renderPopover={
                       <div className='bg-white relative shadow-md rounded-sm border border-gray-200 -translate-x-10 text-left -mt-2'>
                         <div className='flex flex-col'>
-                          <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
+                          <Link
+                            to={Constants.Screens.PROFILE}
+                            className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'
+                          >
                             Tài khoản của tôi
-                          </button>
+                          </Link>
                         </div>
                         <div className='flex flex-col'>
-                          <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
+                          <Link
+                            to={Constants.Screens.CART}
+                            className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'
+                          >
                             Đơn mua
-                          </button>
+                          </Link>
                         </div>
                         <div className='flex flex-col'>
-                          <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
+                          <Link
+                            to={Constants.Screens.CHANGE_PASSWORD}
+                            className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'
+                          >
                             Đổi mật khẩu
-                          </button>
+                          </Link>
                         </div>
                         <div className='flex flex-col'>
                           <button
-                            onClick={Clicklogout}
+                            onClick={handleLogout}
                             className='py-3 px-10 hover:bg-gray-200  hover:text-green-500 text-left font-sans'
                           >
                             Đăng xuất
@@ -132,11 +145,17 @@ export default function Header() {
                   />
                 ) : (
                   <div className='flex items-center '>
-                    <Link to={Constants.Screens.AUTH_LOGIN} className='mr-2 hover:text-red-500 cursor-pointer'>
+                    <Link
+                      to={Constants.Screens.AUTH_LOGIN}
+                      className=' mx-2 hover:text-gray-300 cursor-pointer font-sans'
+                    >
                       Đăng nhập
-                    </Link>{' '}
-                    |
-                    <Link to={Constants.Screens.AUTH_REGISTER} className='ml-2 hover:text-red-500 cursor-pointer'>
+                    </Link>
+                    <div className='border-r-2 border-r-white h-4' />
+                    <Link
+                      to={Constants.Screens.AUTH_REGISTER}
+                      className=' mx-2 hover:text-gray-300 cursor-pointer font-sans'
+                    >
                       Đăng ký
                     </Link>
                   </div>
