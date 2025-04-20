@@ -11,7 +11,6 @@ import { Constants, Resources } from 'src/constants'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { schema, Schema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { saveAccessToken, saveProfile } from 'src/utils/auth'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 
@@ -20,6 +19,7 @@ const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
   const { setIsAuthenticated } = useContext(AppContext)
   const navigate = useNavigate()
+
   const getGoogleAuthUrl = () => {
     const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
     const url = `https://accounts.google.com/o/oauth2/v2/auth`

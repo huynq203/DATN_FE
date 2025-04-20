@@ -12,6 +12,9 @@ class AuthApi {
   logoutCustomer(body: { refresh_token: string }) {
     return http.post(Constants.ApiPath.CUSTOMER_LOGOUT, body)
   }
+  loginGoogle(body: { code: string }) {
+    return http.post<AuthRespone>(Constants.ApiPath.CUSTOMER_LOGIN, body)
+  }
 }
 
 const authApi = new AuthApi()

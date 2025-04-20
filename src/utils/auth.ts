@@ -7,6 +7,8 @@ export const saveRefreshToken = (refresh_token: string) => {
 }
 
 export const saveProfile = (profile: object) => {
+  console.log(profile)
+
   localStorage.setItem('profile', JSON.stringify(profile))
 }
 

@@ -7,7 +7,8 @@ const Constants = {
     //Auth
     CUSTOMER_LOGIN: '/customers/login',
     CUSTOMER_REGISTER: '/customers/register',
-    CUSTOMER_LOGOUT: '/customers/logout'
+    CUSTOMER_LOGOUT: '/customers/logout',
+    CUSTOMER_GOOGLE_LOGIN: '/customers/auth/google'
   },
   Screens: {
     AUTH_LOGIN: '/auth/login',

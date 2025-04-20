@@ -1,4 +1,4 @@
-import { Link, useMatch } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Constants } from 'src/constants'
 
 export default function RegisterHeader() {
