@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useRef, useState, useId, ElementType } from 'react'
 interface Props {
   className?: string
+  classNameSpan?: string
   children: React.ReactNode
   renderPopover: React.ReactNode
   as?: ElementType
@@ -14,6 +15,7 @@ export default function Popover({
   children,
   renderPopover,
   className,
+  classNameSpan,
   as: Element = 'div',
   initialOpen,
   placement = 'bottom-end'
@@ -27,7 +29,8 @@ export default function Popover({
       arrow({
         element: arrowRef
       })
-    ]
+    ],
+    placement: placement
   })
   const showPopover = () => {
     setOpen(true)
@@ -59,7 +62,7 @@ export default function Popover({
               >
                 <span
                   ref={arrowRef}
-                  className='border-x-transparent border-t-transparent border-b-white border-[11px] absolute z-10 -translate-y-6 '
+                  className={classNameSpan}
                   style={{
                     left: middlewareData.arrow?.x,
                     top: middlewareData.arrow?.y

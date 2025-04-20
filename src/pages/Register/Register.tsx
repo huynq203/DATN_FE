@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import Input from 'src/components/Input'
-import { Screens } from 'src/constants'
+import { Constants } from 'src/constants'
 import Resources from 'src/constants/Resources'
 import { schema, Schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -11,7 +11,7 @@ import authApi from 'src/apis/auth.api'
 // Import chỉ mỗi function omit
 import omit from 'lodash/omit'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { ResponseApi, ResponseApiError } from 'src/types/utils.type'
+import { SuccessResponseApi, ErrorResponseApi } from 'src/types/utils.type'
 import { toast } from 'react-toastify'
 
 // type FormData = Pick<Schema, 'name' | 'phone' | 'email' | 'password' | 'confirm_password'>
@@ -36,7 +36,7 @@ export default function Register() {
         toast.success('Đăng ký tài khoản thành công')
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApiError>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
           const formError = error.response?.data.errors
           if (formError) {
             Object.keys(formError).forEach((key) => {
@@ -55,7 +55,7 @@ export default function Register() {
       <Helmet>
         <title>Đăng ký - YOYO Store</title>
         <meta name='description' content='Đăng ký tài khoản mới tại YOYO Store' />
-        <link rel='canonical' href={Screens.AUTH_REGISTER} />
+        <link rel='canonical' href={Constants.Screens.AUTH_REGISTER} />
       </Helmet>
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 lg:py-32 lg:pr-10 gap-4'>
@@ -119,7 +119,7 @@ export default function Register() {
               <div className='mt-3'>
                 <div className='flex text-center justify-center'>
                   <span className='text-sm text-gray-300'>Bạn đã có tài khoản?</span>
-                  <Link to={Screens.AUTH_LOGIN} className=' text-sm ml-2'>
+                  <Link to={Constants.Screens.AUTH_LOGIN} className=' text-sm ml-2'>
                     Đăng nhập
                   </Link>
                 </div>

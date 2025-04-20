@@ -1,16 +1,17 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
-import { useEffect } from 'react'
+
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
 import authApi from 'src/apis/auth.api'
 import Input from 'src/components/Input'
-import { Resources, Screens } from 'src/constants'
-import { ResponseApiError } from 'src/types/utils.type'
+import { Constants, Resources } from 'src/constants'
+import { ErrorResponseApi } from 'src/types/utils.type'
 import { schema, Schema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { saveAccessToken, saveProfile } from 'src/utils/auth'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
@@ -50,9 +51,8 @@ export default function Login() {
         toast.success(res.data.message)
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApiError>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
           const formError = error.response?.data.errors
-          console.log(formError)
           if (formError) {
             Object.keys(formError).forEach((key) => {
               toast.error(formError[key].msg)
@@ -111,7 +111,7 @@ export default function Login() {
                   Đăng nhập
                 </button>
                 <div className='text-sm text-right'>
-                  <Link to={Screens.AUTH_FORGOT_PASSWORD} className='text-red-500 hover:text-red-600'>
+                  <Link to={Constants.Screens.AUTH_FORGOT_PASSWORD} className='text-red-500 hover:text-red-600'>
                     Quên mật khẩu?
                   </Link>
                 </div>
@@ -149,7 +149,7 @@ export default function Login() {
               <div className='mt-3'>
                 <div className='flex justify-center text-sm'>
                   <span className='text-gray-500'>Bạn chưa có tài khoản?</span>
-                  <Link to={Screens.AUTH_REGISTER} className='ml-2 text-red-500 hover:text-red-600'>
+                  <Link to={Constants.Screens.AUTH_REGISTER} className='ml-2 text-red-500 hover:text-red-600'>
                     Đăng ký
                   </Link>
                 </div>

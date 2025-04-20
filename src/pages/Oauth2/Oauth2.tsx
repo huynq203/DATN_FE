@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Screens } from 'src/constants'
+import { Constants } from 'src/constants'
 export default function Oauth2() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
@@ -14,7 +14,7 @@ export default function Oauth2() {
     localStorage.setItem('access_token', access_token as string)
     localStorage.setItem('refresh_token', refresh_token as string)
 
-    navigate(Screens.HOME)
+    navigate(Constants.Screens.HOME)
   }, [params])
   return <div>Oauth2</div>
 }

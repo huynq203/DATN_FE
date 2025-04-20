@@ -1,9 +1,9 @@
-import { Screens } from 'src/constants'
+import { Constants } from 'src/constants'
 
 export default function AdminRoutes() {
   const adminRoutes = [
     {
-      path: Screens.ADMIN_DASHBOARD,
+      path: Constants.Screens.ADMIN_DASHBOARD,
       element: (
         <>
           <div>Hello</div>

@@ -1,8 +1,10 @@
 import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { Constants } from 'src/constants'
 import { HttpStatusCode } from 'src/constants/httpStatusCode'
-import { isAxiosUnprocessableEntityError } from './utils'
 import { toast } from 'react-toastify'
+import { SuccessResponseApi } from 'src/types/utils.type'
+import { AuthRespone } from 'src/types/auth.type'
+import { clearAccessToken, saveAccessToken } from './auth'
 
 export enum ContentType {
   JSON = 'application/json',
@@ -10,8 +12,10 @@ export enum ContentType {
   FORM_DATA = 'multipart/form-data'
 }
 
-class APIAccessor {
+class Http {
   instance: AxiosInstance
+  private accessToken!: string
+
   constructor() {
     this.instance = axios.create({
       baseURL: Constants.Api.BASE_URL,
@@ -22,7 +26,19 @@ class APIAccessor {
     })
     // Add a response interceptor
     this.instance.interceptors.response.use(
-      function (response) {
+      (response) => {
+        console.log(response)
+
+        const { url } = response.config
+        if (url === Constants.ApiPath.CUSTOMER_LOGIN || url === Constants.ApiPath.CUSTOMER_REGISTER) {
+          this.accessToken = (response.data as AuthRespone).result?.access_token
+          console.log(this.accessToken)
+
+          saveAccessToken(this.accessToken)
+        } else if (url === Constants.ApiPath.CUSTOMER_LOGOUT) {
+          this.accessToken = ''
+          clearAccessToken()
+        }
         return response
       },
       function (error: AxiosError) {
@@ -31,17 +47,16 @@ class APIAccessor {
           const message = data.message || error.message
           toast.error(message)
         }
-
         return Promise.reject(error)
       }
     )
   }
 
   // 👇 Khai báo phương thức post
-  // post<T>(url: string, data?: unknown) {
-  //   return this.instance.post<T>(url, data)
-  // }
+  post<T>(url: string, data?: unknown) {
+    return this.instance.post<T>(url, data)
+  }
 }
 
-const apiAccessor = new APIAccessor().instance
-export default apiAccessor
+const http = new Http().instance
+export default http

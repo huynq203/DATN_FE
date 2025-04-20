@@ -1,9 +1,9 @@
-export interface ResponseApi<Data> {
+export interface SuccessResponseApi<Data> {
   message: string
-  data?: Data
+  result: Data
 }
 
-export interface ResponseApiError {
+export interface ErrorResponseApi {
   message: string
   errors?: {
     [key: string]: {

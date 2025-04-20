@@ -1,22 +1,37 @@
-import React from 'react'
-
-import { Screens } from 'src/constants'
-import Header from 'src/components/Header'
-import Footer from 'src/components/Footer'
-import Home from 'src/pages/Home'
+import { Constants } from 'src/constants'
 import MainLayout from 'src/layouts/MainLayout'
+import Home from 'src/pages/Home'
+import { ProtectedRoute } from 'src/pages/Login/isAuthenticated'
+import Profile from 'src/pages/Profile'
 
 export default function MainRoutes() {
   const mainRoutes = [
     {
-      path: Screens.HOME,
+      path: Constants.Screens.HOME,
+      index: true,
       element: (
         <>
           <MainLayout>
             <Home />
-          </MainLayout>
+          </MainLayout> 
         </>
       )
+    },
+    {
+      path: '',
+      element: <ProtectedRoute />,
+      children: [
+        {
+          path: Constants.Screens.PROFILE,
+          element: (
+            <>
+              <MainLayout>
+                <Profile />
+              </MainLayout>
+            </>
+          )
+        }
+      ]
     }
   ]
   return mainRoutes
