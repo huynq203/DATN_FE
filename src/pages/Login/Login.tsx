@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import authApi from 'src/apis/auth.api'
 import Input from 'src/components/Input'
 import { Constants, Resources } from 'src/constants'
@@ -12,10 +12,14 @@ import { ErrorResponseApi } from 'src/types/utils.type'
 import { schema, Schema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { saveAccessToken, saveProfile } from 'src/utils/auth'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
+  const { setIsAuthenticated } = useContext(AppContext)
+  const navigate = useNavigate()
   const getGoogleAuthUrl = () => {
     const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
     const url = `https://accounts.google.com/o/oauth2/v2/auth`
@@ -49,6 +53,8 @@ export default function Login() {
     loginCustomerMuTation.mutate(res, {
       onSuccess: (res) => {
         toast.success(res.data.message)
+        setIsAuthenticated(true)
+        navigate(Constants.Screens.HOME)
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {

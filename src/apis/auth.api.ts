@@ -9,6 +9,9 @@ class AuthApi {
   loginCustomer(body: { email: string; password: string }) {
     return http.post<AuthRespone>(Constants.ApiPath.CUSTOMER_LOGIN, body)
   }
+  logoutCustomer(body: { refresh_token: string }) {
+    return http.post(Constants.ApiPath.CUSTOMER_LOGOUT, body)
+  }
 }
 
 const authApi = new AuthApi()

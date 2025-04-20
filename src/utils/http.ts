@@ -2,9 +2,16 @@ import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { Constants } from 'src/constants'
 import { HttpStatusCode } from 'src/constants/httpStatusCode'
 import { toast } from 'react-toastify'
-import { SuccessResponseApi } from 'src/types/utils.type'
 import { AuthRespone } from 'src/types/auth.type'
-import { clearAccessToken, getAccessTokenFromLS, saveAccessToken } from './auth'
+import {
+  clearLS,
+  getAccessTokenFromLS,
+  getProfileFromLS,
+  getRefreshTokenFromLS,
+  saveAccessToken,
+  saveProfile,
+  saveRefreshToken
+} from './auth'
 
 export enum ContentType {
   JSON = 'application/json',
@@ -15,9 +22,12 @@ export enum ContentType {
 class Http {
   instance: AxiosInstance
   private accessToken: string
-
+  private refreshToken: string
+  private profile: Object
   constructor() {
     this.accessToken = getAccessTokenFromLS()
+    this.refreshToken = getRefreshTokenFromLS()
+    this.profile = getProfileFromLS()
     this.instance = axios.create({
       baseURL: Constants.Api.BASE_URL,
       timeout: Constants.Api.TIMEOUT,
@@ -28,7 +38,7 @@ class Http {
     this.instance.interceptors.request.use(
       (config) => {
         if (this.accessToken && config.headers) {
-          config.headers.authorization = this.accessToken
+          config.headers.authorization = 'Bearer ' + this.accessToken
           return config
         }
         return config
@@ -44,10 +54,16 @@ class Http {
         const { url } = response.config
         if (url === Constants.ApiPath.CUSTOMER_LOGIN || url === Constants.ApiPath.CUSTOMER_REGISTER) {
           this.accessToken = (response.data as AuthRespone).result?.access_token
+          this.refreshToken = (response.data as AuthRespone).result?.refresh_token
+          this.profile = (response.data as AuthRespone).result?.customer
           saveAccessToken(this.accessToken)
+          saveRefreshToken(this.refreshToken)
+          saveProfile(this.profile)
         } else if (url === Constants.ApiPath.CUSTOMER_LOGOUT) {
           this.accessToken = ''
-          clearAccessToken()
+          this.refreshToken = ''
+          this.profile = {}
+          clearLS()
         }
         return response
       },

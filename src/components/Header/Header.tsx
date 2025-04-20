@@ -1,20 +1,26 @@
-import { Link } from 'react-router-dom'
-import { Resources, Screens } from 'src/constants'
+import { Link, useNavigate } from 'react-router-dom'
+import { Constants, Resources } from 'src/constants'
 
 import Popover from '../Popover'
-import {
-  FaFacebookF,
-  FaGooglePlusG,
-  FaInstagram,
-  FaLinkedinIn,
-  FaMailBulk,
-  FaMailchimp,
-  FaTwitter,
-  FaYoutube
-} from 'react-icons/fa'
+import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa'
 import { MdMail } from 'react-icons/md'
+import authApi from 'src/apis/auth.api'
+import { toast } from 'react-toastify'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
 export default function Header() {
+  const navigate = useNavigate()
+  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
   const toggleMobileMenu = () => {}
+  const customer = localStorage.getItem('profile')
+  const profile = JSON.parse(customer || '{}')
+  const Clicklogout = () => {
+    const refresh_token = localStorage.getItem('refresh_token') || ''
+    authApi.logoutCustomer({ refresh_token }).then((res) => {
+      toast.success(res.data.message)
+      setIsAuthenticated(false)
+    })
+  }
   return (
     <>
       <header className='w-full'>
@@ -80,47 +86,61 @@ export default function Header() {
                     </div>
                   }
                 />
-
-                <Popover
-                  className='flex items-center hover:text-red-500 cursor-pointer'
-                  classNameSpan='border-x-transparent border-t-transparent border-b-white border-[11px] absolute z-10 -translate-y-7 '
-                  children={
-                    <>
-                      <div className='w-6 h-6 mr-2 flex-shrink-0'>
-                        <img
-                          className='rounded-full object-cover '
-                          src='https://down-vn.img.susercontent.com/file/vn-11134226-7ras8-m2vjvaq13agq13_tn'
-                          alt='Avatar'
-                        />
+                {isAuthenticated ? (
+                  <Popover
+                    className='flex items-center hover:text-red-500 cursor-pointer'
+                    classNameSpan='border-x-transparent border-t-transparent border-b-white border-[11px] absolute z-10 -translate-y-7 '
+                    children={
+                      <>
+                        <div className='w-6 h-6 mr-2 flex-shrink-0'>
+                          <img
+                            className='rounded-full object-cover '
+                            src='https://down-vn.img.susercontent.com/file/vn-11134226-7ras8-m2vjvaq13agq13_tn'
+                            alt='Avatar'
+                          />
+                        </div>
+                        <span className=''>{profile.name}</span>
+                      </>
+                    }
+                    renderPopover={
+                      <div className='bg-white relative shadow-md rounded-sm border border-gray-200 -translate-x-10 text-left -mt-2'>
+                        <div className='flex flex-col'>
+                          <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
+                            Tài khoản của tôi
+                          </button>
+                        </div>
+                        <div className='flex flex-col'>
+                          <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
+                            Đơn mua
+                          </button>
+                        </div>
+                        <div className='flex flex-col'>
+                          <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
+                            Đổi mật khẩu
+                          </button>
+                        </div>
+                        <div className='flex flex-col'>
+                          <button
+                            onClick={Clicklogout}
+                            className='py-3 px-10 hover:bg-gray-200  hover:text-green-500 text-left font-sans'
+                          >
+                            Đăng xuất
+                          </button>
+                        </div>
                       </div>
-                      <span className=''>Nguyễn Quốc Huy</span>
-                    </>
-                  }
-                  renderPopover={
-                    <div className='bg-white relative shadow-md rounded-sm border border-gray-200 -translate-x-10 text-left -mt-2'>
-                      <div className='flex flex-col'>
-                        <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
-                          Tài khoản của tôi
-                        </button>
-                      </div>
-                      <div className='flex flex-col'>
-                        <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
-                          Đơn mua
-                        </button>
-                      </div>
-                      <div className='flex flex-col'>
-                        <button className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'>
-                          Đổi mật khẩu
-                        </button>
-                      </div>
-                      <div className='flex flex-col'>
-                        <button className='py-3 px-10 hover:bg-gray-200  hover:text-green-500 text-left font-sans'>
-                          Đăng xuất
-                        </button>
-                      </div>
-                    </div>
-                  }
-                />
+                    }
+                  />
+                ) : (
+                  <div className='flex items-center '>
+                    <Link to={Constants.Screens.AUTH_LOGIN} className='mr-2 hover:text-red-500 cursor-pointer'>
+                      Đăng nhập
+                    </Link>{' '}
+                    |
+                    <Link to={Constants.Screens.AUTH_REGISTER} className='ml-2 hover:text-red-500 cursor-pointer'>
+                      Đăng ký
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
