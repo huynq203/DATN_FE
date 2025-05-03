@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Constants } from 'src/constants'
+import { paths } from 'src/constants'
 import { AppContext } from 'src/contexts/app.context'
 import { saveAccessToken, saveProfile, saveRefreshToken } from 'src/utils/auth'
 export default function Oauth2() {
@@ -18,7 +18,7 @@ export default function Oauth2() {
     saveRefreshToken(refresh_token)
     saveProfile(profile)
     setIsAuthenticated(true)
-    navigate(Constants.Screens.HOME)
+    navigate(paths.Screens.HOME)
   }, [params])
   return <div>Oauth2</div>
 }

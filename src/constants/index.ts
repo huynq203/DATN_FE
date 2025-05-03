@@ -1,4 +1,4 @@
 import Resources from './Resources'
-import Constants from './Constants'
+import paths from './paths'
 
-export { Constants, Resources }
+export { paths, Resources }

@@ -1,12 +1,27 @@
-import { Constants } from 'src/constants'
+import { paths } from 'src/constants'
+import MainLayout from 'src/layouts/admin/MainLayout'
+import ChangePassword from 'src/pages/admin/ChangePassword'
+import Dashboard from 'src/pages/admin/Dashboard'
 
 export default function AdminRoutes() {
   const adminRoutes = [
     {
-      path: Constants.Screens.ADMIN_DASHBOARD,
+      path: paths.Screens.ADMIN_DASHBOARD,
       element: (
         <>
-          <div>Hello</div>
+          <MainLayout>
+            <Dashboard />
+          </MainLayout>
+        </>
+      )
+    },
+    {
+      path: paths.Screens.CHANGE_PASSWORD,
+      element: (
+        <>
+          <MainLayout>
+            <ChangePassword />
+          </MainLayout>
         </>
       )
     }

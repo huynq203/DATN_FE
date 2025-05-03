@@ -1,19 +1,29 @@
 import http from 'src/utils/http'
 import { AuthRespone } from 'src/types/auth.type'
-import { Constants } from 'src/constants'
+import { paths } from 'src/constants'
 
 class AuthApi {
   registerCustomer(body: { name: string; phone: string; email: string; password: string }) {
-    return http.post<AuthRespone>(Constants.ApiPath.CUSTOMER_REGISTER, body)
+    return http.post<AuthRespone>(paths.ApiPath.CUSTOMER_REGISTER, body)
   }
+
   loginCustomer(body: { email: string; password: string }) {
-    return http.post<AuthRespone>(Constants.ApiPath.CUSTOMER_LOGIN, body)
+    return http.post<AuthRespone>(paths.ApiPath.CUSTOMER_LOGIN, body)
   }
   logoutCustomer(body: { refresh_token: string }) {
-    return http.post(Constants.ApiPath.CUSTOMER_LOGOUT, body)
+    return http.post(paths.ApiPath.CUSTOMER_LOGOUT, body)
   }
   loginGoogle(body: { code: string }) {
-    return http.post<AuthRespone>(Constants.ApiPath.CUSTOMER_LOGIN, body)
+    return http.post<AuthRespone>(paths.ApiPath.CUSTOMER_LOGIN, body)
+  }
+  forgotPasswordCustomer(body: { email: string }) {
+    return http.post(paths.ApiPath.CUSTOMER_FORGOT_PASSWORD, body)
+  }
+  verifyForgotPasswordCustomer(body: { forgot_password_token: string }) {
+    return http.post(paths.ApiPath.CUSTOMER_VERIFY_FORGOT_PASSWORD, body)
+  }
+  resetPasswordCustomer(body: { new_password: string; confirm_new_password: string; forgot_password_token: string }) {
+    return http.post(paths.ApiPath.CUSTOMER_RESET_PASSWORD, body)
   }
 }
 

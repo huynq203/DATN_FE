@@ -24,6 +24,7 @@ export default {
           paddingRight: theme('spacing.4') // Sử dụng spacing từ theme
         }
       })
-    })
+    }),
+    require('@tailwindcss/line-clamp')
   ]
 }

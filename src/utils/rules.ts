@@ -1,6 +1,8 @@
 import type { RegisterOptions, UseFormGetValues } from 'react-hook-form'
 import * as yup from 'yup'
-type Rules = { [key in 'name' | 'phone' | 'email' | 'password' | 'confirm_password']?: RegisterOptions }
+type Rules = {
+  [key in 'name' | 'phone' | 'email' | 'password' | 'confirm_password' | 'forgot_password_token']?: RegisterOptions
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getRules = (getValues?: UseFormGetValues<any>): Rules => ({
@@ -103,10 +105,8 @@ export const schema = yup.object({
     .matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, 'Password không hợp lệ')
     .min(8, 'Password từ 8 đến 20 ký tự')
     .max(20, 'Password từ 8 đến 20 ký tự'),
-  confirm_password: handleConfirmPasswordYup('password')
+  confirm_password: handleConfirmPasswordYup('password'),
+  forgot_password_token: yup.string()
 })
-
-//Sử dụng omit để loại bỏ các trường không cần thiết
-export const loginSchema = schema.omit(['name', 'phone', 'confirm_password'])
 
 export type Schema = yup.InferType<typeof schema>

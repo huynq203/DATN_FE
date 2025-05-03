@@ -1,5 +1,5 @@
 import axios, { AxiosError, type AxiosInstance } from 'axios'
-import { Constants } from 'src/constants'
+import { paths } from 'src/constants'
 import { HttpStatusCode } from 'src/constants/httpStatusCode'
 import { toast } from 'react-toastify'
 import { AuthRespone } from 'src/types/auth.type'
@@ -12,6 +12,7 @@ import {
   saveProfile,
   saveRefreshToken
 } from './auth'
+import { Customer } from 'src/types/customer.type'
 
 export enum ContentType {
   JSON = 'application/json',
@@ -23,14 +24,15 @@ class Http {
   instance: AxiosInstance
   private accessToken: string
   private refreshToken: string
-  private profile: Object
+  private profile: Customer | null
+
   constructor() {
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
     this.profile = getProfileFromLS()
     this.instance = axios.create({
-      baseURL: Constants.Api.BASE_URL,
-      timeout: Constants.Api.TIMEOUT,
+      baseURL: paths.Api.BASE_URL,
+      timeout: paths.Api.TIMEOUT,
       headers: {
         'Content-type': ContentType.JSON
       }
@@ -50,19 +52,18 @@ class Http {
 
     this.instance.interceptors.response.use(
       (response) => {
-        console.log(response)
         const { url } = response.config
-        if (url === Constants.ApiPath.CUSTOMER_LOGIN || url === Constants.ApiPath.CUSTOMER_REGISTER) {
+        if (url === paths.ApiPath.CUSTOMER_LOGIN || url === paths.ApiPath.CUSTOMER_REGISTER) {
           this.accessToken = (response.data as AuthRespone).result?.access_token
           this.refreshToken = (response.data as AuthRespone).result?.refresh_token
           this.profile = (response.data as AuthRespone).result?.customer
           saveAccessToken(this.accessToken)
           saveRefreshToken(this.refreshToken)
           saveProfile(this.profile)
-        } else if (url === Constants.ApiPath.CUSTOMER_LOGOUT) {
+        } else if (url === paths.ApiPath.CUSTOMER_LOGOUT) {
           this.accessToken = ''
           this.refreshToken = ''
-          this.profile = {}
+          this.profile = null
           clearLS()
         }
         return response

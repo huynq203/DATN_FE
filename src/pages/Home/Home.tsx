@@ -1,6 +1,7 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Constants } from 'src/constants'
+import { paths } from 'src/constants'
+import ProductList from '../ProductList'
 
 export default function Home() {
   return (
@@ -8,9 +9,11 @@ export default function Home() {
       <Helmet>
         <title>Trang chủ - YOYO Store</title>
         <meta name='description' content='Trang chủ - Yoyo' />
-        <link rel='canonical' href={Constants.Screens.HOME} />
+        <link rel='canonical' href={paths.Screens.HOME} />
       </Helmet>
-      <div className=''>Home</div>
+      <div className='pt-32'>
+        <ProductList />
+      </div>
     </>
   )
 }

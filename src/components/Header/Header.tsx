@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Constants, Resources } from 'src/constants'
+import { paths, Resources } from 'src/constants'
 
 import Popover from '../Popover'
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa'
@@ -10,16 +10,15 @@ import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { useMutation } from '@tanstack/react-query'
 export default function Header() {
-  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)
   const toggleMobileMenu = () => {}
-  const customer = localStorage.getItem('profile')
-  const profile = JSON.parse(customer || '{}')
   const refresh_token = localStorage.getItem('refresh_token') || ''
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logoutCustomer({ refresh_token }),
     onSuccess: (res) => {
       toast.success(res.data.message)
       setIsAuthenticated(false)
+      setProfile(null)
     }
   })
   const handleLogout = () => {
@@ -27,7 +26,7 @@ export default function Header() {
   }
   return (
     <>
-      <header className='w-full'>
+      <header className='w-full fixed z-[1000] top-0 left-0'>
         <div className='bg-black'>
           <div className='container  '>
             <div className='flex justify-between items-center  text-white'>
@@ -103,14 +102,14 @@ export default function Header() {
                             alt='Avatar'
                           />
                         </div>
-                        <span className=''>{profile.name}</span>
+                        <span className=''>{profile?.name}</span>
                       </>
                     }
                     renderPopover={
                       <div className='bg-white relative shadow-md rounded-sm border border-gray-200 -translate-x-10 text-left -mt-2'>
                         <div className='flex flex-col'>
                           <Link
-                            to={Constants.Screens.PROFILE}
+                            to={paths.Screens.PROFILE}
                             className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'
                           >
                             Tài khoản của tôi
@@ -118,7 +117,7 @@ export default function Header() {
                         </div>
                         <div className='flex flex-col'>
                           <Link
-                            to={Constants.Screens.CART}
+                            to={paths.Screens.CART}
                             className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'
                           >
                             Đơn mua
@@ -126,7 +125,7 @@ export default function Header() {
                         </div>
                         <div className='flex flex-col'>
                           <Link
-                            to={Constants.Screens.CHANGE_PASSWORD}
+                            to={paths.Screens.CHANGE_PASSWORD}
                             className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left font-sans'
                           >
                             Đổi mật khẩu
@@ -145,15 +144,12 @@ export default function Header() {
                   />
                 ) : (
                   <div className='flex items-center '>
-                    <Link
-                      to={Constants.Screens.AUTH_LOGIN}
-                      className=' mx-2 hover:text-gray-300 cursor-pointer font-sans'
-                    >
+                    <Link to={paths.Screens.AUTH_LOGIN} className=' mx-2 hover:text-gray-300 cursor-pointer font-sans'>
                       Đăng nhập
                     </Link>
                     <div className='border-r-2 border-r-white h-4' />
                     <Link
-                      to={Constants.Screens.AUTH_REGISTER}
+                      to={paths.Screens.AUTH_REGISTER}
                       className=' mx-2 hover:text-gray-300 cursor-pointer font-sans'
                     >
                       Đăng ký

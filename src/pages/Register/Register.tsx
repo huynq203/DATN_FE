@@ -1,9 +1,9 @@
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Input from 'src/components/Input'
-import { Constants } from 'src/constants'
-import Resources from 'src/constants/Resources'
+
+import { paths, Resources } from 'src/constants'
 import { schema, Schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
@@ -11,13 +11,18 @@ import authApi from 'src/apis/auth.api'
 // Import chỉ mỗi function omit
 import omit from 'lodash/omit'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { SuccessResponseApi, ErrorResponseApi } from 'src/types/utils.type'
+import { ErrorResponseApi } from 'src/types/utils.type'
 import { toast } from 'react-toastify'
+import Button from 'src/components/Button'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
 
 // type FormData = Pick<Schema, 'name' | 'phone' | 'email' | 'password' | 'confirm_password'>
 type FormData = Schema
 const registerSchema = schema.pick(['name', 'phone', 'email', 'password', 'confirm_password'])
 export default function Register() {
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -30,10 +35,13 @@ export default function Register() {
   const registerCustomerMuTation = useMutation({
     mutationFn: (body: FormData) => authApi.registerCustomer(body)
   })
-  const onSubmit = handleSubmit((data) => {
-    registerCustomerMuTation.mutate(data, {
-      onSuccess: (data) => {
-        toast.success('Đăng ký tài khoản thành công')
+  const onSubmit = handleSubmit((res) => {
+    registerCustomerMuTation.mutate(res, {
+      onSuccess: (res) => {
+        setIsAuthenticated(true)
+        setProfile(res.data.result.customer)
+        navigate(paths.Screens.HOME)
+        toast.success(res.data.message)
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
@@ -46,6 +54,8 @@ export default function Register() {
               })
             })
           }
+        } else {
+          toast.error('Đăng ký thất bại')
         }
       }
     })
@@ -55,7 +65,7 @@ export default function Register() {
       <Helmet>
         <title>Đăng ký - YOYO Store</title>
         <meta name='description' content='Đăng ký tài khoản mới tại YOYO Store' />
-        <link rel='canonical' href={Constants.Screens.AUTH_REGISTER} />
+        <link rel='canonical' href={paths.Screens.AUTH_REGISTER} />
       </Helmet>
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 lg:py-32 lg:pr-10 gap-4'>
@@ -108,18 +118,20 @@ export default function Register() {
                 autoComplete='on'
               />
               <div className='mt-3'>
-                <button
+                <Button
                   type='submit'
-                  className='w-full text-center py-4 px-3 uppercase text-white bg-red-500 text-sm hover:bg-red-600 border-radius-sm rounded-2xl'
+                  className='w-full py-4 px-3 uppercase text-white bg-red-500 text-sm hover:bg-red-600 border-radius-sm rounded-2xl flex justify-center items-center'
+                  loading={registerCustomerMuTation.isPending}
+                  disabled={registerCustomerMuTation.isPending}
                 >
                   Đăng ký
-                </button>
+                </Button>
               </div>
               <div className='mt-3 text-center border-b-2 text-gray-300'>Hoặc</div>
               <div className='mt-3'>
                 <div className='flex text-center justify-center'>
                   <span className='text-sm text-gray-300'>Bạn đã có tài khoản?</span>
-                  <Link to={Constants.Screens.AUTH_LOGIN} className=' text-sm ml-2'>
+                  <Link to={paths.Screens.AUTH_LOGIN} className=' text-sm ml-2'>
                     Đăng nhập
                   </Link>
                 </div>

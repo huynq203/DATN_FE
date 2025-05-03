@@ -1,9 +1,10 @@
 import { Login, ForgotPassword } from '../pages/Login'
 import Register from '../pages/Register'
 import Oauth2 from '../pages/Oauth2'
-import { Constants } from 'src/constants'
+import { paths } from 'src/constants'
 import RegisterLayout from 'src/layouts/RegisterLayout'
 import { RejectedRoute } from 'src/pages/Login/isAuthenticated'
+import { ResetPassword, VerifyForgotPassword } from 'src/pages/ResetPassword'
 
 export default function AuthRoutes() {
   const authRoutes = [
@@ -12,7 +13,7 @@ export default function AuthRoutes() {
       element: <RejectedRoute />,
       children: [
         {
-          path: Constants.Screens.AUTH_LOGIN,
+          path: paths.Screens.AUTH_LOGIN,
           element: (
             <>
               <RegisterLayout>
@@ -22,7 +23,7 @@ export default function AuthRoutes() {
           )
         },
         {
-          path: Constants.Screens.AUTH_OAUTH,
+          path: paths.Screens.AUTH_OAUTH,
           element: (
             <>
               <RegisterLayout>
@@ -32,7 +33,7 @@ export default function AuthRoutes() {
           )
         },
         {
-          path: Constants.Screens.AUTH_REGISTER,
+          path: paths.Screens.AUTH_REGISTER,
           element: (
             <>
               <RegisterLayout>
@@ -42,11 +43,31 @@ export default function AuthRoutes() {
           )
         },
         {
-          path: Constants.Screens.AUTH_FORGOT_PASSWORD,
+          path: paths.Screens.AUTH_FORGOT_PASSWORD,
           element: (
             <>
               <RegisterLayout>
                 <ForgotPassword />
+              </RegisterLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.AUTH_VERIFY_FORGOT_PASSWORD,
+          element: (
+            <>
+              <RegisterLayout>
+                <VerifyForgotPassword />
+              </RegisterLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.AUTH_RESET_PASSWORD,
+          element: (
+            <>
+              <RegisterLayout>
+                <ResetPassword />
               </RegisterLayout>
             </>
           )

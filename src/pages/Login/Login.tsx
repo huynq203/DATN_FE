@@ -4,20 +4,21 @@ import { useMutation } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { Link, useNavigate } from 'react-router-dom'
+import { data, Link, useNavigate } from 'react-router-dom'
 import authApi from 'src/apis/auth.api'
 import Input from 'src/components/Input'
-import { Constants, Resources } from 'src/constants'
+import { paths, Resources } from 'src/constants'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { schema, Schema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
-
+import Button from 'src/components/Button'
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
   const getGoogleAuthUrl = () => {
@@ -47,26 +48,35 @@ export default function Login() {
     resolver: yupResolver(loginSchema)
   })
   const loginCustomerMuTation = useMutation({
-    mutationFn: (body: FormData) => authApi.loginCustomer(body)
+    mutationFn: (body: FormData) => authApi.loginCustomer(body),
+    onMutate: () => {
+      setIsLoading(true)
+    }
   })
   const onSubmit = handleSubmit((res) => {
-    loginCustomerMuTation.mutate(res, {
-      onSuccess: (res) => {
-        toast.success(res.data.message)
-        setIsAuthenticated(true)
-        navigate(Constants.Screens.HOME)
-      },
-      onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-          const formError = error.response?.data.errors
-          if (formError) {
-            Object.keys(formError).forEach((key) => {
-              toast.error(formError[key].msg)
-            })
+    setIsLoading(true)
+    setTimeout(() => {
+      setIsLoading(false)
+      loginCustomerMuTation.mutate(res, {
+        onSuccess: (res) => {
+          setIsAuthenticated(true)
+          setProfile(res.data.result.customer)
+          navigate(paths.Screens.HOME)
+          toast.success(res.data.message)
+        },
+        onError: (error) => {
+          if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+            const formError = error.response?.data.errors
+            if (formError) {
+              Object.keys(formError).forEach((key) => {
+                toast.error(formError[key].msg)
+              })
+            }
           }
+          setIsLoading(false)
         }
-      }
-    })
+      })
+    }, 3000)
   })
   return (
     <div className='bg-amber-50'>
@@ -110,14 +120,18 @@ export default function Login() {
               />
 
               <div className='mt-3'>
-                <button
+                <Button
                   type='submit'
-                  className='w-full text-center py-4 px-3 uppercase text-white bg-red-500 text-sm hover:bg-red-600 rounded-2xl'
+                  className='w-full py-4 px-3 uppercase text-white bg-red-500 text-sm hover:bg-red-600 rounded-2xl flex items-center justify-center'
+                  loading={isLoading}
+                  // loading={loginCustomerMuTation.isPending}
+                  disabled={isLoading}
                 >
                   Đăng nhập
-                </button>
+                </Button>
+
                 <div className='text-sm text-right'>
-                  <Link to={Constants.Screens.AUTH_FORGOT_PASSWORD} className='text-red-500 hover:text-red-600'>
+                  <Link to={paths.Screens.AUTH_FORGOT_PASSWORD} className='text-red-500 hover:text-red-600'>
                     Quên mật khẩu?
                   </Link>
                 </div>
@@ -155,7 +169,7 @@ export default function Login() {
               <div className='mt-3'>
                 <div className='flex justify-center text-sm'>
                   <span className='text-gray-500'>Bạn chưa có tài khoản?</span>
-                  <Link to={Constants.Screens.AUTH_REGISTER} className='ml-2 text-red-500 hover:text-red-600'>
+                  <Link to={paths.Screens.AUTH_REGISTER} className='ml-2 text-red-500 hover:text-red-600'>
                     Đăng ký
                   </Link>
                 </div>

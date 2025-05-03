@@ -1,6 +1,6 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Constants } from 'src/constants'
+import { paths } from 'src/constants'
 
 export default function Profile() {
   const getProfile = localStorage.getItem('profile')
@@ -10,7 +10,7 @@ export default function Profile() {
       <Helmet>
         <title>Profile - YOYO Store</title>
         <meta name='description' content='Profile - Yoyo' />
-        <link rel='canonical' href={Constants.Screens.PROFILE} />
+        <link rel='canonical' href={paths.Screens.PROFILE} />
       </Helmet>
     </>
   )
