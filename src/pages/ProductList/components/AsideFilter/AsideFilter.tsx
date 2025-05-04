@@ -1,13 +1,51 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button'
-import Input from 'src/components/Input'
 import { paths } from 'src/constants'
+import { QueryConfig } from '../../ProductList'
+import { Category, CategoryList } from 'src/types/category.type'
+import classNames from 'classnames'
+import InputNumber from 'src/components/InputNumber'
+import { useForm, Controller } from 'react-hook-form'
+import { Schema, schema } from 'src/utils/rules'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { NoUnderfinedField } from 'src/types/utils.type'
+interface Props {
+  queryConfig: QueryConfig
+  categories: Category[]
+}
 
-export default function AsideFilter() {
+type FormData = NoUnderfinedField<Pick<Schema, 'price_min' | 'price_max'>>
+const priceSchema = schema.pick(['price_min', 'price_max'])
+export default function AsideFilter({ queryConfig, categories }: Props) {
+  const navigate = useNavigate()
+  const { category_id } = queryConfig
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    formState: { errors }
+  } = useForm<FormData>({
+    defaultValues: {
+      price_min: '',
+      price_max: ''
+    },
+    resolver: yupResolver(priceSchema as any)
+  })
+
+  const onSubmit = handleSubmit((data) => {
+    navigate({
+      pathname: paths.Screens.PRODUCT,
+      search: createSearchParams({
+        ...queryConfig,
+        price_min: data.price_min || '1',
+        price_max: data.price_max
+      }).toString()
+    })
+  })
   return (
-    <div className='py-4'>
-      <Link to={paths.Screens.HOME} className='flex imtes-center font-bold'>
+    <div className='py-4 font-sans'>
+      <Link to={paths.Screens.PRODUCT} className='flex imtes-center font-bold'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
@@ -18,25 +56,44 @@ export default function AsideFilter() {
         >
           <path stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12' />
         </svg>
-        <span className='ml-1 mt-1'>Tất cả danh mục</span>
+        <span
+          className={classNames('ml-1 mt-1 font-bold', {
+            'text-red-500': category_id === undefined
+          })}
+        >
+          Tất cả danh mục
+        </span>
       </Link>
-      <div className='bg-gray-300 h-[1px] my-4' />
+      <div className='bg-gray-300 h-[1px] my-4 ' />
       <ul>
-        <li className=' py-2 pl-2'>
-          <Link to={paths.Screens.HOME} className='relative flex items-center font-sans hover:text-red-400'>
-            <svg viewBox='0 0 4 7' className='h-2 w-2 absoulte top-1 left-[10px] fill-red-500'>
-              <polygon points='4 3.5 0 0 0 7' />
-            </svg>
-            <span className='pl-1'>Adidas</span>
-          </Link>
-        </li>
-        <li className=' py-1 pl-5'>
-          <Link to={paths.Screens.HOME} className='relative flex items-center font-sans hover:text-red-400'>
-            <span className=''>Adidas</span>
-          </Link>
-        </li>
+        {categories.map((categoryItem) => {
+          const isActive = category_id === categoryItem._id
+          return (
+            <li className='py-2 pl-2' key={categoryItem._id}>
+              <Link
+                to={{
+                  pathname: paths.Screens.PRODUCT,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    category_id: categoryItem._id
+                  }).toString()
+                }}
+                className={classNames('flex relative px-2', {
+                  'text-red-500 font-sans font-bold': isActive
+                })}
+              >
+                {isActive && (
+                  <svg viewBox='0 0 4 7' className='h-2 w-2 absolute top-1 left-[10px] fill-red-500'>
+                    <polygon points='4 3.5 0 0 0 7' />
+                  </svg>
+                )}
+                <span className='ml-4'>{categoryItem.name}</span>
+              </Link>
+            </li>
+          )
+        })}
       </ul>
-      <Link to={paths.Screens.HOME} className='flex items-center font-bold mt-4 uppercase'>
+      <Link to={paths.Screens.PRODUCT} className='flex items-center font-bold mt-4 uppercase'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
@@ -56,24 +113,52 @@ export default function AsideFilter() {
       <div className='bg-gray-300 h-[1px] my-4' />
       <div className='my-5'>
         <span>Khoảng giá</span>
-        <form className='mt-2'>
+        <form className='mt-2' onSubmit={onSubmit}>
           <div className='flex items-start'>
-            <Input
-              type='text'
-              className='grow'
-              name='minPrice'
-              placeholder='đ Từ'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-2xl'
+            <Controller
+              control={control}
+              name='price_min'
+              render={({ field }) => {
+                return (
+                  <InputNumber
+                    type='text'
+                    className='grow'
+                    placeholder='đ Từ'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-2xl'
+                    classNameError='hidden'
+                    {...field}
+                    onChange={(event) => {
+                      field.onChange(event)
+                      trigger('price_max')
+                    }}
+                  />
+                )
+              }}
             />
+
             <div className='mx-1 mt-1 shrink-0'> -- </div>
-            <Input
-              type='text'
-              className='grow'
-              name='maxPrice'
-              placeholder='đ Đến'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-2xl'
+            <Controller
+              control={control}
+              name='price_max'
+              render={({ field }) => {
+                return (
+                  <InputNumber
+                    type='text'
+                    className='grow'
+                    placeholder='đ Từ'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-2xl'
+                    classNameError='hidden'
+                    {...field}
+                    onChange={(event) => {
+                      field.onChange(event)
+                      trigger('price_min')
+                    }}
+                  />
+                )
+              }}
             />
           </div>
+          <div className='mt-1 text-red-600 min-h-[1.25rem] text-sm'>{errors.price_min?.message}</div>
           <Button className='w-full p-2 uppercase bg-red-400 hover:bg-red-600 text-white text-sm rounded-md flex justify-center items-center'>
             Áp dụng
           </Button>

@@ -10,7 +10,8 @@ import { AppProvider } from './contexts/app.context'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false // để tắt refetch(không làm mới dữ liệu) khi chuyển tab
+      refetchOnWindowFocus: false, // để tắt refetch(không làm mới dữ liệu) khi chuyển tab
+      retry: 0
     }
   }
 })

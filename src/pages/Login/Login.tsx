@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 import { data, Link, useNavigate } from 'react-router-dom'
 import authApi from 'src/apis/auth.api'
 import Input from 'src/components/Input'
-import { paths, Resources } from 'src/constants'
+import { paths, resources } from 'src/constants'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { schema, Schema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
@@ -83,14 +83,14 @@ export default function Login() {
       <Helmet>
         <title>Đăng nhập - YOYO Store</title>
         <meta name='description' content='Đăng nhập tài khoản YOYO Store' />
-        <link rel='icon' type='image/svg+xml' href={Resources.Images.THUMBNAIL} />
+        <link rel='icon' type='image/svg+xml' href={resources.Images.THUMBNAIL} />
       </Helmet>
       <div className='container px-4'>
         <div className='grid grid-cols-1 lg:grid-cols-5 lg:py-10 lg:pr-10 gap-4'>
           {/* IMAGE */}
           <div className='lg:col-span-3 flex justify-center pt-5'>
             <img
-              src={Resources.Images.THUMBNAIL}
+              src={resources.Images.THUMBNAIL}
               alt='Login illustration'
               className='max-w-full h-auto object-contain rounded-lg shadow-xl'
             />

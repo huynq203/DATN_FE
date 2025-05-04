@@ -1,48 +1,53 @@
-import AsideFilter from './AsideFilter'
-import SortProductList from './SortProductList'
-import Product from './Product/Product'
-import { useQuery } from '@tanstack/react-query'
-import useQueryParams from 'src/components/useQueryParams'
+import AsideFilter from './components/AsideFilter'
+import SortProductList from './components/SortProductList'
+import Product from './components/Product/Product'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+
 import productApi from 'src/apis/product.api'
 import Paginate from 'src/components/Paginate'
 import { ProductListConfig } from 'src/types/product.type'
-import { omitBy, isUndefined } from 'lodash'
+
+import categoryApi from 'src/apis/category.api'
+import useQueryConfig from 'src/hooks/useQueryConfig'
+import { Helmet } from 'react-helmet-async'
 export type QueryConfig = {
   [key in keyof ProductListConfig]: string
 }
 
 export default function ProductList() {
-  const queryParams: QueryConfig = useQueryParams()
-  const queryConfig: QueryConfig = omitBy(
-    {
-      page: queryParams.page || '1',
-      limit: queryParams.limit,
-      sort_by: queryParams.sort_by,
-      order: queryParams.order,
-      rating_filter: queryParams.rating_filter,
-      price_max: queryParams.price_max,
-      price_min: queryParams.price_min,
-      name: queryParams.name
-    },
-    isUndefined
-  )
-  const listProduct = useQuery({
+  const queryConfig = useQueryConfig()
+  const { data: listProduct } = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => {
       return productApi.getProducts(queryConfig as ProductListConfig)
+    },
+    placeholderData: keepPreviousData,
+    staleTime: 3 * 60 * 1000
+  })
+
+  const { data: listCategory } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => {
+      return categoryApi.getCategory()
     }
-  }).data
+  })
 
   return (
     <div className='bg-white py-6'>
+      <Helmet>
+        <title>Sản phẩm | YoYo Store</title>
+        <meta name='description' content='Cửa hàng Yoyo' />
+      </Helmet>
       <div className='container'>
         {listProduct && (
           <div className='grid grid-cols-12 gap-6'>
             <div className='col-span-2'>
-              <AsideFilter />
+              {listCategory && (
+                <AsideFilter queryConfig={queryConfig} categories={listCategory?.data.result.categories} />
+              )}
             </div>
             <div className='col-span-10 ml-10'>
-              <SortProductList />
+              <SortProductList queryConfig={queryConfig} total_page={listProduct.data.result.paginate.total_page} />
               <div className='mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
                 {listProduct.data.result.products.map((product) => (
                   <div className='col-span-1' key={product._id}>
@@ -50,7 +55,7 @@ export default function ProductList() {
                   </div>
                 ))}
               </div>
-              <Paginate queryConfig={queryConfig} total_page={listProduct.data.result.paginate.total_page as number} />
+              <Paginate queryConfig={queryConfig} total_page={listProduct?.data.result.paginate.total_page} />
             </div>
           </div>
         )}

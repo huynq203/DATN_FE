@@ -1,7 +1,10 @@
+import { Suspense } from 'react'
 import { paths } from 'src/constants'
 import MainLayout from 'src/layouts/MainLayout'
 import Home from 'src/pages/Home'
 import { ProtectedRoute } from 'src/pages/Login/isAuthenticated'
+import ProductDetail from 'src/pages/ProductDetail'
+import ProductList from 'src/pages/ProductList'
 import Profile from 'src/pages/Profile'
 
 export default function MainRoutes() {
@@ -10,22 +13,31 @@ export default function MainRoutes() {
       path: paths.Screens.HOME,
       index: true,
       element: (
-        <>
-          <MainLayout>
+        <MainLayout>
+          <Suspense>
             <Home />
-          </MainLayout>
-        </>
+          </Suspense>
+        </MainLayout>
       )
     },
     {
-      path: paths.Screens.HOME,
-      index: true,
+      path: paths.Screens.PRODUCT,
       element: (
-        <>
-          <MainLayout>
-            <Home />
-          </MainLayout>
-        </>
+        <MainLayout>
+          <Suspense>
+            <ProductList />
+          </Suspense>
+        </MainLayout>
+      )
+    },
+    {
+      path: paths.Screens.PRODUCT_DETAIL,
+      element: (
+        <MainLayout>
+          <Suspense>
+            <ProductDetail />
+          </Suspense>
+        </MainLayout>
       )
     },
 
@@ -36,11 +48,11 @@ export default function MainRoutes() {
         {
           path: paths.Screens.PROFILE,
           element: (
-            <>
-              <MainLayout>
+            <MainLayout>
+              <Suspense>
                 <Profile />
-              </MainLayout>
-            </>
+              </Suspense>
+            </MainLayout>
           )
         }
       ]

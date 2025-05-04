@@ -11,9 +11,7 @@ export default function Home() {
         <meta name='description' content='Trang chủ - Yoyo' />
         <link rel='canonical' href={paths.Screens.HOME} />
       </Helmet>
-      <div className='pt-32'>
-        <ProductList />
-      </div>
+      Trang Home
     </>
   )
 }

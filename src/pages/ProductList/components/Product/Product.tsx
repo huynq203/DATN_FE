@@ -1,15 +1,16 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import ProductRating from 'src/components/ProductRating'
+import { paths } from 'src/constants'
 import { Product as ProductType } from 'src/types/product.type'
-import { formatCurrency, formatNumberToSocialStyle } from 'src/utils/utils'
+import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils'
 interface Props {
   product: ProductType
 }
 export default function Product({ product }: Props) {
   return (
     <>
-      <Link to=''>
+      <Link to={`${paths.Screens.PRODUCT}/${generateNameId({ name: product.slug, id: product._id })}`}>
         <div className='bg-gray-100 shadow rounded-sm hover:translate-y-[-0.1rem] hover:shadow-md border hover:border-red-500 transition-transform duration-200 font-sans '>
           <div className='w-full pt-[100%] relative'>
             <img
@@ -29,7 +30,7 @@ export default function Product({ product }: Props) {
               <>
                 <div className='text-red-500 truncate ml-3'>
                   <span className='text-sm'>đ</span>
-                  <span>{product.promotion_price}</span>
+                  <span className='ml-1'>{product.promotion_price}</span>
                 </div>
               </>
             )}

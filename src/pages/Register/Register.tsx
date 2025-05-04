@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import Input from 'src/components/Input'
 
-import { paths, Resources } from 'src/constants'
+import { paths, resources } from 'src/constants'
 import { schema, Schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
@@ -70,7 +70,7 @@ export default function Register() {
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 lg:py-32 lg:pr-10 gap-4'>
           <div className='  lg:col-span-3 flex justify-center'>
-            <img src={Resources.Images.THUMBNAIL} alt='Thumbnail' className='max-w-full h-auto object-contain' />
+            <img src={resources.Images.THUMBNAIL} alt='Thumbnail' className='max-w-full h-auto object-contain' />
           </div>
           <div className='lg:col-span-2 lg:col-start-4 pt-10' onSubmit={onSubmit}>
             <form action='' className='p-10 rounded bg-white shadow-sm' noValidate>

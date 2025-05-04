@@ -27,6 +27,7 @@ const paths = {
     AUTH_LOGOUT: '/auth/logout',
     HOME: '/', // Trang chủ
     PRODUCT: '/products', // Sản phẩm
+    PRODUCT_DETAIL: '/products/:nameId', // Chi tiết sản phẩm
     BLOG: '/blog', // Blog
     INTRODUCE: '/introduce', // Giới thiệu
     CONTACT: '/contact', // Liên hệ

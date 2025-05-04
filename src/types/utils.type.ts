@@ -19,3 +19,7 @@ export interface ErrorResponseApi {
 export interface ResponseApiErrorWithStatus {
   message: string
 }
+//cú pháp -? loại bỏ key optional
+export type NoUnderfinedField<T> = {
+  [P in keyof T]-?: NoUnderfinedField<NonNullable<T[P]>>
+}

@@ -1,4 +1,4 @@
-import Resources from './Resources'
 import paths from './paths'
+import resources from './Resources'
 
-export { paths, Resources }
+export { paths, resources }

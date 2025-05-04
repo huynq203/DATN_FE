@@ -1,4 +1,3 @@
-import { Pagination } from 'antd'
 import classNames from 'classnames'
 import { createSearchParams, Link } from 'react-router-dom'
 import { paths } from 'src/constants'
@@ -52,7 +51,7 @@ export default function Paginate({ queryConfig, total_page }: Props) {
         return (
           <Link
             to={{
-              pathname: paths.Screens.HOME,
+              pathname: paths.Screens.PRODUCT,
               search: createSearchParams({
                 ...queryConfig,
                 page: pageNumber.toString()
@@ -76,7 +75,7 @@ export default function Paginate({ queryConfig, total_page }: Props) {
       ) : (
         <Link
           to={{
-            pathname: paths.Screens.HOME,
+            pathname: paths.Screens.PRODUCT,
             search: createSearchParams({
               ...queryConfig,
               page: (page - 1).toString()
@@ -94,7 +93,7 @@ export default function Paginate({ queryConfig, total_page }: Props) {
       ) : (
         <Link
           to={{
-            pathname: paths.Screens.HOME,
+            pathname: paths.Screens.PRODUCT,
             search: createSearchParams({
               ...queryConfig,
               page: (page + 1).toString()

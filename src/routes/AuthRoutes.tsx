@@ -5,7 +5,7 @@ import { paths } from 'src/constants'
 import RegisterLayout from 'src/layouts/RegisterLayout'
 import { RejectedRoute } from 'src/pages/Login/isAuthenticated'
 import { ResetPassword, VerifyForgotPassword } from 'src/pages/ResetPassword'
-
+import { Suspense } from 'react'
 export default function AuthRoutes() {
   const authRoutes = [
     {
@@ -13,66 +13,122 @@ export default function AuthRoutes() {
       element: <RejectedRoute />,
       children: [
         {
-          path: paths.Screens.AUTH_LOGIN,
-          element: (
-            <>
-              <RegisterLayout>
-                <Login />
-              </RegisterLayout>
-            </>
-          )
-        },
-        {
-          path: paths.Screens.AUTH_OAUTH,
-          element: (
-            <>
-              <RegisterLayout>
-                <Oauth2 />
-              </RegisterLayout>
-            </>
-          )
-        },
-        {
-          path: paths.Screens.AUTH_REGISTER,
-          element: (
-            <>
-              <RegisterLayout>
-                <Register />
-              </RegisterLayout>
-            </>
-          )
-        },
-        {
-          path: paths.Screens.AUTH_FORGOT_PASSWORD,
-          element: (
-            <>
-              <RegisterLayout>
-                <ForgotPassword />
-              </RegisterLayout>
-            </>
-          )
-        },
-        {
-          path: paths.Screens.AUTH_VERIFY_FORGOT_PASSWORD,
-          element: (
-            <>
-              <RegisterLayout>
-                <VerifyForgotPassword />
-              </RegisterLayout>
-            </>
-          )
-        },
-        {
-          path: paths.Screens.AUTH_RESET_PASSWORD,
-          element: (
-            <>
-              <RegisterLayout>
-                <ResetPassword />
-              </RegisterLayout>
-            </>
-          )
+          path: '',
+          element: <RejectedRoute />,
+          children: [
+            {
+              path: paths.Screens.AUTH_LOGIN,
+              element: (
+                <Suspense>
+                  <Login />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.AUTH_OAUTH,
+              element: (
+                <Suspense>
+                  <Oauth2 />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.AUTH_REGISTER,
+              element: (
+                <Suspense>
+                  <Register />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.AUTH_FORGOT_PASSWORD,
+              element: (
+                <Suspense>
+                  <ForgotPassword />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.AUTH_VERIFY_FORGOT_PASSWORD,
+              element: (
+                <Suspense>
+                  <VerifyForgotPassword />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.AUTH_RESET_PASSWORD,
+              element: (
+                <Suspense>
+                  <ResetPassword />
+                </Suspense>
+              )
+            }
+          ]
         }
       ]
+      // children: [
+      //   {
+      //     path: paths.Screens.AUTH_LOGIN,
+      //     element: (
+      //       <>
+      //         <RegisterLayout>
+      //           <Login />
+      //         </RegisterLayout>
+      //       </>
+      //     )
+      //   },
+      //   {
+      //     path: paths.Screens.AUTH_OAUTH,
+      //     element: (
+      //       <>
+      //         <RegisterLayout>
+      //           <Oauth2 />
+      //         </RegisterLayout>
+      //       </>
+      //     )
+      //   },
+      //   {
+      //     path: paths.Screens.AUTH_REGISTER,
+      //     element: (
+      //       <>
+      //         <RegisterLayout>
+      //           <Register />
+      //         </RegisterLayout>
+      //       </>
+      //     )
+      //   },
+      //   {
+      //     path: paths.Screens.AUTH_FORGOT_PASSWORD,
+      //     element: (
+      //       <>
+      //         <RegisterLayout>
+      //           <ForgotPassword />
+      //         </RegisterLayout>
+      //       </>
+      //     )
+      //   },
+      //   {
+      //     path: paths.Screens.AUTH_VERIFY_FORGOT_PASSWORD,
+      //     element: (
+      //       <>
+      //         <RegisterLayout>
+      //           <VerifyForgotPassword />
+      //         </RegisterLayout>
+      //       </>
+      //     )
+      //   },
+      //   {
+      //     path: paths.Screens.AUTH_RESET_PASSWORD,
+      //     element: (
+      //       <>
+      //         <RegisterLayout>
+      //           <ResetPassword />
+      //         </RegisterLayout>
+      //       </>
+      //     )
+      //   }
+      // ]
     }
   ]
   return authRoutes

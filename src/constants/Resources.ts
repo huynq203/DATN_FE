@@ -1,6 +1,6 @@
 import app_logo from '../assets/images/app_logo.png'
 import thumbnail from '../assets/images/thumbnail.png'
-const Resources = {
+const resources = {
   Images: {
     THUMBNAIL: thumbnail,
     APP_LOGO: app_logo
@@ -11,4 +11,4 @@ const Resources = {
   Sound: {}
 }
 
-export default Resources
+export default resources

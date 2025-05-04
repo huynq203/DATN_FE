@@ -1,8 +1,10 @@
 export interface Product {
   _id: string
   category_id: {
-    _id: string
-    name: string
+    [key: number]: {
+      _id: string
+      name: string
+    }
   }
   name: string
   description: string
@@ -18,11 +20,14 @@ export interface Product {
   sizes: {
     _id: string
     size_name: string
-    stock: number
   }
   status: number
   view: number
   sold: number
+  stock: number
+  created_by: string
+  created_at: string
+  updated_at: string
 }
 
 export interface ProductList {
@@ -36,9 +41,9 @@ export interface ProductList {
 
 export interface ProductListConfig {
   page?: number | string
-  limit?: number | string 
-  sort_by?: 'created_at' | 'view' | 'price' | 'sold'
-  order?: 1 | -1 // 1: tăng dần, -1: giảm dần
+  limit?: number | string
+  sort_by?: 'created_at' | 'view' | 'price' | 'sold' | 'promotion_price'
+  order?: '1' | '-1' // 1: tăng dần, -1: giảm dần
   rating_filter?: number | string
   price_max?: number | string
   price_min?: number | string

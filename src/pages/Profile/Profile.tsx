@@ -12,6 +12,7 @@ export default function Profile() {
         <meta name='description' content='Profile - Yoyo' />
         <link rel='canonical' href={paths.Screens.PROFILE} />
       </Helmet>
+      Profile
     </>
   )
 }

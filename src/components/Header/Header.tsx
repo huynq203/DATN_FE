@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { paths, Resources } from 'src/constants'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
+import { paths, resources } from 'src/constants'
 
 import Popover from '../Popover'
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa'
@@ -9,7 +9,23 @@ import { toast } from 'react-toastify'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { useMutation } from '@tanstack/react-query'
+import useQueryConfig from 'src/hooks/useQueryConfig'
+import { useForm } from 'react-hook-form'
+import { schema, Schema } from 'src/utils/rules'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { omit } from 'lodash'
+type FormData = Pick<Schema, 'search_name'>
+const nameSearchSchema = schema.pick(['search_name'])
 export default function Header() {
+  const queryConfig = useQueryConfig()
+  const navigate = useNavigate()
+  const { register, handleSubmit } = useForm<FormData>({
+    defaultValues: {
+      search_name: ''
+    },
+    resolver: yupResolver(nameSearchSchema)
+  })
+
   const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)
   const toggleMobileMenu = () => {}
   const refresh_token = localStorage.getItem('refresh_token') || ''
@@ -24,9 +40,23 @@ export default function Header() {
   const handleLogout = () => {
     logoutMutation.mutate()
   }
+  const onSubmitSearch = handleSubmit((data) => {
+    navigate({
+      pathname: paths.Screens.PRODUCT,
+      search: createSearchParams(
+        omit(
+          {
+            ...queryConfig,
+            name: data.search_name
+          },
+          ['order', 'sort_by', 'category_id']
+        )
+      ).toString()
+    })
+  })
   return (
     <>
-      <header className='w-full fixed z-[1000] top-0 left-0'>
+      <header className='w-full top-0 left-0'>
         <div className='bg-black'>
           <div className='container  '>
             <div className='flex justify-between items-center  text-white'>
@@ -167,7 +197,7 @@ export default function Header() {
                 <div className='flex lg:flex'>
                   <Link to='/'>
                     {/* <span className='sr-only'>Your Company</span> */}
-                    <img alt='YoYo' src={Resources.Images.APP_LOGO} className='h-[80px] w-[200px] items-center' />
+                    <img alt='YoYo' src={resources.Images.APP_LOGO} className='h-[80px] w-[200px] items-center' />
                   </Link>
                 </div>
                 <div className='flex lg:hidden'>
@@ -208,10 +238,10 @@ export default function Header() {
                   <Link to='/' className='block  hover:text-red-500  font-sans text-lg'>
                     Trang chủ
                   </Link>
-                  <Link to='/' className='block  hover:text-red-500 font-sans text-lg'>
+                  <Link to={paths.Screens.PRODUCT} className='block  hover:text-red-500 font-sans text-lg'>
                     Sản phẩm
                   </Link>
-                  <Link to='/' className=' block hover:text-red-500 font-sans text-lg'>
+                  <Link to={paths.Screens.BLOG} className=' block hover:text-red-500 font-sans text-lg'>
                     Blog
                   </Link>
                   <Link to='/' className=' block hover:text-red-500 font-sans text-lg'>
@@ -223,13 +253,13 @@ export default function Header() {
                 </div>
                 <div className='hidden lg:flex lg:justify-end my-2 ml-24'>
                   <div className=' flex items-center space-x-4'>
-                    <form className='flex items-center w-full max-w-xs'>
+                    <form className='flex items-center w-full max-w-xs' onSubmit={onSubmitSearch}>
                       <input
                         type='text'
-                        name='search'
                         className='text-black px-3 py-2 flex-grow border-none outline-none '
                         placeholder='Tìm kiếm sản phẩm'
                         aria-label='Search'
+                        {...register('search_name')}
                       />
                       <button className='search-btn'>
                         <svg
