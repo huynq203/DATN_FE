@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
@@ -10,8 +10,14 @@ import { useEffect, useMemo, useState } from 'react'
 import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
 import classNames from 'classnames'
 import Product from '../ProductList/components/Product'
+import QuantityController from 'src/components/QuantityController'
+import cartApi from 'src/apis/cart.api'
+import { toast } from 'react-toastify'
+import { MESSAGE } from 'src/constants/messages'
 
 export default function ProductDetail() {
+  const [buyCount, setBuyCount] = useState(1)
+  const [sizeName, setSizeName] = useState(0)
   const { nameId } = useParams()
   const product_id = getIdFromNameId(nameId as string)
   const { data: ProductDetail } = useQuery({
@@ -22,7 +28,7 @@ export default function ProductDetail() {
 
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const [activeImage, setActiveImage] = useState('')
-  const [activeSize, setActiveSize] = useState(0)
+  const [activeFlagSize, setActiveFlagSize] = useState(0)
   const product = ProductDetail?.data.result
   const currentImages = useMemo(
     () => (product ? product.url_images.slice(...currentIndexImages) : []),
@@ -38,6 +44,10 @@ export default function ProductDetail() {
     staleTime: 3 * 60 * 1000
   })
 
+  const addToCartMutation = useMutation({
+    mutationFn: cartApi.addToCart
+  })
+
   useEffect(() => {
     if (product && product.url_images.length > 0) {
       setActiveImage(product.url_images[0].url)
@@ -47,9 +57,7 @@ export default function ProductDetail() {
   const chooseActiveImage = (image: string) => {
     setActiveImage(image)
   }
-  const chooseActiveSize = (size: number) => {
-    setActiveSize(size)
-  }
+
   const next = () => {
     if (currentIndexImages[1] < (product as ProductType)?.url_images.length) {
       setCurrentIndexImages((next) => [next[0] + 1, next[1] + 1])
@@ -59,6 +67,38 @@ export default function ProductDetail() {
     if (currentIndexImages[0] > 0) {
       setCurrentIndexImages((prev) => [prev[0] - 1, prev[1] - 1])
     }
+  }
+
+  const handleBuyCount = (value: number) => {
+    setBuyCount(value)
+  }
+
+  const handleBuySize = (value: number) => {
+    setSizeName(value)
+    setActiveFlagSize(value)
+  }
+
+  const handleAddToCart = () => {
+    if (sizeName === 0) {
+      toast.error(MESSAGE.PLEASE_CHOOSE_SIZE)
+      return
+    }
+    addToCartMutation.mutate(
+      {
+        product_id: product_id,
+        size: sizeName,
+        quantity: buyCount
+      },
+      {
+        onSuccess: (res) => {
+          toast.success(res.data.message)
+          console.log(res)
+        },
+        onError: (error) => {
+          console.log(error)
+        }
+      }
+    )
   }
 
   if (!product) return null
@@ -98,6 +138,7 @@ export default function ProductDetail() {
                 </button>
                 {currentImages.map((img) => {
                   const isActive = img.url === activeImage
+
                   return (
                     <div
                       className=' relative w-full pt-[100%]'
@@ -151,11 +192,12 @@ export default function ProductDetail() {
                 </div>
               </div>
               <div className='mt-8 flex items-center pl-5 text-lg'>
-                <span>Loại: {product.category_id[0].name}</span>
+                <span>Loại: </span>
+                <span className='ml-20'>{product.category_id[0].name}</span>
               </div>
-              <div className='mt-5 flex items-center  px-5 py-4 text-lg'>
+              <div className='mt-3 flex items-center  px-5 py-4 text-lg'>
                 <span>Giá bán: </span>
-                <div className={` ml-5 ${product.promotion_price > 0 ? 'text-gray-400 line-through' : 'text-black'}`}>
+                <div className={` ml-12 ${product.promotion_price > 0 ? 'text-gray-400 line-through' : 'text-black'}`}>
                   {formatCurrency(product.price)} VNĐ
                 </div>
                 {product.promotion_price > 0 && (
@@ -164,64 +206,46 @@ export default function ProductDetail() {
                   </>
                 )}
               </div>
-              <div className='mt-5 flex items-center  pl-5'>
-                <span className='text-lg'>Kích thước: </span>
-                {Array.isArray(product.sizes) &&
-                  product.sizes.map((item) => {
-                    const isActiveSize = item.size_name === activeSize
-                    return (
-                      <button
-                        key={item._id}
-                        className={classNames(
-                          'ml-3 px-5 py-2 flex items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500',
-                          {
-                            'text-red-500 border-red-500': isActiveSize
-                          }
-                        )}
-                        onMouseEnter={() => chooseActiveSize(item.size_name)}
-                      >
-                        {item.size_name}
-                      </button>
-                    )
-                  })}
+              <div className='mt-3 flex items-center  pl-5'>
+                <span className='text-lg'>Kích thước </span>
+                <div className='flex ml-5 visible'>
+                  {Array.isArray(product.sizes) &&
+                    product.sizes.map((item) => {
+                      const isFlagSize = item.size_name === activeFlagSize
+                      return (
+                        <button
+                          key={item._id}
+                          className={classNames(
+                            'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
+
+                            {
+                              'text-red-500 border-red-500': isFlagSize
+                            }
+                          )}
+                          onClick={() => handleBuySize(item.size_name)}
+                        >
+                          {item.size_name}
+                        </button>
+                      )
+                    })}
+                </div>
               </div>
               <div className='mt-5 flex items-center text-lg pl-5'>
                 <span className=' text-black'>Số lượng</span>
-                <div className='ml-10 flex items-center'>
-                  <button className='flex h-8 w-8 items-center justify-center rounded-l-sm border border-gray-300 text-gray-600'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      stroke-width='1.5'
-                      stroke='currentColor'
-                      className='h-4 w-4'
-                    >
-                      <path stroke-linecap='round' stroke-linejoin='round' d='M5 12h14' />
-                    </svg>
-                  </button>
-                  <InputNumber
-                    value={1}
-                    classNameError='hidden'
-                    classNameInput='h-8 w-14 border-t border-b border-gray-300 p-1 text-center outline-none'
-                  />
-                  <button className='flex h-8 w-8 items-center justify-center rounded-l-sm border border-gray-300 text-gray-600'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      stroke-width='1.5'
-                      stroke='currentColor'
-                      className='h-4 w-4'
-                    >
-                      <path stroke-linecap='round' stroke-linejoin='round' d='M12 4.5v15m7.5-7.5h-15' />
-                    </svg>
-                  </button>
-                </div>
+                <QuantityController
+                  max={product.stock - 1}
+                  onDecrease={handleBuyCount}
+                  onIncrease={handleBuyCount}
+                  onType={handleBuyCount}
+                  value={buyCount}
+                />
                 <div className='ml-8 text-sm text-gray-500'>Hàng còn: {product.stock}</div>
               </div>
               <div className='mt-5 pl-5 flex items-center'>
-                <button className='flex h-12 items-center justify-center rounded-sm border border-green-600 bg-green-600 text-white shadow-sm hover:bg-green-600/90'>
+                <button
+                  className='flex h-12 items-center justify-center rounded-sm border border-green-600 bg-green-600 text-white shadow-sm hover:bg-green-600/90'
+                  onClick={handleAddToCart}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'

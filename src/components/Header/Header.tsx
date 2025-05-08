@@ -6,14 +6,16 @@ import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa'
 import { MdMail } from 'react-icons/md'
 import authApi from 'src/apis/auth.api'
 import { toast } from 'react-toastify'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { AppContext } from 'src/contexts/app.context'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { useForm } from 'react-hook-form'
 import { schema, Schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
+import cartApi from 'src/apis/cart.api'
+import { formatCurrency } from 'src/utils/utils'
 type FormData = Pick<Schema, 'search_name'>
 const nameSearchSchema = schema.pick(['search_name'])
 export default function Header() {
@@ -37,6 +39,17 @@ export default function Header() {
       setProfile(null)
     }
   })
+  //Khi chuyển trang header thì header chỉ bị re-render
+  //Chứ không bị unmout - mouting again
+  //Tất nhiên là trừ trường hợp logout ròi nhảy sang RegisterHeader sẽ bị gọi lại
+  //nên các query này sẽ không bị inactive => Không bị gọi lại => Không cần thiết phải set stale : Infinity
+  const { data: CartData } = useQuery({
+    queryKey: ['cart'],
+    queryFn: () => cartApi.getCart()
+  })
+  const cartDataByCustomer = CartData?.data.result
+  console.log(cartDataByCustomer)
+
   const handleLogout = () => {
     logoutMutation.mutate()
   }
@@ -54,6 +67,7 @@ export default function Header() {
       ).toString()
     })
   })
+
   return (
     <>
       <header className='w-full top-0 left-0'>
@@ -304,100 +318,43 @@ export default function Header() {
                           <div className='bg-white relative shadow-md rounded-sm border border-gray-200 text-left mt-1 max-w-[400px] text-sm'>
                             <div className='p-2'>
                               <div className='text-gray-400 capitalize'>Sản phẩm mới thêm</div>
-                              <div className='mt-5'>
-                                <div className='mt-4 flex'>
-                                  <div className='flex-shrink-0'>
-                                    <img
-                                      src='https://down-vn.img.susercontent.com/file/vn-11134201-7ra0g-m8mrix6lofvy80_tn'
-                                      alt='Image'
-                                      className='w-16 h-16 rounded-md object-cover'
-                                    />
-                                  </div>
-                                  <div className='flex-grow ml-2 overflow-hidden'>
-                                    <div className='truncate '>
-                                      Bộ Serum Glycolic Melasyl Kem dưỡng ngày đêm sáng mờ thâm nám L'Oreal Paris
-                                      Glycolic
-                                    </div>
-                                  </div>
-                                  <div className='ml-2 flex-shrink-0'>
-                                    <span className='text-orange-600'>₫459.000</span>
-                                  </div>
+                              {cartDataByCustomer ? (
+                                <div className='mt-5'>
+                                  {cartDataByCustomer.carts.slice(0, 5).map((item) => {
+                                    return (
+                                      <div className='mt-4 flex' key={item._id}>
+                                        <div className='flex-shrink-0'>
+                                          <img
+                                            src={item.product_id.url_images?.[0]?.url}
+                                            alt='Image'
+                                            className='w-16 h-16 rounded-md object-cover'
+                                          />
+                                        </div>
+                                        <div className='flex flex-col overflow-hidden'>
+                                          <div className='ml-2 '>
+                                            <div className='truncate '>{item.product_id.name}</div>
+                                          </div>
+                                          <div className='ml-2'>
+                                            <div className='truncate '>Size: {item.size}</div>
+                                          </div>
+                                        </div>
+                                        <div className='ml-2 flex-shrink-0'>
+                                          <span className='text-orange-600'>
+                                            {formatCurrency(item.product_id.price)} VNĐ
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
                                 </div>
-                                <div className='mt-4 flex'>
-                                  <div className='flex-shrink-0'>
-                                    <img
-                                      src='https://down-vn.img.susercontent.com/file/vn-11134201-7ra0g-m8mrix6lofvy80_tn'
-                                      alt='Image'
-                                      className='w-16 h-16 rounded-md object-cover'
-                                    />
-                                  </div>
-                                  <div className='flex-grow ml-2 overflow-hidden'>
-                                    <div className='truncate '>
-                                      Bộ Serum Glycolic Melasyl Kem dưỡng ngày đêm sáng mờ thâm nám L'Oreal Paris
-                                      Glycolic
-                                    </div>
-                                  </div>
-                                  <div className='ml-2 flex-shrink-0'>
-                                    <span className='text-orange-600'>₫459.000</span>
-                                  </div>
+                              ) : (
+                                <div className='mt-2'>
+                                  <img src='No Cart' alt='No Cart' />
                                 </div>
-                                <div className='mt-4 flex'>
-                                  <div className='flex-shrink-0'>
-                                    <img
-                                      src='https://down-vn.img.susercontent.com/file/vn-11134201-7ra0g-m8mrix6lofvy80_tn'
-                                      alt='Image'
-                                      className='w-16 h-16 rounded-md object-cover'
-                                    />
-                                  </div>
-                                  <div className='flex-grow ml-2 overflow-hidden'>
-                                    <div className='truncate '>
-                                      Bộ Serum Glycolic Melasyl Kem dưỡng ngày đêm sáng mờ thâm nám L'Oreal Paris
-                                      Glycolic
-                                    </div>
-                                  </div>
-                                  <div className='ml-2 flex-shrink-0'>
-                                    <span className='text-orange-600'>₫459.000</span>
-                                  </div>
-                                </div>
-                                <div className='mt-4 flex'>
-                                  <div className='flex-shrink-0'>
-                                    <img
-                                      src='https://down-vn.img.susercontent.com/file/vn-11134201-7ra0g-m8mrix6lofvy80_tn'
-                                      alt='Image'
-                                      className='w-16 h-16 rounded-md object-cover'
-                                    />
-                                  </div>
-                                  <div className='flex-grow ml-2 overflow-hidden'>
-                                    <div className='truncate '>
-                                      Bộ Serum Glycolic Melasyl Kem dưỡng ngày đêm sáng mờ thâm nám L'Oreal Paris
-                                      Glycolic
-                                    </div>
-                                  </div>
-                                  <div className='ml-2 flex-shrink-0'>
-                                    <span className='text-orange-600'>₫459.000</span>
-                                  </div>
-                                </div>
-                                <div className='mt-4 flex'>
-                                  <div className='flex-shrink-0'>
-                                    <img
-                                      src='https://down-vn.img.susercontent.com/file/vn-11134201-7ra0g-m8mrix6lofvy80_tn'
-                                      alt='Image'
-                                      className='w-16 h-16 rounded-md object-cover'
-                                    />
-                                  </div>
-                                  <div className='flex-grow ml-2 overflow-hidden'>
-                                    <div className='truncate '>
-                                      Bộ Serum Glycolic Melasyl Kem dưỡng ngày đêm sáng mờ thâm nám L'Oreal Paris
-                                      Glycolic
-                                    </div>
-                                  </div>
-                                  <div className='ml-2 flex-shrink-0'>
-                                    <span className='text-orange-600'>₫459.000</span>
-                                  </div>
-                                </div>
-                              </div>
+                              )}
+
                               <div className='flex mt-6 items-center justify-between'>
-                                <span className=''>1 Thêm hàng vào giỏ</span>
+                                <span className=''>{cartDataByCustomer?.total_cart} Thêm hàng vào giỏ</span>
                                 <Link
                                   to='/cart'
                                   className='capitalize bg-red-600 hover:bg-red-700 text-white  px-4 py-2 rounded-sm'

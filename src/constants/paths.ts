@@ -15,7 +15,10 @@ const paths = {
     //Category
     CATEGORY_URL: '/categories',
     //Product
-    PRODUCT_URL: '/products'
+    PRODUCT_URL: '/products',
+    //Cart
+    CART_URL: '/carts',
+    CART_ADD_TO_CART: '/carts/add-to-cart'
   },
   Screens: {
     AUTH_LOGIN: '/auth/login',

@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { paths } from 'src/constants'
 import MainLayout from 'src/layouts/MainLayout'
+import Blog from 'src/pages/Blog'
 import Home from 'src/pages/Home'
 import { ProtectedRoute } from 'src/pages/Login/isAuthenticated'
 import ProductDetail from 'src/pages/ProductDetail'
@@ -36,6 +37,16 @@ export default function MainRoutes() {
         <MainLayout>
           <Suspense>
             <ProductDetail />
+          </Suspense>
+        </MainLayout>
+      )
+    },
+    {
+      path: paths.Screens.BLOG,
+      element: (
+        <MainLayout>
+          <Suspense>
+            <Blog />
           </Suspense>
         </MainLayout>
       )
