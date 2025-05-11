@@ -45,9 +45,9 @@ export default function SortProductList({ queryConfig, total_page }: Props) {
     <div className='bg-gray-300/40 py-4 px-3'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div className='flex flex-wrap items-center gap-2'>
-          <div className='font-sans'>Sắp xếp theo</div>
+          <div className=''>Sắp xếp theo</div>
           <button
-            className={classNames('h-8 px-4 text-xs text-center font-sans', {
+            className={classNames('h-8 px-4 text-xs text-center ', {
               'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.view),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.view)
             })}
@@ -56,7 +56,7 @@ export default function SortProductList({ queryConfig, total_page }: Props) {
             Lượt xem
           </button>
           <button
-            className={classNames('h-8 px-4 capitalize  text-xs text-center font-sans', {
+            className={classNames('h-8 px-4 capitalize  text-xs text-center ', {
               'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.created_at),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.created_at)
             })}
@@ -65,7 +65,7 @@ export default function SortProductList({ queryConfig, total_page }: Props) {
             Mới nhất
           </button>
           <button
-            className={classNames('h-8 px-4 capitalize  text-xs text-center font-sans', {
+            className={classNames('h-8 px-4 capitalize  text-xs text-center ', {
               'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.sold),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.sold)
             })}
@@ -74,7 +74,7 @@ export default function SortProductList({ queryConfig, total_page }: Props) {
             Bán chạy
           </button>
           <button
-            className={classNames('h-8 px-4 capitalize  text-xs text-center font-sans', {
+            className={classNames('h-8 px-4 capitalize  text-xs text-center ', {
               'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.promotion_price),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.promotion_price)
             })}
@@ -83,7 +83,7 @@ export default function SortProductList({ queryConfig, total_page }: Props) {
             Giảm giá
           </button>
           <select
-            className={classNames('h-8 px-4  text-xs font-sans', {
+            className={classNames('h-8 px-4  text-xs ', {
               'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.price),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
             })}

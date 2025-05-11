@@ -10,6 +10,18 @@ import { ProductListConfig } from 'src/types/product.type'
 import categoryApi from 'src/apis/category.api'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { Helmet } from 'react-helmet-async'
+import { BeatLoader } from 'react-spinners'
+import { CSSProperties, useEffect, useState } from 'react'
+import Loading from '../Loading'
+const override: CSSProperties = {
+  display: 'block',
+  margin: '0 auto',
+  textAlign: 'center',
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)'
+}
 export type QueryConfig = {
   [key in keyof ProductListConfig]: string
 }
@@ -33,32 +45,35 @@ export default function ProductList() {
   })
 
   return (
-    <div className='bg-white py-6'>
+    <div className='bg-white'>
       <Helmet>
-        <title>Sản phẩm | YoYo Store</title>
+        <title>Sản phẩm</title>
         <meta name='description' content='Cửa hàng Yoyo' />
       </Helmet>
       <div className='container'>
-        {listProduct && (
-          <div className='grid grid-cols-12 gap-6'>
-            <div className='col-span-2'>
-              {listCategory && (
-                <AsideFilter queryConfig={queryConfig} categories={listCategory?.data.result.categories} />
-              )}
-            </div>
-            <div className='col-span-10 ml-10'>
-              <SortProductList queryConfig={queryConfig} total_page={listProduct.data.result.paginate.total_page} />
-              <div className='mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
-                {listProduct.data.result.products.map((product) => (
-                  <div className='col-span-1' key={product._id}>
-                    <Product product={product} />
-                  </div>
-                ))}
+        <div className='overflow-auto py-5'>
+          {' '}
+          {listProduct && (
+            <div className='grid grid-cols-12 gap-6'>
+              <div className='col-span-2'>
+                {listCategory && (
+                  <AsideFilter queryConfig={queryConfig} categories={listCategory?.data.result.categories} />
+                )}
               </div>
-              <Paginate queryConfig={queryConfig} total_page={listProduct?.data.result.paginate.total_page} />
+              <div className='col-span-10 ml-10'>
+                <SortProductList queryConfig={queryConfig} total_page={listProduct.data.result.paginate.total_page} />
+                <div className='mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3'>
+                  {listProduct.data.result.products.map((product) => (
+                    <div className='col-span-1' key={product._id}>
+                      <Product product={product} />
+                    </div>
+                  ))}
+                </div>
+                <Paginate queryConfig={queryConfig} total_page={listProduct?.data.result.paginate.total_page} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )

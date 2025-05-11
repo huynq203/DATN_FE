@@ -1,14 +1,14 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
 
-export default function Blog() {
+export default function Introduce() {
   return (
     <div>
       <Helmet>
-        <title>Blog</title>
+        <title>Giới thiệu</title>
         <meta name='description' content='Cửa hàng Yoyo' />
       </Helmet>
-      Blog
+      Giới thiệu
     </div>
   )
 }

@@ -1,11 +1,13 @@
 import { Product } from './product.type'
 
+export type CartStatus = 0 | 1 | 2
+export type CartListStatus = CartStatus | 0
 export interface Cart {
   _id: string
   customer_id: string
   product_id: Product
   quantity: number
-  size: number
+  size: CartStatus
   created_at: string
   updated_at: string
 }

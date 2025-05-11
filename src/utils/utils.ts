@@ -36,3 +36,6 @@ export const getIdFromNameId = (nameId: string) => {
   const arr = nameId.split('-i.')
   return arr[arr.length - 1]
 }
+
+export const rateSale = (price: number, promotion_price: number) =>
+  Math.round(((price - promotion_price) / price) * 100) + '%'

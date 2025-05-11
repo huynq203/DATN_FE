@@ -44,7 +44,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
     })
   })
   return (
-    <div className='py-4 font-sans'>
+    <div className='py-4 '>
       <Link to={paths.Screens.PRODUCT} className='flex imtes-center font-bold'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
@@ -79,7 +79,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                   }).toString()
                 }}
                 className={classNames('flex relative px-2', {
-                  'text-red-500 font-sans font-bold': isActive
+                  'text-red-500  font-bold': isActive
                 })}
               >
                 {isActive && (

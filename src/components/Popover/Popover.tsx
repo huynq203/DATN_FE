@@ -53,6 +53,7 @@ export default function Popover({
                   top: y ?? 0,
                   left: x ?? 0,
                   width: 'max-content',
+                  zIndex: 9999,
                   transformOrigin: `${middlewareData.arrow?.x}px top`
                 }}
                 initial={{ opacity: 0, transform: 'scale(0)' }}
@@ -68,6 +69,7 @@ export default function Popover({
                     top: middlewareData.arrow?.y
                   }}
                 />
+
                 {renderPopover}
               </motion.div>
             )}

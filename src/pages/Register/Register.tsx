@@ -16,9 +16,9 @@ import { toast } from 'react-toastify'
 import Button from 'src/components/Button'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
+import { MESSAGE } from 'src/constants/messages'
 
-// type FormData = Pick<Schema, 'name' | 'phone' | 'email' | 'password' | 'confirm_password'>
-type FormData = Schema
+type FormData = Pick<Schema, 'name' | 'phone' | 'email' | 'password' | 'confirm_password'>
 const registerSchema = schema.pick(['name', 'phone', 'email', 'password', 'confirm_password'])
 export default function Register() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
@@ -41,7 +41,7 @@ export default function Register() {
         setIsAuthenticated(true)
         setProfile(res.data.result.customer)
         navigate(paths.Screens.HOME)
-        toast.success(res.data.message)
+        toast.success(res.data.message, { autoClose: 1000 })
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
@@ -55,7 +55,7 @@ export default function Register() {
             })
           }
         } else {
-          toast.error('Đăng ký thất bại')
+          toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
         }
       }
     })

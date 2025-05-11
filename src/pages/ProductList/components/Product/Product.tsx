@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import ProductRating from 'src/components/ProductRating'
 import { paths } from 'src/constants'
 import { Product as ProductType } from 'src/types/product.type'
-import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils'
+import { formatCurrency, formatNumberToSocialStyle, generateNameId, rateSale } from 'src/utils/utils'
 interface Props {
   product: ProductType
 }
@@ -11,8 +11,11 @@ export default function Product({ product }: Props) {
   return (
     <>
       <Link to={`${paths.Screens.PRODUCT}/${generateNameId({ name: product.slug, id: product._id })}`}>
-        <div className='bg-gray-100 shadow rounded-sm hover:translate-y-[-0.1rem] hover:shadow-md border hover:border-red-500 transition-transform duration-200 font-sans '>
-          <div className='w-full pt-[100%] relative'>
+        <div className='shadow rounded-sm hover:translate-y-[-0.1rem] hover:shadow-md border hover:border-red-500 transition-transform duration-200  overflow-hidden group'>
+          {/* <button className='absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-orange-500 text-white px-4 py-2 rounded-md shadow-md'>
+            Add to Cart
+          </button> */}
+          <div className='w-full pt-[100%] relative z-1'>
             <img
               src={product.url_images.length > 0 ? product.url_images[0].url : ''}
               alt={product.name}
@@ -21,21 +24,30 @@ export default function Product({ product }: Props) {
           </div>
           <div className='p-2 overflow-hidden'>
             <div className='my-2 min-h-[1.75rem] line-clamp-2 text-sm'>{product.name}</div>
+            <div className='flex flex-col my-2 min-h-[1.75rem] text-sm text-gray-500'>
+              <span>Nhà sản xuất: {product.category_id[0].name}</span>
+              <span>Lượt xem: {formatNumberToSocialStyle(product.view)}</span>
+            </div>
           </div>
-          <div className='flex items-center mt-1'>
-            <div className={`${product.promotion_price > 0 ? 'line-through' : ''} max-w-[50%] text-black truncate`}>
-              đ {formatCurrency(product.price)}
+
+          <div className='flex items-center ml-2'>
+            <div
+              className={`${product.promotion_price > 0 ? 'line-through text-gray-500 text-xs' : 'text-lg'} max-w-[50%] text-black truncate`}
+            >
+              ₫{formatCurrency(product.price)}
             </div>
             {product.promotion_price > 0 && (
               <>
-                <div className='text-red-500 truncate ml-3'>
-                  <span className='text-sm'>đ</span>
-                  <span className='ml-1'>{product.promotion_price}</span>
+                <div className='text-red-500 truncate ml-3 text-lg'>
+                  <span className='ml-1'>₫{formatCurrency(product.promotion_price)}</span>
+                </div>
+                <div className='ml-1 rounded-sm bg-red-200/90 px-1 py-[2px] text-[10px] uppercase text-red-500'>
+                  {rateSale(product.price, product.promotion_price)}
                 </div>
               </>
             )}
           </div>
-          <div className='mt-3 flex items-center justify-end'>
+          <div className='mt-2 flex items-center justify-end'>
             <div className='flex items-center'>
               <svg viewBox='0 0 9.5 8' className='h-3 w-3'>
                 <defs>

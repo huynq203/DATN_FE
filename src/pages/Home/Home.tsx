@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>Trang chủ - YOYO Store</title>
-        <meta name='description' content='Trang chủ - Yoyo' />
+        <title>Trang chủ</title>
+        <meta name='description' content='Trang chủ | Yoyo Store' />
         <link rel='canonical' href={paths.Screens.HOME} />
       </Helmet>
       Trang Home

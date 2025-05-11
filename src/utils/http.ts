@@ -68,11 +68,18 @@ class Http {
         }
         return response
       },
+
       function (error: AxiosError) {
+        const status = error.response?.status
+        if (status === HttpStatusCode.Unauthorized) {
+          toast.info('Phiên đăng nhập đã hết hạn', { autoClose: 1000 })
+          clearLS()
+          window.location.href = paths.Screens.AUTH_LOGIN
+        }
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
           const data: any | undefined = error.response?.data
           const message = data.message || error.message
-          toast.error(message)
+          toast.error(message, { autoClose: 1000 })
         }
         return Promise.reject(error)
       }

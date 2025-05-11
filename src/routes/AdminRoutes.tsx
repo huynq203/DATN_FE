@@ -16,7 +16,7 @@ export default function AdminRoutes() {
       )
     },
     {
-      path: paths.Screens.CHANGE_PASSWORD,
+      path: paths.Screens.ADMIN_CHANGE_PASSWORD,
       element: (
         <>
           <MainLayout>

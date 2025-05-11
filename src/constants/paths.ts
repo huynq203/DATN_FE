@@ -18,7 +18,9 @@ const paths = {
     PRODUCT_URL: '/products',
     //Cart
     CART_URL: '/carts',
-    CART_ADD_TO_CART: '/carts/add-to-cart'
+    CART_ADD_TO_CART: '/carts/add-to-cart',
+    CART_BUY_PRODUCT: '/carts/buy-products',
+    CART_UPDATE_PRODUCT: '/carts/update-product'
   },
   Screens: {
     AUTH_LOGIN: '/auth/login',
@@ -37,6 +39,8 @@ const paths = {
     PROFILE: '/profile', // Hồ sơ cá nhân
     CART: '/cart', // Giỏ hàng
     CHECKOUT: '/checkout', // Thanh toán
+    MY_ORDER: '/my-order', // Đơn hàng
+    ORDER_DETAIL: '/order/:id', // Chi tiết đơn hàng
     CHANGE_PASSWORD: '/change-password',
     ADMIN_DASHBOARD: '/admin',
     ADMIN_MANAGER_CUSTOMER: '/admin/customers',

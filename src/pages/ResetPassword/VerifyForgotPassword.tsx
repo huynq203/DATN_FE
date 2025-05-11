@@ -27,6 +27,7 @@ export default function VerifyForgotPassword() {
       navigate(paths.Screens.AUTH_FORGOT_PASSWORD)
     }
   })
+  //C1
   const isMounted = useRef(false)
   useEffect(() => {
     if (token && !isMounted.current) {
@@ -37,6 +38,7 @@ export default function VerifyForgotPassword() {
       isMounted.current = true
     }
   }, [])
+  //C2
   // useEffect(() => {
   //   let isMounted = false
   //   if (token) {
