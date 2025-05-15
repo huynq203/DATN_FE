@@ -22,9 +22,8 @@ export default function Cart() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
-  const choosenCartIdFromLocation = (location.state as { cartId: string } | null)?.cartId
 
-  // const { buy_product_id, buy_size, buy_quantity } = location.state
+  const choosenCartIdFromLocation = (location.state as { cartId: string } | null)?.cartId
 
   const { data: CartData, refetch } = useQuery({
     queryKey: ['cart', { status: CartStatus.InCart }],
@@ -44,12 +43,12 @@ export default function Cart() {
     }
   })
 
-  const buyProductsMutation = useMutation({
-    mutationFn: cartApi.buyProducts,
-    onSuccess: () => {
-      refetch()
-    }
-  })
+  // const buyProductsMutation = useMutation({
+  //   mutationFn: cartApi.buyProducts,
+  //   onSuccess: () => {
+  //     refetch()
+  //   }
+  // })
   const productInCart = CartData?.data.result
   //Every phải là true hết khi có 1 item là false sẽ return false hết
   const isAllChecked = extendedCarts.every((item) => item.checked)
@@ -114,20 +113,27 @@ export default function Cart() {
           draft[cartIndex].disabled = true
         })
       )
-      updateCartMutation.mutate({ product_id: cart.product_id._id, size: cart.size, quantity: value })
+      updateCartMutation.mutate({
+        product_id: cart.product_id._id,
+        size: cart.size,
+        color: cart.color,
+        quantity: value
+      })
     }
   }
 
   const handleDeleteCart = (cartIndex: number) => {
     const cartId = extendedCarts[cartIndex].product_id._id
     const cartSize = extendedCarts[cartIndex].size
-    deleteCartMutation.mutate([{ product_id: cartId, size: cartSize }])
+    const cartColor = extendedCarts[cartIndex].color
+    deleteCartMutation.mutate([{ product_id: cartId, size: cartSize, color: cartColor }])
   }
 
   const handleDeleteManyCart = () => {
     const cartIds = checkedCarts.map((item) => ({
       product_id: item.product_id._id,
-      size: item.size
+      size: item.size,
+      color: item.color
     }))
     deleteCartMutation.mutate(cartIds)
   }
@@ -145,23 +151,23 @@ export default function Cart() {
       const body = checkedCarts.map((item) => ({
         product_id: item.product_id,
         size: item.size,
+        color: item.color,
         quantity: item.quantity
       }))
       setIsLoading(true)
       setTimeout(() => {
-        buyProductsMutation.mutate(body, {
-          onSuccess: () => {
-            setIsLoading(false)
-            navigate(paths.Screens.CHECKOUT, {
-              state: { buyProducts: body, totalCheckedCartPrice, totalCheckedCartServingPrice }
-            })
-          }
+        setIsLoading(false)
+        navigate(paths.Screens.CHECKOUT, {
+          state: { buyProducts: body, totalCheckedCartPrice, totalCheckedCartServingPrice }
         })
+        // buyProductsMutation.mutate(body, {
+        //   onSuccess: () => {
+
+        //   }
+        // })
       }, 3000)
     }
   }
-  console.log(isLoading)
-
   return (
     <div className='bg-neutral-100'>
       <Helmet>
@@ -235,6 +241,10 @@ export default function Cart() {
                                 <div className='text-gray-600'>
                                   <span className='text-sm'>Size:</span>
                                   <span className='ml-2 text-sm'>{item.size}</span>
+                                </div>
+                                <div className='text-gray-600'>
+                                  <span className='text-sm'>Màu sắc:</span>
+                                  <span className='ml-2 text-sm'>{item.color}</span>
                                 </div>
                               </div>
                             </div>
@@ -344,8 +354,8 @@ export default function Cart() {
                   <Button
                     className='ml-5 mt-5 sm:mt-0 h-10  w-52 uppercase text-white bg-red-500 text-sm hover:bg-red-600 rounded-xl flex items-center justify-center'
                     onClick={handleBuyCart}
-                    disabled={buyProductsMutation.isPending}
-                    loading={buyProductsMutation.isPending}
+                    disabled={isLoading}
+                    loading={isLoading}
                   >
                     Mua hàng
                   </Button>

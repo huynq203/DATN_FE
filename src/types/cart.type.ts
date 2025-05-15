@@ -8,6 +8,7 @@ export interface Cart {
   product_id: Product
   quantity: number
   size: CartStatus
+  color: string
   created_at: string
   updated_at: string
 }

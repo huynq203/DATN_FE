@@ -21,6 +21,10 @@ export interface Product {
     _id: string
     size_name: string
   }
+  colors: {
+    _id: string
+    color_name: string
+  }
   status: number
   view: number
   sold: number

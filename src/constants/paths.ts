@@ -20,9 +20,15 @@ const paths = {
     CART_URL: '/carts',
     CART_ADD_TO_CART: '/carts/add-to-cart',
     CART_BUY_PRODUCT: '/carts/buy-products',
-    CART_UPDATE_PRODUCT: '/carts/update-product'
+    CART_UPDATE_PRODUCT: '/carts/update-product',
+    ORDER_URL: '/orders',
+    CREATE_ORDER_COD: '/orders/create-order-cod',
+    CREATE_ORDER_MOMO: '/orders/create-order-momo',
+    CREATE_ORDER_VNPAY: '/orders/create-order-vnpay',
+    RETURN_VNPAY: '/orders/return-vnpay'
   },
   Screens: {
+    //Site
     AUTH_LOGIN: '/auth/login',
     AUTH_OAUTH: '/auth/oauth',
     AUTH_REGISTER: '/auth/register',
@@ -42,6 +48,8 @@ const paths = {
     MY_ORDER: '/my-order', // Đơn hàng
     ORDER_DETAIL: '/order/:id', // Chi tiết đơn hàng
     CHANGE_PASSWORD: '/change-password',
+    CHECK_ORDER: '/check-order', // Đặt hàng thành công
+    //Admin
     ADMIN_DASHBOARD: '/admin',
     ADMIN_MANAGER_CUSTOMER: '/admin/customers',
     ADMIN_MANAGER_USER: '/admin/users',

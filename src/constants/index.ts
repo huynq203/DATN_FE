@@ -1,4 +1,4 @@
 import paths from './paths'
-import resources from './Resources'
+import resources from './resources'
 
 export { paths, resources }

@@ -10,24 +10,16 @@ import { ProductListConfig } from 'src/types/product.type'
 import categoryApi from 'src/apis/category.api'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { Helmet } from 'react-helmet-async'
-import { BeatLoader } from 'react-spinners'
-import { CSSProperties, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Loading from '../Loading'
-const override: CSSProperties = {
-  display: 'block',
-  margin: '0 auto',
-  textAlign: 'center',
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)'
-}
+
 export type QueryConfig = {
   [key in keyof ProductListConfig]: string
 }
 
 export default function ProductList() {
   const queryConfig = useQueryConfig()
+  const [isLoading, setIsLoading] = useState(true)
   const { data: listProduct } = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => {
@@ -43,7 +35,11 @@ export default function ProductList() {
       return categoryApi.getCategory()
     }
   })
-
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 3000)
+  }, [])
   return (
     <div className='bg-white'>
       <Helmet>
@@ -51,6 +47,15 @@ export default function ProductList() {
         <meta name='description' content='Cửa hàng Yoyo' />
       </Helmet>
       <div className='container'>
+        {isLoading && (
+          <div className='fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50'>
+            <div className='text-xl font-semibold animate-pulse text-black-700'>Đang tải dữ liệu</div>
+            <div className='ml-48 mt-2'>
+              <Loading loading={isLoading} color='black' top='50%' />
+            </div>
+          </div>
+        )}
+
         <div className='overflow-auto py-5'>
           {' '}
           {listProduct && (

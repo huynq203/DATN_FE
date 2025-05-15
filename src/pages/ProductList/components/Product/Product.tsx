@@ -48,7 +48,7 @@ export default function Product({ product }: Props) {
             )}
           </div>
           <div className='mt-2 flex items-center justify-end'>
-            <div className='flex items-center'>
+            {/* <div className='flex items-center'>
               <svg viewBox='0 0 9.5 8' className='h-3 w-3'>
                 <defs>
                   <linearGradient id='ratingStarGradient' x1='50%' x2='50%' y1='0%' y2='100%'>
@@ -75,7 +75,7 @@ export default function Product({ product }: Props) {
                 </g>
               </svg>
               <span className='ml-1 text-xs'>3.4</span>
-            </div>
+            </div> */}
             <div className=' ml-1 text-xs text-end'>
               <span className='ml-1'>Đã bán</span>
               <span className='ml-1'>{formatNumberToSocialStyle(product.sold)}</span>

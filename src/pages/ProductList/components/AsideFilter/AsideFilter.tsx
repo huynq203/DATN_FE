@@ -165,7 +165,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
         </form>
       </div>
       <div className='bg-gray-300 h-[1px] my-4' />
-      <span>Đánh giá</span>
+      {/* <span>Đánh giá</span>
       <ul className='my-3'>
         <li className='py-1 pl-2'>
           <Link to='' className='flex items-center text-sm'>
@@ -413,7 +413,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       <div className='bg-gray-300 h-[1px] my-4' />
       <Button className='w-full p-2 uppercase bg-red-400 hover:bg-red-600 text-white text-sm rounded-md flex justify-center items-center'>
         Xóa tất cả
-      </Button>
+      </Button> */}
     </div>
   )
 }

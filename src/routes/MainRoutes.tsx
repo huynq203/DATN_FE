@@ -10,6 +10,7 @@ import Home from 'src/pages/Home'
 import Introduce from 'src/pages/Introduce'
 import { ProtectedRoute } from 'src/pages/Login/isAuthenticated'
 import MyOrder from 'src/pages/MyOrder'
+import NotifyOrder from 'src/pages/NotifyOrder'
 import ProductDetail from 'src/pages/ProductDetail'
 import ProductList from 'src/pages/ProductList'
 import Profile from 'src/pages/Profile'
@@ -128,6 +129,16 @@ export default function MainRoutes() {
             <MainLayout>
               <Suspense>
                 <Checkout />
+              </Suspense>
+            </MainLayout>
+          )
+        },
+        {
+          path: paths.Screens.CHECK_ORDER,
+          element: (
+            <MainLayout>
+              <Suspense>
+                <NotifyOrder />
               </Suspense>
             </MainLayout>
           )

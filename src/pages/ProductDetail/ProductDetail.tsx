@@ -20,6 +20,11 @@ import { CartStatus } from 'src/constants/enum'
 export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState(1)
   const [sizeName, setSizeName] = useState(0)
+  const [colorName, setColorName] = useState('')
+  const [activeImage, setActiveImage] = useState('')
+  const [activeFlagSize, setActiveFlagSize] = useState(0)
+  const [activeFlagColor, setActiveFlagColor] = useState('')
+
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { nameId } = useParams()
@@ -31,9 +36,9 @@ export default function ProductDetail() {
   })
 
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
-  const [activeImage, setActiveImage] = useState('')
-  const [activeFlagSize, setActiveFlagSize] = useState(0)
+
   const product = ProductDetail?.data.result
+
   const currentImages = useMemo(
     () => (product ? product.url_images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
@@ -81,16 +86,25 @@ export default function ProductDetail() {
     setSizeName(value)
     setActiveFlagSize(value)
   }
+  const handleBuyColor = (value: string) => {
+    setColorName(value)
+    setActiveFlagColor(value)
+  }
 
   const handleAddToCart = () => {
     if (sizeName === 0) {
       toast.error(MESSAGE.PLEASE_CHOOSE_SIZE, { autoClose: 1000 })
       return
     }
+    if (colorName === '') {
+      toast.error(MESSAGE.PLEASE_CHOOSE_COLOR, { autoClose: 1000 })
+      return
+    }
     addToCartMutation.mutate(
       {
         product_id: product_id,
         size: sizeName,
+        color: colorName,
         quantity: buyCount
       },
       {
@@ -113,6 +127,7 @@ export default function ProductDetail() {
     const res = await addToCartMutation.mutateAsync({
       product_id: product_id,
       size: sizeName,
+      color: colorName,
       quantity: buyCount
     })
     const cart = res.data.result
@@ -252,6 +267,30 @@ export default function ProductDetail() {
                           onClick={() => handleBuySize(item.size_name)}
                         >
                           {item.size_name}
+                        </button>
+                      )
+                    })}
+                </div>
+              </div>
+              <div className='mt-3 flex items-center  pl-5'>
+                <span className='text-lg'>Màu sắc </span>
+                <div className='flex ml-5 visible'>
+                  {Array.isArray(product.colors) &&
+                    product.colors.map((item) => {
+                      const isFlagColor = item.color_name === activeFlagColor
+                      return (
+                        <button
+                          key={item._id}
+                          className={classNames(
+                            'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
+
+                            {
+                              'text-red-500 border-red-500': isFlagColor
+                            }
+                          )}
+                          onClick={() => handleBuyColor(item.color_name)}
+                        >
+                          {item.color_name}
                         </button>
                       )
                     })}
