@@ -28,6 +28,7 @@ export default function ProductList() {
     placeholderData: keepPreviousData,
     staleTime: 3 * 60 * 1000
   })
+  console.log(listProduct)
 
   const { data: listCategory } = useQuery({
     queryKey: ['categories'],
@@ -47,15 +48,6 @@ export default function ProductList() {
         <meta name='description' content='Cửa hàng Yoyo' />
       </Helmet>
       <div className='container'>
-        {isLoading && (
-          <div className='fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50'>
-            <div className='text-xl font-semibold animate-pulse text-black-700'>Đang tải dữ liệu</div>
-            <div className='ml-48 mt-2'>
-              <Loading loading={isLoading} color='black' top='50%' />
-            </div>
-          </div>
-        )}
-
         <div className='overflow-auto py-5'>
           {' '}
           {listProduct && (

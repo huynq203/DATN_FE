@@ -1,5 +1,5 @@
 import { paths } from 'src/constants'
-import { Order, OrderResponse } from 'src/types/order.type'
+import { Order, OrderResponse, VnpayStatusType } from 'src/types/order.type'
 import { SuccessResponseApi } from 'src/types/utils.type'
 import http from 'src/utils/http'
 
@@ -14,7 +14,7 @@ class OrderApi {
     return http.post(paths.ApiPath.CREATE_ORDER_VNPAY, body)
   }
   checkVnpayOrder = (params: Record<string, any>) => {
-    return http.get<SuccessResponseApi<OrderResponse>>(paths.ApiPath.RETURN_VNPAY, { params })
+    return http.get<SuccessResponseApi<VnpayStatusType>>(paths.ApiPath.RETURN_VNPAY, { params })
   }
 }
 

@@ -8,6 +8,8 @@ import { paths } from 'src/constants'
 import { MESSAGE } from 'src/constants/messages'
 import Loading from '../Loading'
 import { Helmet } from 'react-helmet-async'
+import { CartStatus, VnPayStatus } from 'src/constants/enum'
+import cartApi from 'src/apis/cart.api'
 
 export default function NotifyOrder() {
   const navigator = useNavigate()
@@ -16,25 +18,31 @@ export default function NotifyOrder() {
   const [title, setTitle] = useState('Đang xử lý đơn hàng')
   const [subtitle, setSubTitle] = useState('Đang xử lý đơn hàng của bạn, vui lòng chờ trong giây lát')
   const [isLoading, setIsLoading] = useState(true)
-
+  const { refetch } = useQuery({
+    queryKey: ['cart', { status: CartStatus.InCart }],
+    queryFn: () => cartApi.getCart({ status: CartStatus.InCart })
+  })
   const { data: checkOrderVnpay } = useQuery({
     queryKey: ['', searchParams.toString()],
     queryFn: () => orderApi.checkVnpayOrder(Object.fromEntries(searchParams.entries()))
   })
 
   const checkOrder = checkOrderVnpay?.data.result
+  console.log(checkOrder)
 
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false)
-      if (checkOrder?.vnp_ResponseCode == '00') {
+      if (checkOrder?.vnp_ResponseCode === VnPayStatus.Success) {
         setStatus('success')
         setTitle('Thanh toán thành công')
         setSubTitle('Đơn hàng của bạn đã được thanh toán thành công')
-      } else if (checkOrder?.vnp_ResponseCode == '24') {
+        refetch()
+      } else if (checkOrder?.vnp_ResponseCode === VnPayStatus.Cancel) {
         setStatus('error')
         setTitle('Thanh toán thất bại')
         setSubTitle('Đơn hàng của bạn đã bị hủy')
+        refetch()
       }
     }, 3000)
   }, [searchParams])

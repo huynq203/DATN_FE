@@ -9,3 +9,8 @@ export enum PaymentMethod {
   MOMO, // 1 Thanh toán qua thẻ: MOMO
   VNPAY // 2 Thanh toán qua thẻ: VNPAY
 }
+
+export enum VnPayStatus {
+  Success = '00',
+  Cancel = '24'
+}

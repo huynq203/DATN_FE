@@ -24,3 +24,7 @@ export interface OrderResponse {
   vnp_TxnRef: string
   vnp_SecureHash: string
 }
+
+export interface VnpayStatusType {
+  vnp_ResponseCode: string
+}

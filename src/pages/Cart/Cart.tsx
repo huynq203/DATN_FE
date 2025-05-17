@@ -174,7 +174,7 @@ export default function Cart() {
         <title>Giỏ hàng</title>
         <meta name='description' content='Giỏ hàng Yoyo' />
       </Helmet>
-      <Loading loading={isLoading} color='black' top='60%' />
+
       <div className='container'>
         {extendedCarts.length > 0 ? (
           <div className='py-5'>

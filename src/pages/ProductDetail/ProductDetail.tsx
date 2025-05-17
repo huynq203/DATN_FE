@@ -38,6 +38,7 @@ export default function ProductDetail() {
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
 
   const product = ProductDetail?.data.result
+  console.log(product)
 
   const currentImages = useMemo(
     () => (product ? product.url_images.slice(...currentIndexImages) : []),
@@ -259,7 +260,6 @@ export default function ProductDetail() {
                           key={item._id}
                           className={classNames(
                             'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
-
                             {
                               'text-red-500 border-red-500': isFlagSize
                             }
