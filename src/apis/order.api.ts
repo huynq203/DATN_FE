@@ -1,5 +1,5 @@
 import { paths } from 'src/constants'
-import { Order, OrderResponse, VnpayStatusType } from 'src/types/order.type'
+import { Order, VnpayStatusType } from 'src/types/order.type'
 import { SuccessResponseApi } from 'src/types/utils.type'
 import http from 'src/utils/http'
 

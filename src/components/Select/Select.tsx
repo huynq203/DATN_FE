@@ -1,4 +1,4 @@
-import React, { SelectHTMLAttributes } from 'react'
+import  { SelectHTMLAttributes } from 'react'
 import { RegisterOptions, UseFormRegister } from 'react-hook-form'
 interface Props extends SelectHTMLAttributes<HTMLSelectElement> {
   classNameInput?: string

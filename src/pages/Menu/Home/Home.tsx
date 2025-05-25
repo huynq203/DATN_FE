@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { paths } from 'src/constants'
-import ProductList from '../../ProductList'
 import Loading from '../../Loading'
 
 export default function Home() {

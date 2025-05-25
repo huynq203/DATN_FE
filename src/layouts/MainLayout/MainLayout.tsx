@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Footer from 'src/components/Footer'
 import Header from 'src/components/Header'
-import Loading from 'src/pages/Loading'
 
 interface Props {
   children?: React.ReactNode

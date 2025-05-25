@@ -1,4 +1,4 @@
-import React, { TextareaHTMLAttributes } from 'react'
+import { TextareaHTMLAttributes } from 'react'
 import { RegisterOptions, UseFormRegister } from 'react-hook-form'
 interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   classNameInput?: string

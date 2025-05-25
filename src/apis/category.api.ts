@@ -1,12 +1,6 @@
 import http from 'src/utils/http'
 import { paths } from 'src/constants'
-import {
-  Category,
-  CategoryList,
-  CategoryListConfig,
-  CategoryReqBody,
-  CategoryUpdateReqBody
-} from 'src/types/category.type'
+import { Category, CategoryList, CategoryReqBody, CategoryUpdateReqBody } from 'src/types/category.type'
 import { SuccessResponseApi } from 'src/types/utils.type'
 
 class CategoryApi {

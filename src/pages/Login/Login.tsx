@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import authApi from 'src/apis/auth.api'
 import Input from 'src/components/Input'
 import { paths, resources } from 'src/constants'
@@ -20,7 +20,7 @@ const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+
 
   const getGoogleAuthUrl = () => {
     const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env

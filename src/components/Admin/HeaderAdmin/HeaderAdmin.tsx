@@ -1,8 +1,8 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { Dropdown, Layout, Menu, theme } from 'antd'
-import { AppstoreOutlined, DownOutlined, UnorderedListOutlined, UserOutlined } from '@ant-design/icons'
-import { Link, useNavigate } from 'react-router-dom'
-import { paths } from 'src/constants'
+import { DownOutlined, UserOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
+
 import { AppContext } from 'src/contexts/app.context'
 import { useMutation } from '@tanstack/react-query'
 import userApi from 'src/apis/user.api'
@@ -44,7 +44,7 @@ export default function HeaderAdmin() {
       logoutMutation.mutate()
     }
     if (data.key === 'change-password') {
-      }
+    }
   }
   return (
     <Header style={{ padding: 0, background: colorBgContainer }}>

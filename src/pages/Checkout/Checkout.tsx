@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Loading from '../Loading'
 import { Helmet } from 'react-helmet-async'
@@ -14,7 +14,7 @@ import { CartStatus, PaymentMethod } from 'src/constants/enum'
 import cartApi from 'src/apis/cart.api'
 import customerApi from 'src/apis/customer.api'
 import { ErrorResponseApi } from 'src/types/utils.type'
-import { MESSAGE } from 'src/constants/messages'
+
 
 interface CheckoutState {
   buyProducts: Carts[]
@@ -32,7 +32,7 @@ export default function Checkout() {
   const addresses = listAddress?.data.result
   const [isLoading, setIsLoading] = useState(false)
   const location = useLocation()
-  const { buyProducts, totalCheckedCartPrice, totalCheckedCartServingPrice } = location.state as CheckoutState
+  const { buyProducts, totalCheckedCartPrice } = location.state as CheckoutState
 
   const getProfile = localStorage.getItem('profile')
   const profile = JSON.parse(getProfile || '{}') as Customer

@@ -16,5 +16,4 @@ const resources = {
 
   Sound: {}
 }
-
 export default resources

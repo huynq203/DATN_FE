@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { AppstoreOutlined, UnorderedListOutlined, UserOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
-import { Layout, Menu, theme } from 'antd'
-const { Footer, Sider } = Layout
+import { Layout, Menu } from 'antd'
+const {  Sider } = Layout
 type MenuItem = Required<MenuProps>['items'][number]
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTicket, faUser, faHouse, faCartShopping, faPenToSquare, faPen } from '@fortawesome/free-solid-svg-icons'

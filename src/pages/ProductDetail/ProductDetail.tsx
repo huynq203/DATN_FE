@@ -123,7 +123,7 @@ export default function ProductDetail() {
           queryClient.invalidateQueries({ queryKey: ['cart', { status: CartStatus.InCart }] })
         },
         onError: (error) => {
-          toast.error(MESSAGE.ADD_TO_CART_FAILED, { autoClose: 1000 })
+          toast.error(MESSAGE.ADD_TO_CART_FAILED + error, { autoClose: 1000 })
         }
       }
     )

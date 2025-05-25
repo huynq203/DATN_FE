@@ -46,6 +46,4 @@ const InputV2 = forwardRef<HTMLInputElement, InputNumberProps>(function InputNum
 
 export default InputV2
 
-function Hexa(props: { name: string; lastName: string }) {
-  return null
-}
+

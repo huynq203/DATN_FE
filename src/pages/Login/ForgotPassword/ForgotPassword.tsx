@@ -13,7 +13,7 @@ import { paths } from 'src/constants'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { Schema, schema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import * as yup from 'yup'
+
 
 type FormData = Pick<Schema, 'email'>
 const fogotPasswordSchema = schema.pick(['email'])
