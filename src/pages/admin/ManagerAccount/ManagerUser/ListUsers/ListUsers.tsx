@@ -1,7 +1,5 @@
 import React from 'react'
 
 export default function ListUsers() {
-  return (
-    <div>ListUsers</div>
-  )
+  return <div>Danh sách user</div>
 }
