@@ -15,3 +15,5 @@ export function RejectedRoute() {
   // Replace with your authentication logic
   return !isAuthenticated ? <Outlet /> : <Navigate to={paths.Screens.HOME} />
 }
+
+

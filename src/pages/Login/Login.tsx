@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { data, Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import authApi from 'src/apis/auth.api'
 import Input from 'src/components/Input'
 import { paths, resources } from 'src/constants'
@@ -62,7 +62,6 @@ export default function Login() {
         onSuccess: (res) => {
           setIsAuthenticated(true)
           setProfile(res.data.result.customer)
-          navigate(paths.Screens.HOME)
           toast.success(res.data.message, { autoClose: 1000 })
         },
         onError: (error) => {

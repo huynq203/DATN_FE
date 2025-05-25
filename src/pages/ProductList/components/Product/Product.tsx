@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Link } from 'react-router-dom'
 import ProductRating from 'src/components/ProductRating'
 import { paths } from 'src/constants'
@@ -25,7 +25,7 @@ export default function Product({ product }: Props) {
           <div className='p-2 overflow-hidden'>
             <div className='my-2 min-h-[1.75rem] line-clamp-2 text-sm'>{product.name}</div>
             <div className='flex flex-col my-2 min-h-[1.75rem] text-sm text-gray-500'>
-              <span>Nhà sản xuất: {product.category_id[0].name}</span>
+              <span>Nhà sản xuất: {product.category_id.name}</span>
               <span>Lượt xem: {formatNumberToSocialStyle(product.view)}</span>
             </div>
           </div>

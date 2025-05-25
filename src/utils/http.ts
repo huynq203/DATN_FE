@@ -2,17 +2,20 @@ import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { paths } from 'src/constants'
 import { HttpStatusCode } from 'src/constants/httpStatusCode'
 import { toast } from 'react-toastify'
-import { AuthRespone } from 'src/types/auth.type'
+import { AuthRespone, UserRespone } from 'src/types/auth.type'
 import {
   clearLS,
   getAccessTokenFromLS,
   getProfileFromLS,
   getRefreshTokenFromLS,
+  getRoleFromLS,
   saveAccessToken,
-  saveProfile,
-  saveRefreshToken
+  saveProfileToLS,
+  saveRefreshToken,
+  saveRole
 } from './auth'
 import { Customer } from 'src/types/customer.type'
+import { MESSAGE } from 'src/constants/messages'
 
 export enum ContentType {
   JSON = 'application/json',
@@ -25,11 +28,12 @@ class Http {
   private accessToken: string
   private refreshToken: string
   private profile: Customer | null
-
+  private role: string
   constructor() {
     this.accessToken = getAccessTokenFromLS()
     this.refreshToken = getRefreshTokenFromLS()
     this.profile = getProfileFromLS()
+    this.role = getRoleFromLS()
     this.instance = axios.create({
       baseURL: paths.Api.BASE_URL,
       timeout: paths.Api.TIMEOUT,
@@ -49,37 +53,42 @@ class Http {
         return Promise.reject(error)
       }
     )
-
     this.instance.interceptors.response.use(
       (response) => {
         const { url } = response.config
-        if (url === paths.ApiPath.CUSTOMER_LOGIN || url === paths.ApiPath.CUSTOMER_REGISTER) {
+        if (
+          url === paths.ApiPath.CUSTOMER_LOGIN ||
+          url === paths.ApiPath.CUSTOMER_REGISTER ||
+          url === paths.ApiPath.LOGIN_USER
+        ) {
           this.accessToken = (response.data as AuthRespone).result?.access_token
           this.refreshToken = (response.data as AuthRespone).result?.refresh_token
-          this.profile = (response.data as AuthRespone).result?.customer
+          this.profile = (response.data as AuthRespone).result?.customer || (response.data as UserRespone).result?.user
+          this.role = (response.data as AuthRespone).result?.role || (response.data as UserRespone).result?.role
           saveAccessToken(this.accessToken)
           saveRefreshToken(this.refreshToken)
-          saveProfile(this.profile)
-        } else if (url === paths.ApiPath.CUSTOMER_LOGOUT) {
+          saveProfileToLS(this.profile)
+          saveRole(this.role)
+        } else if (url === paths.ApiPath.CUSTOMER_LOGOUT || url === paths.ApiPath.LOGOUT_USER) {
           this.accessToken = ''
           this.refreshToken = ''
           this.profile = null
+          this.role = ''
           clearLS()
         }
         return response
       },
 
       function (error: AxiosError) {
-        const status = error.response?.status
-        if (status === HttpStatusCode.Unauthorized) {
-          toast.info('Phiên đăng nhập đã hết hạn', { autoClose: 1000 })
-          clearLS()
-          window.location.href = paths.Screens.AUTH_LOGIN
-        }
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
           const data: any | undefined = error.response?.data
           const message = data.message || error.message
-          toast.error(message, { autoClose: 1000 })
+          //toast.error(message, { autoClose: 1000 })
+        }
+        if (error.response?.status === HttpStatusCode.Unauthorized) {
+          toast.error(MESSAGE.TOKEN_IS_EXPIRED, { autoClose: 1000 })
+          clearLS()
+          // window.location.href = paths.Screens.AUTH_LOGIN
         }
         return Promise.reject(error)
       }

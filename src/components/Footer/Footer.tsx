@@ -3,7 +3,7 @@ import { FaLocationDot } from 'react-icons/fa6'
 import { MdEmail } from 'react-icons/md'
 export default function Footer() {
   return (
-    <footer className='bg-neutral-200  py-10'>
+    <footer className='bg-neutral-200  py-10 border border-t-black'>
       <div className='container'>
         <div className='px-4 grid grid-cols-1 md:grid-cols-3 gap-8'>
           <div>

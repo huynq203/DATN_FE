@@ -26,7 +26,6 @@ type FormData = Pick<Schema, 'search_name'>
 const nameSearchSchema = schema.pick(['search_name'])
 export default function Header() {
   const queryConfig = useQueryConfig()
-
   const navigate = useNavigate()
   const { register, handleSubmit } = useForm<FormData>({
     defaultValues: {

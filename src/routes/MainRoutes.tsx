@@ -1,19 +1,25 @@
 import { Suspense } from 'react'
 import { paths } from 'src/constants'
 import MainLayout from 'src/layouts/MainLayout'
-import Blog from 'src/pages/Blog'
+import Blog from 'src/pages/Menu/Blog'
 import Cart from 'src/pages/Cart'
-import ChangePassword from 'src/pages/ChangePassword'
+
 import Checkout from 'src/pages/Checkout'
-import Contact from 'src/pages/Contact'
-import Home from 'src/pages/Home'
-import Introduce from 'src/pages/Introduce'
+import Contact from 'src/pages/Menu/Contact'
+import Home from 'src/pages/Menu/Home'
+import Introduce from 'src/pages/Menu/Introduce'
 import { ProtectedRoute } from 'src/pages/Login/isAuthenticated'
-import MyOrder from 'src/pages/MyOrder'
 import NotifyOrder from 'src/pages/NotifyOrder'
 import ProductDetail from 'src/pages/ProductDetail'
 import ProductList from 'src/pages/ProductList'
-import Profile from 'src/pages/Profile'
+import Profile from 'src/pages/Profile/pages/Profile'
+import HistoryOrder from 'src/pages/Profile/pages/HistoryOrder'
+
+import CustomerLayout from 'src/pages/Profile/layouts/CustomerLayout'
+import path from 'path'
+import Address from 'src/pages/Profile/pages/Address'
+import ChangePassword from 'src/pages/Profile/pages/ChangePassword'
+import WishList from 'src/pages/Profile/pages/WishList'
 
 export default function MainRoutes() {
   const mainRoutes = [
@@ -84,36 +90,6 @@ export default function MainRoutes() {
       element: <ProtectedRoute />,
       children: [
         {
-          path: paths.Screens.PROFILE,
-          element: (
-            <MainLayout>
-              <Suspense>
-                <Profile />
-              </Suspense>
-            </MainLayout>
-          )
-        },
-        {
-          path: paths.Screens.MY_ORDER,
-          element: (
-            <MainLayout>
-              <Suspense>
-                <MyOrder />
-              </Suspense>
-            </MainLayout>
-          )
-        },
-        {
-          path: paths.Screens.CHANGE_PASSWORD,
-          element: (
-            <MainLayout>
-              <Suspense>
-                <ChangePassword />
-              </Suspense>
-            </MainLayout>
-          )
-        },
-        {
           path: paths.Screens.CART,
           element: (
             <MainLayout>
@@ -142,6 +118,56 @@ export default function MainRoutes() {
               </Suspense>
             </MainLayout>
           )
+        },
+        {
+          path: paths.Screens.CUSTOMER,
+          element: (
+            <MainLayout>
+              <CustomerLayout />
+            </MainLayout>
+          ),
+          children: [
+            {
+              path: paths.Screens.PROFILE,
+              element: (
+                <Suspense>
+                  <Profile />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.ADDRESS,
+              element: (
+                <Suspense>
+                  <Address />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.HISTORY_ORDER,
+              element: (
+                <Suspense>
+                  <HistoryOrder />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.CHANGE_PASSWORD,
+              element: (
+                <Suspense>
+                  <ChangePassword />
+                </Suspense>
+              )
+            },
+            {
+              path: paths.Screens.WISH_LIST,
+              element: (
+                <Suspense>
+                  <WishList />
+                </Suspense>
+              )
+            }
+          ]
         }
       ]
     }

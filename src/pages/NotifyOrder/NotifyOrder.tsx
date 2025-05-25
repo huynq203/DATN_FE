@@ -8,40 +8,50 @@ import { paths } from 'src/constants'
 import { MESSAGE } from 'src/constants/messages'
 import Loading from '../Loading'
 import { Helmet } from 'react-helmet-async'
-import { CartStatus, VnPayStatus } from 'src/constants/enum'
+import { CartStatus, PaymentMethod, VnPayStatus } from 'src/constants/enum'
 import cartApi from 'src/apis/cart.api'
 
 export default function NotifyOrder() {
-  const navigator = useNavigate()
+  const location = useLocation()
   const searchParams = new URLSearchParams(useLocation().search)
   const [status, setStatus] = useState<'success' | 'error' | 'info'>('info')
   const [title, setTitle] = useState('Đang xử lý đơn hàng')
   const [subtitle, setSubTitle] = useState('Đang xử lý đơn hàng của bạn, vui lòng chờ trong giây lát')
   const [isLoading, setIsLoading] = useState(true)
+  const { payment_method } = location.state || ''
+
   const { refetch } = useQuery({
     queryKey: ['cart', { status: CartStatus.InCart }],
     queryFn: () => cartApi.getCart({ status: CartStatus.InCart })
   })
+
   const { data: checkOrderVnpay } = useQuery({
     queryKey: ['', searchParams.toString()],
     queryFn: () => orderApi.checkVnpayOrder(Object.fromEntries(searchParams.entries()))
   })
-
-  const checkOrder = checkOrderVnpay?.data.result
-  console.log(checkOrder)
+  const checkOrderVnp = checkOrderVnpay?.data.result
+  console.log(checkOrderVnp)
 
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false)
-      if (checkOrder?.vnp_ResponseCode === VnPayStatus.Success) {
+
+      if (checkOrderVnp?.payment_method === PaymentMethod.VNPAY) {
+        if (checkOrderVnp?.vnp_ResponseCode === VnPayStatus.Success) {
+          setStatus('success')
+          setTitle('Thanh toán thành công')
+          setSubTitle('Đơn hàng của bạn đã được thanh toán thành công')
+          refetch()
+        } else if (checkOrderVnp?.vnp_ResponseCode === VnPayStatus.Cancel) {
+          setStatus('error')
+          setTitle('Thanh toán thất bại')
+          setSubTitle('Đơn hàng của bạn đã bị hủy')
+          refetch()
+        }
+      } else if (payment_method === PaymentMethod.COD) {
         setStatus('success')
         setTitle('Thanh toán thành công')
         setSubTitle('Đơn hàng của bạn đã được thanh toán thành công')
-        refetch()
-      } else if (checkOrder?.vnp_ResponseCode === VnPayStatus.Cancel) {
-        setStatus('error')
-        setTitle('Thanh toán thất bại')
-        setSubTitle('Đơn hàng của bạn đã bị hủy')
         refetch()
       }
     }, 3000)

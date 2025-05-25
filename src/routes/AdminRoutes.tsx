@@ -1,29 +1,137 @@
 import { paths } from 'src/constants'
 import MainLayout from 'src/layouts/admin/MainLayout'
-import ChangePassword from 'src/pages/admin/ChangePassword'
+
 import Dashboard from 'src/pages/admin/Dashboard'
+import Login from 'src/pages/admin/Login'
+import { ProtectedRouteAdmin, RejectedRouteAdmin } from 'src/pages/admin/Login/isAuthenticated'
+import CustomerDetail from 'src/pages/admin/ManagerAccount/ManagerCustomer/CustomerDetail'
+import ListCustomer from 'src/pages/admin/ManagerAccount/ManagerCustomer/ListCustomers'
+import ListUsers from 'src/pages/admin/ManagerAccount/ManagerUser/ListUsers'
+import ListCategories from 'src/pages/admin/ManagerCategory/ListCategories'
+import ManagerOrder from 'src/pages/admin/ManagerOrder'
+import CreateProduct from 'src/pages/admin/ManagerProduct/CreateProduct'
+import ListProducts from 'src/pages/admin/ManagerProduct/ListProducts'
+import UpdateProduct from 'src/pages/admin/ManagerProduct/UpdateProduct/UpdateProduct'
+import ManagerRecceipt from 'src/pages/admin/ManagerRecceipt'
 
 export default function AdminRoutes() {
   const adminRoutes = [
     {
-      path: paths.Screens.ADMIN_DASHBOARD,
-      element: (
-        <>
-          <MainLayout>
-            <Dashboard />
-          </MainLayout>
-        </>
-      )
+      path: '',
+      element: <RejectedRouteAdmin />,
+      children: [
+        {
+          path: paths.Screens.ADMIN_LOGIN,
+          element: <Login />
+        }
+      ]
     },
+
     {
-      path: paths.Screens.ADMIN_CHANGE_PASSWORD,
-      element: (
-        <>
-          <MainLayout>
-            <ChangePassword />
-          </MainLayout>
-        </>
-      )
+      path: '',
+      element: <ProtectedRouteAdmin />,
+      children: [
+        {
+          path: paths.Screens.ADMIN_DASHBOARD,
+          element: (
+            <>
+              <MainLayout>
+                <Dashboard />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_CUSTOMER,
+          element: (
+            <>
+              <MainLayout>
+                <ListCustomer />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_CUSTOMER_DETAIL,
+          element: (
+            <>
+              <MainLayout>
+                <CustomerDetail />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_USER,
+          element: (
+            <>
+              <MainLayout>
+                <ListUsers />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_ORDER,
+          element: (
+            <>
+              <MainLayout>
+                <ManagerOrder />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_RECCEIPTES,
+          element: (
+            <>
+              <MainLayout>
+                <ManagerRecceipt />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_PRODUCT,
+          element: (
+            <>
+              <MainLayout>
+                <ListProducts />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_CREATE_PRODUCT,
+          element: (
+            <>
+              <MainLayout>
+                <CreateProduct />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_UPDATE_PRODUCT,
+          element: (
+            <>
+              <MainLayout>
+                <UpdateProduct />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_CATEGORY,
+          element: (
+            <>
+              <MainLayout>
+                <ListCategories />
+              </MainLayout>
+            </>
+          )
+        }
+      ]
     }
   ]
   return adminRoutes

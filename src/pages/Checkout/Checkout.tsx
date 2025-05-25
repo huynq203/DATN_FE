@@ -1,20 +1,20 @@
 import React, { use, useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Loading from '../Loading'
 import { Helmet } from 'react-helmet-async'
 import Button from 'src/components/Button'
-import { formatCurrency } from 'src/utils/utils'
-import { Product } from 'src/types/product.type'
+import { formatCurrency, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { Cart as Carts } from 'src/types/cart.type'
 import { Customer } from 'src/types/customer.type'
-import classNames from 'classnames'
 import { paths, resources } from 'src/constants'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import orderApi from 'src/apis/order.api'
 import { toast } from 'react-toastify'
-import Cart from '../Cart'
 import { CartStatus, PaymentMethod } from 'src/constants/enum'
 import cartApi from 'src/apis/cart.api'
+import customerApi from 'src/apis/customer.api'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import { MESSAGE } from 'src/constants/messages'
 
 interface CheckoutState {
   buyProducts: Carts[]
@@ -23,14 +23,23 @@ interface CheckoutState {
 }
 
 export default function Checkout() {
+  const { data: listAddress } = useQuery({
+    queryKey: ['addresses'],
+    queryFn: () => {
+      return customerApi.getAddress()
+    }
+  })
+  const addresses = listAddress?.data.result
   const [isLoading, setIsLoading] = useState(false)
   const location = useLocation()
   const { buyProducts, totalCheckedCartPrice, totalCheckedCartServingPrice } = location.state as CheckoutState
+
   const getProfile = localStorage.getItem('profile')
   const profile = JSON.parse(getProfile || '{}') as Customer
   const [selectedPayment, setSelectedPayment] = useState(0)
-  const [selectedAddress, setSelectedAddress] = useState(profile.addresses[0]?.address)
+  const [selectedAddress, setSelectedAddress] = useState(addresses?.[0]?.address || '')
   const navigate = useNavigate()
+
   const handleChangePayment = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target
     setSelectedPayment(Number(value))
@@ -57,6 +66,7 @@ export default function Checkout() {
     setIsLoading(true)
     const orderData = {
       order_details: buyProducts.map((item) => ({
+        cart_id: item._id,
         product_id: item.product_id._id,
         quantity: item.quantity,
         size: item.size,
@@ -73,15 +83,32 @@ export default function Checkout() {
             setIsLoading(false)
             toast.success(res.data.message)
             history.replaceState(null, '')
-            navigate(paths.Screens.CHECK_ORDER)
+            // window.location.href = paths.Screens.CHECK_ORDER
+            navigate(paths.Screens.CHECK_ORDER, {
+              state: {
+                payment_method: PaymentMethod.COD
+              }
+            })
             refetch()
           }, 3000)
+        },
+        onError: (error) => {
+          setIsLoading(false)
+          if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+            toast.error(error.response?.data.message)
+          } else {
+            const axiosError = error as import('axios').AxiosError<ErrorResponseApi>
+            toast.error(axiosError.response?.data.message, { autoClose: 1000 })
+          }
         }
       })
     } else if (selectedPayment === PaymentMethod.MOMO) {
       createOrderMomoMutation.mutate(orderData, {
         onSuccess: (res) => {
-          window.location.href = res.data.result
+          console.log(res)
+
+          // window.location.href = res.data.result
+          // navigate(paths.Screens.CHECK_ORDER)
         }
       })
     } else if (selectedPayment === PaymentMethod.VNPAY) {
@@ -178,11 +205,20 @@ export default function Checkout() {
                   <h3 className='text-lg font-bold mt-1'>Giao tới</h3>
                   <p className='ml-1'>{profile.name}</p>
                   <p className='ml-1'>{profile.phone}</p>
-                  <select className='' name='' id='' onChange={handleChangeAddress}>
-                    {profile.addresses.length > 1 &&
-                      profile.addresses.map((item) => <option value={item.address}>{item.address}</option>)}
-                  </select>
-                  <span className='ml-3 border border-red-500 text-xs text-red-500'>Mặc định</span>
+                  {addresses ? (
+                    <div>
+                      <select onChange={handleChangeAddress}>
+                        {addresses.map((item) => (
+                          <option value={item.address}>{item.address}</option>
+                        ))}
+                      </select>
+                      <span className='ml-3 border border-red-500 text-xs text-red-500'>Mặc định</span>
+                    </div>
+                  ) : (
+                    <p className='ml-1 text-xs text-red-600'>
+                      <Link to={paths.Screens.ADDRESS}>Thêm địa chỉ giao hàng</Link>
+                    </p>
+                  )}
                 </div>
                 <div className='bg-gray-100 p-4 rounded-lg mt-4'>
                   <p>

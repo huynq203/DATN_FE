@@ -21,6 +21,7 @@ export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState(1)
   const [sizeName, setSizeName] = useState(0)
   const [colorName, setColorName] = useState('')
+  const [stock, setStock] = useState<number>()
   const [activeImage, setActiveImage] = useState('')
   const [activeFlagSize, setActiveFlagSize] = useState(0)
   const [activeFlagColor, setActiveFlagColor] = useState('')
@@ -38,13 +39,12 @@ export default function ProductDetail() {
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
 
   const product = ProductDetail?.data.result
-  console.log(product)
 
   const currentImages = useMemo(
     () => (product ? product.url_images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
   )
-  const queryConfig: ProductListConfig = { limit: '10', page: '1', category_id: product?.category_id[0]._id }
+  const queryConfig: ProductListConfig = { limit: '10', page: '1', category_id: product?.category_id._id }
   const { data: listProduct } = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => {
@@ -86,11 +86,20 @@ export default function ProductDetail() {
   const handleBuySize = (value: number) => {
     setSizeName(value)
     setActiveFlagSize(value)
+    updateStock(colorName, value.toString())
   }
   const handleBuyColor = (value: string) => {
     setColorName(value)
     setActiveFlagColor(value)
+    updateStock(value, sizeName.toString())
   }
+  const updateStock = (color: string, size: string) => {
+    const result = product?.option_products.find((item) => item.color === color && item.size.toString() === size)
+    setStock(result ? result.stock : 0)
+  }
+
+  const uniqueColors = Array.from(new Set(product?.option_products.map((item) => item.color)))
+  const uniqueSizes = Array.from(new Set(product?.option_products.map((item) => item.size))).sort((a, b) => a - b)
 
   const handleAddToCart = () => {
     if (sizeName === 0) {
@@ -230,7 +239,7 @@ export default function ProductDetail() {
               </div>
               <div className='mt-8 flex items-center pl-5 text-lg'>
                 <span>Loại: </span>
-                <span className='ml-20'>{product.category_id[0].name}</span>
+                <span className='ml-20'>{product.category_id.name}</span>
               </div>
               <div className='mt-3 flex items-center  bg-gray-50 px-5 py-4  font-semibold'>
                 <div
@@ -252,66 +261,68 @@ export default function ProductDetail() {
               <div className='mt-3 flex items-center  pl-5'>
                 <span className='text-lg'>Kích thước </span>
                 <div className='flex ml-5 visible'>
-                  {Array.isArray(product.sizes) &&
-                    product.sizes.map((item) => {
-                      const isFlagSize = item.size_name === activeFlagSize
-                      return (
-                        <button
-                          key={item._id}
-                          className={classNames(
-                            'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
-                            {
-                              'text-red-500 border-red-500': isFlagSize
-                            }
-                          )}
-                          onClick={() => handleBuySize(item.size_name)}
-                        >
-                          {item.size_name}
-                        </button>
-                      )
-                    })}
+                  {uniqueSizes.map((item) => {
+                    const isFlagSize = item === activeFlagSize
+                    return (
+                      <button
+                        key={item}
+                        className={classNames(
+                          'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
+                          {
+                            'text-red-500 border-red-500': isFlagSize
+                          }
+                        )}
+                        onClick={() => handleBuySize(item)}
+                      >
+                        {item}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
               <div className='mt-3 flex items-center  pl-5'>
                 <span className='text-lg'>Màu sắc </span>
                 <div className='flex ml-5 visible'>
-                  {Array.isArray(product.colors) &&
-                    product.colors.map((item) => {
-                      const isFlagColor = item.color_name === activeFlagColor
-                      return (
-                        <button
-                          key={item._id}
-                          className={classNames(
-                            'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
-
-                            {
-                              'text-red-500 border-red-500': isFlagColor
-                            }
-                          )}
-                          onClick={() => handleBuyColor(item.color_name)}
-                        >
-                          {item.color_name}
-                        </button>
-                      )
-                    })}
+                  {uniqueColors.map((item) => {
+                    const isFlagColor = item === activeFlagColor
+                    return (
+                      <button
+                        key={item}
+                        className={classNames(
+                          'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
+                          {
+                            'text-red-500 border-red-500': isFlagColor
+                          }
+                        )}
+                        onClick={() => handleBuyColor(item)}
+                      >
+                        {item}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
-              <div className='mt-5 flex items-center text-lg pl-5'>
-                <span className=' text-black'>Số lượng</span>
-                <QuantityController
-                  max={product.stock}
-                  onDecrease={handleBuyCount}
-                  onIncrease={handleBuyCount}
-                  onType={handleBuyCount}
-                  value={buyCount}
-                />
-                <div className='ml-8 text-sm text-gray-500'>Hàng còn: {product.stock}</div>
-              </div>
+              {activeFlagColor && activeFlagSize && (
+                <div className='mt-5 flex items-center text-lg pl-5'>
+                  <span className=' text-black'>Số lượng</span>
+                  <QuantityController
+                    max={stock}
+                    onDecrease={handleBuyCount}
+                    onIncrease={handleBuyCount}
+                    onType={handleBuyCount}
+                    value={buyCount}
+                  />
+                  <div className={`ml-8 text-sm ${stock && stock > 0 ? 'text-gray-600' : 'text-red-600'}`}>
+                    {stock && stock > 0 ? `Hàng còn: ${stock} sản phẩm` : `Hết hàng`}
+                  </div>
+                </div>
+              )}
               <div className='mt-5 pl-5 flex items-center'>
                 {accessToken ? (
                   <button
                     className='flex h-12 items-center justify-center rounded-sm border border-green-600 bg-green-600 text-white shadow-sm hover:bg-green-600/90'
                     onClick={handleAddToCart}
+                    disabled={stock === 0}
                   >
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -393,8 +404,6 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
-
-      <div className='container'></div>
     </div>
   )
 }

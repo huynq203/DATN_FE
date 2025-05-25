@@ -17,3 +17,8 @@ export interface CartList {
   carts: Cart[]
   total_cart: number
 }
+
+export interface ExtendedCarts extends Cart {
+  disabled: boolean
+  checked: boolean
+}

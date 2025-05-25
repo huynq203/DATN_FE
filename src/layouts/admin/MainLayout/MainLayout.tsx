@@ -9,6 +9,7 @@ import { faTicket, faUser, faHouse, faCartShopping, faPenToSquare, faPen } from 
 import HeaderAdmin from 'src/components/Admin/HeaderAdmin/HeaderAdmin'
 import { paths } from 'src/constants'
 import { useNavigate } from 'react-router-dom'
+import FooterAdmin from 'src/components/Admin/FooterAdmin'
 function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
   return {
     key,
@@ -52,9 +53,7 @@ export default function MainLayout({ children }: Props) {
       <Layout>
         <HeaderAdmin />
         {children}
-        <Footer style={{ textAlign: 'center' }}>
-          HuyNQ1 Design ©{new Date().getFullYear()} Created by Nguyễn Quốc Huy 2025
-        </Footer>
+        <FooterAdmin />
       </Layout>
     </Layout>
   )

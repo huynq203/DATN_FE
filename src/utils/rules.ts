@@ -131,4 +131,35 @@ export const schema = yup.object({
   search_name: yup.string().trim().required('Tên không được để trống')
 })
 
+export const customerSchema = yup.object({
+  name: yup.string().max(50, 'Tên không được quá 50 ký tự').required('Tên không được để trống'),
+  email: yup.string().email('Email không đúng định dạng').required('Email không được để trống'),
+  phone: yup
+    .string()
+    .required('Số điện thoại không được để trống')
+    .matches(/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/, 'Số điện thoại không hợp lệ')
+    .min(10, 'Số điện thoại không hợp lệ')
+    .max(10, 'Số điện thoại không hợp lệ'),
+  date_of_birth: yup.date().max(new Date(), 'Hãy chọn 1 ngày').required('Ngày sinh không hợp lệ'),
+  password: schema.fields['password'],
+  new_password: schema.fields['password'],
+  confirm_new_password: handleConfirmPasswordYup('new_password')
+})
+
+export const productsSchema = yup.object({
+  category_id: yup.string().required('Danh mục không được để trống'),
+  name: yup.string().required('Tên sản phẩm không được để trống'),
+  price: yup.string().typeError('Giá không hợp lệ').min(0, 'Giá không hợp lệ').required('Giá không được để trống'),
+  stock: yup
+    .string()
+    .typeError('Số lượng không hợp lệ')
+    .min(0, 'Số lượng không hợp lệ')
+    .required('Số lượng không được để trống'),
+  size: yup.string().required('Kích thước không được để trống'),
+  color: yup.string().required('Màu sắc không được để trống'),
+  description: yup.string().required('Mô tả không được để trống')
+})
+
+export type ProductSchema = yup.InferType<typeof productsSchema>
+export type CustomerSchema = yup.InferType<typeof customerSchema>
 export type Schema = yup.InferType<typeof schema>

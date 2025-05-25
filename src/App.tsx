@@ -7,6 +7,7 @@ import { LocalStorageEventTarget } from './utils/auth'
 function App() {
   // const authRoutes = AuthRoutes() // Gọi là customer hook
   const { reset } = useContext(AppContext)
+
   useEffect(() => {
     LocalStorageEventTarget.addEventListener('clearLS', reset)
     return () => {

@@ -28,7 +28,9 @@ export default function ProductList() {
     placeholderData: keepPreviousData,
     staleTime: 3 * 60 * 1000
   })
-  console.log(listProduct)
+  const productData = listProduct?.data.result.products
+  const totalPage = listProduct?.data.result.paginate.total_page
+ 
 
   const { data: listCategory } = useQuery({
     queryKey: ['categories'],
@@ -50,7 +52,7 @@ export default function ProductList() {
       <div className='container'>
         <div className='overflow-auto py-5'>
           {' '}
-          {listProduct && (
+          {productData && (
             <div className='grid grid-cols-12 gap-6'>
               <div className='col-span-2'>
                 {listCategory && (
@@ -58,15 +60,15 @@ export default function ProductList() {
                 )}
               </div>
               <div className='col-span-10 ml-10'>
-                <SortProductList queryConfig={queryConfig} total_page={listProduct.data.result.paginate.total_page} />
+                {totalPage && <SortProductList queryConfig={queryConfig} total_page={totalPage} />}
                 <div className='mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3'>
-                  {listProduct.data.result.products.map((product) => (
+                  {productData.map((product) => (
                     <div className='col-span-1' key={product._id}>
                       <Product product={product} />
                     </div>
                   ))}
                 </div>
-                <Paginate queryConfig={queryConfig} total_page={listProduct?.data.result.paginate.total_page} />
+                {totalPage && <Paginate queryConfig={queryConfig} total_page={totalPage} />}
               </div>
             </div>
           )}

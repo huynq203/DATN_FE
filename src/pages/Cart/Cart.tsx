@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import cartApi from 'src/apis/cart.api'
@@ -7,28 +7,22 @@ import Button from 'src/components/Button'
 import QuantityController from 'src/components/QuantityController'
 import { paths } from 'src/constants'
 import { CartStatus } from 'src/constants/enum'
-import { Cart as Carts } from 'src/types/cart.type'
 import { formatCurrency, generateNameId } from 'src/utils/utils'
 import { produce } from 'immer'
 import { keyBy } from 'lodash'
-import Loading from '../Loading'
+import { AppContext } from 'src/contexts/app.context'
+import { toast } from 'react-toastify'
 
-interface ExtendedCarts extends Carts {
-  disabled: boolean
-  checked: boolean
-}
 export default function Cart() {
-  const [extendedCarts, setExtendedCarts] = useState<ExtendedCarts[]>([])
+  const { extendedCarts, setExtendedCarts, profile } = useContext(AppContext)
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const choosenCartIdFromLocation = (location.state as { cartId: string } | null)?.cartId
 
   const { data: CartData, refetch } = useQuery({
     queryKey: ['cart', { status: CartStatus.InCart }],
     queryFn: () => cartApi.getCart({ status: CartStatus.InCart })
   })
+
   const updateCartMutation = useMutation({
     mutationFn: cartApi.updateCart,
     onSuccess: () => {
@@ -43,32 +37,36 @@ export default function Cart() {
     }
   })
 
-  // const buyProductsMutation = useMutation({
-  //   mutationFn: cartApi.buyProducts,
-  //   onSuccess: () => {
-  //     refetch()
-  //   }
-  // })
+  const location = useLocation()
+  const choosenCartIdFromLocation = (location.state as { cartId: string } | null)?.cartId
   const productInCart = CartData?.data.result
   //Every phải là true hết khi có 1 item là false sẽ return false hết
-  const isAllChecked = extendedCarts.every((item) => item.checked)
-  const checkedCarts = extendedCarts.filter((item) => item.checked)
+  const isAllChecked = useMemo(() => extendedCarts.every((item) => item.checked), [extendedCarts])
+  const checkedCarts = useMemo(() => extendedCarts.filter((item) => item.checked), [extendedCarts])
   const checkedCartsCount = checkedCarts.length
-  const totalCheckedCartPrice = checkedCarts.reduce((result, current) => {
-    return (
-      result +
-      (current.product_id.promotion_price > 0 ? current.product_id.promotion_price : current.product_id.price) *
-        current.quantity
-    )
-  }, 0)
-  const totalCheckedCartServingPrice = checkedCarts.reduce((result, current) => {
-    return (
-      result +
-      (current.product_id.promotion_price > 0
-        ? current.product_id.price * current.quantity - current.product_id.promotion_price * current.quantity
-        : 0)
-    )
-  }, 0)
+  const totalCheckedCartPrice = useMemo(
+    () =>
+      checkedCarts.reduce((result, current) => {
+        return (
+          result +
+          (current.product_id.promotion_price > 0 ? current.product_id.promotion_price : current.product_id.price) *
+            current.quantity
+        )
+      }, 0),
+    [checkedCarts]
+  )
+  const totalCheckedCartServingPrice = useMemo(
+    () =>
+      checkedCarts.reduce((result, current) => {
+        return (
+          result +
+          (current.product_id.promotion_price > 0
+            ? current.product_id.price * current.quantity - current.product_id.promotion_price * current.quantity
+            : 0)
+        )
+      }, 0),
+    [checkedCarts]
+  )
   useEffect(() => {
     setExtendedCarts((prev) => {
       const extendedCartsObject = keyBy(prev, '_id')
@@ -147,8 +145,12 @@ export default function Cart() {
   }
 
   const handleBuyCart = () => {
+    if (profile?.verify === 0) {
+      toast.error('Vui lòng xác thực tài khoản trước khi mua hàng')
+    }
     if (checkedCarts.length > 0) {
       const body = checkedCarts.map((item) => ({
+        _id: item._id,
         product_id: item.product_id,
         size: item.size,
         color: item.color,
@@ -160,11 +162,6 @@ export default function Cart() {
         navigate(paths.Screens.CHECKOUT, {
           state: { buyProducts: body, totalCheckedCartPrice, totalCheckedCartServingPrice }
         })
-        // buyProductsMutation.mutate(body, {
-        //   onSuccess: () => {
-
-        //   }
-        // })
       }, 3000)
     }
   }
@@ -269,19 +266,17 @@ export default function Cart() {
                           </div>
                           <div className='col-span-1 '>
                             <QuantityController
-                              max={item.product_id.stock}
+                              max={100}
                               value={item.quantity as number}
                               classNameWrapper='flex items-center'
-                              onIncrease={(value) => handleQuantity(index, value, value <= item.product_id.stock)}
+                              onIncrease={(value) => handleQuantity(index, value, value <= 100)}
                               onDecrease={(value) => handleQuantity(index, value, value >= 1)}
                               onType={handleTypeQuantity(index)}
                               onFocusOut={(value) =>
                                 handleQuantity(
                                   index,
                                   value,
-                                  value >= 1 &&
-                                    value <= item.product_id.stock &&
-                                    value !== productInCart?.carts[index]?.quantity
+                                  value >= 1 && value <= 100 && value !== productInCart?.carts[index]?.quantity
                                 )
                               }
                               disabled={item.disabled}

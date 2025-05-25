@@ -1,7 +1,10 @@
 import React from 'react'
-
+import { Layout } from 'antd'
+const { Footer } = Layout
 export default function FooterAdmin() {
   return (
-    <div>FooterAdmin</div>
+    <Footer style={{ textAlign: 'center' }}>
+      HuyNQ1 Design ©{new Date().getFullYear()} Created by Nguyễn Quốc Huy 2025
+    </Footer>
   )
 }

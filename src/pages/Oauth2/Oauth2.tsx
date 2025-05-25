@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { paths } from 'src/constants'
 import { AppContext } from 'src/contexts/app.context'
-import { saveAccessToken, saveProfile, saveRefreshToken } from 'src/utils/auth'
+import { saveAccessToken, saveProfileToLS, saveRefreshToken } from 'src/utils/auth'
 export default function Oauth2() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
@@ -16,7 +16,7 @@ export default function Oauth2() {
     //Test UI cho trường hợp login
     saveAccessToken(access_token)
     saveRefreshToken(refresh_token)
-    saveProfile(profile)
+    saveProfileToLS(profile)
     setIsAuthenticated(true)
     navigate(paths.Screens.HOME)
   }, [params])

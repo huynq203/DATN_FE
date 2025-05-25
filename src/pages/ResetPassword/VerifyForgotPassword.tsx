@@ -65,5 +65,5 @@ export default function VerifyForgotPassword() {
   //   }
   // }, [])
 
-  return <div>VerifyForgotPassword</div>
+  return <div></div>
 }

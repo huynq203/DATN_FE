@@ -6,6 +6,7 @@ export interface User {
   date_of_birth: Date
   address: string
   role: string
+  verify: number
   created_at: string
   updated_at: string
 }

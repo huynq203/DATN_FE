@@ -115,7 +115,7 @@ export default function NavHeader() {
                   </>
                 }
                 renderPopover={
-                  <div className='bg-white relative z-50 shadow-md rounded-sm border border-gray-200 -translate-x-10 text-left -mt-2'>
+                  <div className='bg-white relative z-50 shadow-md rounded-sm border border-gray-200 -translate-x-10 text-center -mt-2'>
                     <div className='flex flex-col'>
                       <Link
                         to={paths.Screens.PROFILE}
@@ -126,7 +126,7 @@ export default function NavHeader() {
                     </div>
                     <div className='flex flex-col'>
                       <Link
-                        to={paths.Screens.MY_ORDER}
+                        to={paths.Screens.HISTORY_ORDER}
                         className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left '
                       >
                         Đơn mua
