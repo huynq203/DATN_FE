@@ -8,7 +8,8 @@ class SwalAlert {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Xóa'
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy bỏ'
     })
   }
   notifySuccess(title: string, text: string) {
@@ -23,6 +24,18 @@ class SwalAlert {
       title,
       text,
       icon: 'error'
+    })
+  }
+  showConfirm() {
+    return Swal.fire({
+      title: 'Xác nhận',
+      text: 'Bạn có chắc chắn muốn thực hiện hành động này?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Hủy bỏ'
     })
   }
 }

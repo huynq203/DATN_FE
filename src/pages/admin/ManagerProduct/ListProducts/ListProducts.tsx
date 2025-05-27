@@ -5,7 +5,6 @@ import { JSX } from 'react'
 import { Link } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import { paths, resources } from 'src/constants'
-
 import { createStyles } from 'antd-style'
 import Button from 'src/components/Button'
 import swalAlert from 'src/utils/SwalAlert'
@@ -75,7 +74,7 @@ export default function ListProducts() {
     mutationFn: productApi.exportFileProduct,
     onSuccess: (res) => {
       const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-      saveAs(blob, `${new Date().toISOString()}_product_list.xlsx`)
+      saveAs(blob, `${new Date().toISOString()}_products_list.xlsx`)
     }
   })
   const handleExportFile = () => {
@@ -154,7 +153,7 @@ export default function ListProducts() {
         <div className='flex gap-2 justify-center'>
           <Link
             to=''
-            className='flex h-9 px-3 text-white bg-blue-500/90 text-sm hover:bg-blue-400 hover:text-white flex items-center justify-center rounded-sm'
+            className='flex h-9 px-1 text-white bg-blue-500/90 text-sm hover:bg-blue-400 hover:text-white items-center justify-center rounded-sm'
           >
             Nhập hàng
           </Link>
@@ -223,56 +222,59 @@ export default function ListProducts() {
             borderRadius: borderRadiusLG
           }}
         >
-          <div className='grid grid-cols-2'>
-            <div className='flex '>Quản lý sản phẩm</div>
-            <div className='flex justify-end'>
-              <Button
-                onClick={handleExportFile}
-                className='bg-blue-200/90 text-blue-700 px-4 py-2 rounded-md font-bold mr-4'
-              >
-                <div className='flex'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth='1.5'
-                    stroke='currentColor'
-                    className='size-5'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3'
-                    />
-                  </svg>
+          <div className='rounded bg-gray-50 p-4'>
+            <div className='grid grid-cols-2'>
+              <div className='flex text-lg capitalize mt-1'>Quản lý sản phẩm</div>
+              <div className='flex justify-end'>
+                <Button
+                  onClick={handleExportFile}
+                  className='bg-blue-200/90 text-blue-700 hover:bg-blue-300/90 px-4 py-2 rounded-md font-bold mr-4'
+                >
+                  <div className='flex'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth='1.5'
+                      stroke='currentColor'
+                      className='size-5'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3'
+                      />
+                    </svg>
 
-                  <span className=''>Tải xuống</span>
-                </div>
-              </Button>
-              <Link
-                to={paths.Screens.ADMIN_CREATE_PRODUCT}
-                className='bg-blue-200/90 text-blue-700 px-4 py-2 rounded-md font-bold'
-              >
-                <div className='flex'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth='1.5'
-                    stroke='currentColor'
-                    className='size-5'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
-                    />
-                  </svg>
-                  <span className=''>Thêm sản phẩm</span>
-                </div>
-              </Link>
+                    <span className=''>Tải xuống</span>
+                  </div>
+                </Button>
+                <Link
+                  to={paths.Screens.ADMIN_CREATE_PRODUCT}
+                  className='bg-blue-200/90 text-blue-700 hover:bg-blue-300/90 px-4 py-2 rounded-md font-bold'
+                >
+                  <div className='flex'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth='1.5'
+                      stroke='currentColor'
+                      className='size-5'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+                      />
+                    </svg>
+                    <span className=''>Thêm sản phẩm</span>
+                  </div>
+                </Link>
+              </div>
             </div>
           </div>
+
           <div className='mt-5'>
             <Table<DataType>
               className={styles.customTable}

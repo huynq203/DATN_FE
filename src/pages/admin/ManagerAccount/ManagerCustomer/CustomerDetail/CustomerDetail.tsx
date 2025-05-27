@@ -1,22 +1,19 @@
 import { useQuery } from '@tanstack/react-query'
-import { Breadcrumb, Table, theme } from 'antd'
+import { Breadcrumb, Table, TableColumnsType, theme } from 'antd'
 import { createStyles } from 'antd-style'
 import { Content } from 'antd/es/layout/layout'
-import React from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useParams } from 'react-router-dom'
 import customerApi from 'src/apis/customer.api'
-import Button from 'src/components/Button'
 import { paths, resources } from 'src/constants'
 import { FaUser, FaPhone, FaBirthdayCake, FaIdBadge } from 'react-icons/fa'
+import addressApi from 'src/apis/address.api'
 
 interface DataType {
   key: string
   name: string
-  email: string
   phone: string
-  date_of_birth: string
-  status: number
+  address: string
   created_at: string
   updated_at: string
 }
@@ -51,8 +48,71 @@ export default function CustomerDetail() {
     }
   })
   const customerData = customerDetail?.data.result
-  console.log('customerData', customerData)
 
+  const { data: addressData } = useQuery({
+    queryKey: ['addressList', customer_id],
+    queryFn: () => {
+      return addressApi.getAddressManagerByCustomer(customer_id as string)
+    }
+  })
+  const listAddress = addressData?.data.result
+
+  const columns: TableColumnsType<DataType> = [
+    {
+      title: 'Họ tên',
+      width: 50,
+      dataIndex: 'name',
+      align: 'center',
+      key: '1'
+    },
+    {
+      title: 'Điện thoại',
+      width: 50,
+      dataIndex: 'phone',
+      align: 'center',
+      key: '2',
+      sorter: true
+    },
+    {
+      title: 'Địa chỉ',
+      width: 50,
+      dataIndex: 'address',
+      align: 'center',
+      key: '3'
+    },
+
+    {
+      title: 'Ngày tạo',
+      width: 50,
+      dataIndex: 'created_at',
+      align: 'center',
+      key: '5'
+    },
+    {
+      title: 'Ngày cập nhật',
+      width: 50,
+      dataIndex: 'updated_at',
+      align: 'center',
+      key: '6'
+    }
+  ]
+  const dataSource =
+    listAddress?.map((item) => ({
+      key: item._id,
+      name: item.name,
+      phone: item.phone,
+      address: item.address,
+      created_at: new Date(item.created_at).toLocaleTimeString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }),
+      updated_at: new Date(item.updated_at).toLocaleTimeString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+    })) || []
   return (
     <Content style={{ margin: '0 16px' }}>
       <Breadcrumb style={{ margin: '16px 0', paddingTop: 24 }}>
@@ -134,12 +194,12 @@ export default function CustomerDetail() {
             </div>
           </div>
           <div className='mt-4 p-4 shadow bg-white'>
-            <div className='rounded bg-gray-50 p-4 text-lg capitalize'>Địa chỉ khách hàng</div>
+            <div className='rounded bg-gray-50 p-4 text-lg capitalize'>Địa chỉ nhận hàng</div>
             <div className='mt-2'>
               <Table<DataType>
                 className={styles.customTable}
-                columns={[]}
-                dataSource={[]}
+                columns={columns}
+                dataSource={dataSource}
                 bordered
                 size='middle'
                 scroll={{ x: 'calc(700px + 50%)', y: 47 * 10 }}

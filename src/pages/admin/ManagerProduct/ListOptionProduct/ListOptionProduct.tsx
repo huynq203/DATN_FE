@@ -159,33 +159,36 @@ export default function ListOptionProduct({ product_id }: Props) {
     })) || []
   return (
     <div>
-      <div className='grid grid-cols-2 mt-5'>
-        <div className='flex '>Cập nhật kích thước, màu sắc</div>
-        <div className='flex justify-end'>
-          <Button
-            className='bg-blue-200/90 text-blue-700 px-4 py-2 rounded-md font-bold'
-            onClick={() => setIsModalOpenInsert(true)}
-          >
-            <div className='flex'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth='1.5'
-                stroke='currentColor'
-                className='size-5'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
-                />
-              </svg>
-              <span className=''>Thêm Option</span>
-            </div>
-          </Button>
+      <div className='rounded bg-gray-50 p-4 mt-5'>
+        <div className='grid grid-cols-2'>
+          <div className='flex text-lg capitalize mt-1'>Cập nhật kích thước, màu sắc</div>
+          <div className='flex justify-end'>
+            <Button
+              className='bg-blue-200/90 text-blue-700 px-4 py-2 rounded-md font-bold'
+              onClick={() => setIsModalOpenInsert(true)}
+            >
+              <div className='flex'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth='1.5'
+                  stroke='currentColor'
+                  className='size-5'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+                  />
+                </svg>
+                <span className=''>Thêm Option</span>
+              </div>
+            </Button>
+          </div>
         </div>
       </div>
+
       <div className='mt-5'>
         <Table<DataType> columns={columns} dataSource={dataSource} />
         <ModalCreatetOptionProduct

@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import categoryApi from 'src/apis/category.api'
 import { MESSAGE } from 'src/constants/messages'
 import { ErrorResponseApi } from 'src/types/utils.type'
+import swalAlert from 'src/utils/SwalAlert'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 type FieldType = {
   name?: string
@@ -42,27 +43,31 @@ export default function ModalUpdatetCategory({ isModalOpen, setIsModalOpen, cate
     mutationFn: categoryApi.updateCategory
   })
   const onFinish = (values: DataType) => {
-    updateCategoryMutation.mutate(
-      {
-        ...values,
-        category_id: categoryDetail.key
-      },
-      {
-        onSuccess: (data) => {
-          toast.success(data.data.message)
-          form.resetFields()
-          setIsModalOpen(false)
-          refetch()
-        },
-        onError: (error) => {
-          if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-            toast.error(error.response?.data.message)
-          } else {
-            toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
+    swalAlert.showConfirm().then((result) => {
+      if (result.isConfirmed) {
+        updateCategoryMutation.mutate(
+          {
+            ...values,
+            category_id: categoryDetail.key
+          },
+          {
+            onSuccess: (data) => {
+              toast.success(data.data.message)
+              form.resetFields()
+              setIsModalOpen(false)
+              refetch()
+            },
+            onError: (error) => {
+              if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+                toast.error(error.response?.data.message)
+              } else {
+                toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
+              }
+            }
           }
-        }
+        )
       }
-    )
+    })
   }
   useEffect(() => {
     form.setFieldsValue({

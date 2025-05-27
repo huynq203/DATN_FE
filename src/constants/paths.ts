@@ -12,7 +12,8 @@ const paths = {
     CUSTOMER_FORGOT_PASSWORD: '/customers/forgot-password',
     CUSTOMER_VERIFY_FORGOT_PASSWORD: '/customers/verify-forgot-password',
     CUSTOMER_RESET_PASSWORD: '/customers/reset-password',
-    GET_ADDRESS: '/addresses',
+
+    //
     //Category
     CATEGORY_URL: '/categories',
     CREATE_CATEGORY: '/categories/create',
@@ -46,11 +47,27 @@ const paths = {
     GET_PROFILE: '/customers/profile',
     UPDATE_PROFILE: '/customers/profile',
 
+    //Address
+    GET_ADDRESS: '/addresses',
+    GET_ADDRESS_BY_CUSTOMER: '/addresses/address-by-customer',
+
     //Admin
     LOGIN_USER: '/users/login',
     LOGOUT_USER: '/users/logout',
-    GET_ALL_CUSTOMERS: 'customers',
-    DELETE_CUSTOMER: 'customers/delete'
+    GET_ALL_CUSTOMERS: '/customers',
+    DELETE_CUSTOMER: 'customers/delete',
+    CHANGE_STATUS_CUSTOMER: '/customers/change-status',
+    EXPORT_FILE_CUSTOMER: '/customers/export-file',
+    //USER
+    GET_USERS: '/users',
+    CHANGE_STATUS_USER: '/users/change-status',
+    CREATE_USER: '/users/create',
+    UPDATE_USER: '/users/update',
+    DELETE_USER: '/users/delete',
+    GET_USER_BY_ID: '/users/get-user-by-id',
+
+    //Role
+    GET_ROLE_USER: '/roles'
   },
   Screens: {
     //Site

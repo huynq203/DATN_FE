@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Form, Input, Modal } from 'antd'
-import React from 'react'
 import { toast } from 'react-toastify'
 import categoryApi from 'src/apis/category.api'
+import { MESSAGE } from 'src/constants/messages'
 import { CategoryReqBody } from 'src/types/category.type'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
 type FieldType = {
   name?: string
@@ -40,7 +42,11 @@ export default function ModalCreateCategory({ isModalOpen, setIsModalOpen }: Pro
         refetch()
       },
       onError: (error) => {
-        console.error('Error creating category:', error)
+        if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+          toast.error(error.response?.data.message)
+        } else {
+          toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
+        }
       }
     })
   }

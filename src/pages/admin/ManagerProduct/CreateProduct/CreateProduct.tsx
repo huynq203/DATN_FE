@@ -154,6 +154,12 @@ export default function CreateProduct() {
               <meta name='description' content='Thêm sản phẩm YOYO Store' />
               <link rel='icon' type='image/svg+xml' href={resources.Images.THUMBNAIL} />
             </Helmet>
+            <div className='rounded bg-gray-50 p-4 mt-5'>
+              <div className='grid grid-cols-2'>
+                <div className='flex text-lg capitalize mt-1'>Thêm sản phẩm</div>
+                <div className='flex justify-end'></div>
+              </div>
+            </div>
             <form className='flex-grow md:mt-0' encType='multipart/form-data' onSubmit={onSumit}>
               <div className='flex flex-wrap mt-5 gap-y-5'>
                 <div className='flex w-full md:w-1/2'>

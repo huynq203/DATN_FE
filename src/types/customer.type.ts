@@ -1,10 +1,5 @@
-export interface Addresses {
-  _id: string
-  address: string
-  customer_id: string
-  created_at: string
-  updated_at: string
-}
+import { Addresses } from "./address.type"
+
 
 export interface Customer {
   _id: string

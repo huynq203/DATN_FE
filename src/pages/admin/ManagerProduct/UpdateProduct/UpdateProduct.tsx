@@ -55,8 +55,7 @@ export default function UpdateProduct() {
     register,
     formState: { errors },
     handleSubmit,
-    setValue,
-    watch
+    setValue
   } = useForm<FormData>({
     defaultValues: {
       name: '',
@@ -67,8 +66,6 @@ export default function UpdateProduct() {
   })
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data)
-
     let url_images: Media[] = product?.url_images || []
     try {
       if (files.length > 0) {
@@ -163,9 +160,13 @@ export default function UpdateProduct() {
               <link rel='icon' type='image/svg+xml' href={resources.Images.THUMBNAIL} />
             </Helmet>
             <div>
-              <div className='grid grid-cols-2'>
-                <div className='flex '>Cập nhật sản phẩm</div>
+              <div className='rounded bg-gray-50 p-4'>
+                {' '}
+                <div className='grid grid-cols-2'>
+                  <div className='flex text-lg capitalize mt-1'>Cập nhật sản phẩm</div>
+                </div>
               </div>
+
               <form className='flex-grow md:mt-0' encType='multipart/form-data' onSubmit={onSubmit}>
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-2 mt-5'>
                   <div>

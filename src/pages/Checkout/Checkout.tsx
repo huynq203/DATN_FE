@@ -14,7 +14,7 @@ import { CartStatus, PaymentMethod } from 'src/constants/enum'
 import cartApi from 'src/apis/cart.api'
 import customerApi from 'src/apis/customer.api'
 import { ErrorResponseApi } from 'src/types/utils.type'
-
+import addressApi from 'src/apis/address.api'
 
 interface CheckoutState {
   buyProducts: Carts[]
@@ -26,9 +26,11 @@ export default function Checkout() {
   const { data: listAddress } = useQuery({
     queryKey: ['addresses'],
     queryFn: () => {
-      return customerApi.getAddress()
+      return addressApi.getAddressbyCustomer()
     }
   })
+  console.log(listAddress)
+
   const addresses = listAddress?.data.result
   const [isLoading, setIsLoading] = useState(false)
   const location = useLocation()

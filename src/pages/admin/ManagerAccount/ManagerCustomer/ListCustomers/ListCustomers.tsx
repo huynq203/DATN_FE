@@ -2,7 +2,6 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { Breadcrumb, Table, TableColumnsType, Tag, theme } from 'antd'
 import { createStyles } from 'antd-style'
 import { Content } from 'antd/es/layout/layout'
-import React from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -14,7 +13,7 @@ import { MESSAGE } from 'src/constants/messages'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import swalAlert from 'src/utils/SwalAlert'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-
+import { saveAs } from 'file-saver'
 interface DataType {
   key: string
   name: string
@@ -83,6 +82,43 @@ export default function ListCustomers() {
     })
   }
 
+  const changeStatusCustomerMutation = useMutation({
+    mutationFn: customerApi.changeStatusCustomer
+  })
+
+  const handleChangeStatusCustomer = (customer_id: string, status: StatusType) => {
+    swalAlert.showConfirm().then((result) => {
+      if (result.isConfirmed) {
+        changeStatusCustomerMutation.mutate(
+          { customer_id, status },
+          {
+            onSuccess: () => {
+              swalAlert.notifySuccess('Thông báo', 'Bạn đã thay đổi trạng thái thành công')
+              refetch()
+            },
+            onError: (error) => {
+              if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+              } else {
+                swalAlert.notifyError('Thông báo', MESSAGE.SERVER_ERROR)
+              }
+            }
+          }
+        )
+      }
+    })
+  }
+
+  const exportFileCustomerMutation = useMutation({
+    mutationFn: customerApi.exportFileCustomer,
+    onSuccess: (res) => {
+      const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      saveAs(blob, `${new Date().toISOString()}_customers_list.xlsx`)
+    }
+  })
+  const handleExportFile = () => {
+    exportFileCustomerMutation.mutate()
+  }
   const columns: TableColumnsType<DataType> = [
     {
       title: 'Trạng thái',
@@ -93,9 +129,13 @@ export default function ListCustomers() {
       render: (_, record: DataType) => (
         <>
           {record.status === StatusType.Inactive ? (
-            <Tag color='volcano'>Inactive</Tag>
+            <Button onClick={() => handleChangeStatusCustomer(record.key, StatusType.Inactive)}>
+              <Tag color='volcano'>Inactive</Tag>
+            </Button>
           ) : (
-            <Tag color='green'>Active</Tag>
+            <Button onClick={() => handleChangeStatusCustomer(record.key, StatusType.Active)}>
+              <Tag color='green'>Active</Tag>
+            </Button>
           )}
         </>
       )
@@ -211,31 +251,37 @@ export default function ListCustomers() {
             borderRadius: borderRadiusLG
           }}
         >
-          <div className='grid grid-cols-2'>
-            <div className='flex '>Quản lý khách hàng</div>
-            <div className='flex justify-end'>
-              <Button className='bg-blue-200/90 text-blue-700 px-4 py-2 rounded-md font-bold mr-4'>
-                <div className='flex'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth='1.5'
-                    stroke='currentColor'
-                    className='size-5'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3'
-                    />
-                  </svg>
+          <div className='rounded bg-gray-50 p-4 '>
+            <div className='grid grid-cols-2'>
+              <div className='flex text-lg capitalize mt-1'>Quản lý khách hàng</div>
+              <div className='flex justify-end'>
+                <Button
+                  className='bg-blue-200/90 text-blue-700 hover:bg-blue-300/90 px-4 py-2 rounded-md font-bold mr-4'
+                  onClick={handleExportFile}
+                >
+                  <div className='flex'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth='1.5'
+                      stroke='currentColor'
+                      className='size-5'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3'
+                      />
+                    </svg>
 
-                  <span className=''>Tải xuống</span>
-                </div>
-              </Button>
+                    <span className=''>Tải xuống</span>
+                  </div>
+                </Button>
+              </div>
             </div>
           </div>
+
           <div className='mt-5'>
             <Table<DataType>
               className={styles.customTable}
