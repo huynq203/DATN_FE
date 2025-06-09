@@ -1,9 +1,17 @@
+import classNames from 'classnames'
 import path from 'path'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
+import Button from 'src/components/Button'
+import ChangePassword from 'src/components/NavHeader/components/ChangePassword'
 import { paths } from 'src/constants'
+import { AppContext } from 'src/contexts/app.context'
+import { getProfileFromLS } from 'src/utils/auth'
 
 export default function CustomerSideNav() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const { profile } = useContext(AppContext)
   return (
     <div className=' mb-20'>
       <div className='flex items-center border-b border-b-gray-200 py-4 '>
@@ -18,8 +26,8 @@ export default function CustomerSideNav() {
           />
         </Link>
         <div className='flex-grow pl-4'>
-          <div className='mb-1 truncate font-semibold text-gray-600'>Nguyễn Quốc Huy</div>
-          <Link to={paths.Screens.PROFILE} className='flex items-center capitalize text-gray-500'>
+          <div className='mb-1 truncate font-semibold text-gray-600'>{profile?.name}</div>
+          <NavLink to={paths.Screens.PROFILE} className='flex items-center capitalize text-gray-500 hover:text-black'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -35,11 +43,19 @@ export default function CustomerSideNav() {
               />
             </svg>
             <span>Sửa thông tin</span>
-          </Link>
+          </NavLink>
         </div>
       </div>
       <div className='mt-5'>
-        <Link to={paths.Screens.PROFILE} className='flex items-center capitalize  transition-colors font-bold'>
+        <NavLink
+          to={paths.Screens.PROFILE}
+          className={({ isActive }) =>
+            classNames('flex items-center capitalize  transition-colors', {
+              'font-bold': isActive,
+              'text-gray-600': !isActive
+            })
+          }
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
@@ -55,8 +71,16 @@ export default function CustomerSideNav() {
             />
           </svg>
           <span className='mt-1'>Tài khoản của tôi</span>
-        </Link>
-        <Link to={paths.Screens.ADDRESS} className='flex items-center capitalize  transition-colors mt-3'>
+        </NavLink>
+        <NavLink
+          to={paths.Screens.ADDRESS}
+          className={({ isActive }) =>
+            classNames('flex items-center capitalize  transition-colors mt-3', {
+              'font-bold': isActive,
+              'text-gray-600': !isActive
+            })
+          }
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
@@ -74,49 +98,16 @@ export default function CustomerSideNav() {
           </svg>
 
           <span className='mt-1'>Địa chỉ</span>
-        </Link>
-        <Link
-          to={paths.Screens.CHANGE_PASSWORD}
-          className='flex items-center capitalize text-black transition-colors mt-3'
-        >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke-width='1.5'
-            stroke='currentColor'
-            className='size-6 mr-3'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              d='M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z'
-            />
-          </svg>
+        </NavLink>
 
-          <span className='mt-1'>Đổi mật khẩu</span>
-        </Link>
-        <Link to={paths.Screens.WISH_LIST} className='flex items-center capitalize text-black transition-colors mt-3'>
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            viewBox='0 0 24 24'
-            strokeWidth='1.5'
-            stroke='currentColor'
-            className='size-6 mr-3'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              d='M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z'
-            />
-          </svg>
-
-          <span className='mt-1'>Sản phẩm yêu thích</span>
-        </Link>
-        <Link
+        <NavLink
           to={paths.Screens.HISTORY_ORDER}
-          className='flex items-center capitalize text-black transition-colors mt-3'
+          className={({ isActive }) =>
+            classNames('flex items-center capitalize  transition-colors mt-3', {
+              'font-bold': isActive,
+              'text-gray-600': !isActive
+            })
+          }
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -134,7 +125,54 @@ export default function CustomerSideNav() {
           </svg>
 
           <span className='mt-1'>Đơn hàng</span>
-        </Link>
+        </NavLink>
+        <NavLink
+          to={paths.Screens.WISH_LIST}
+          className={({ isActive }) =>
+            classNames('flex items-center capitalize  transition-colors mt-3', {
+              'font-bold': isActive,
+              'text-gray-600': !isActive
+            })
+          }
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth='1.5'
+            stroke='currentColor'
+            className='size-6 mr-3'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              d='M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z'
+            />
+          </svg>
+
+          <span className='mt-1'>Sản phẩm yêu thích</span>
+        </NavLink>
+        <Button onClick={() => setIsModalOpen(true)}>
+          <div className='flex items-center capitalize transition-colors mt-2'>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              stroke-width='1.5'
+              stroke='currentColor'
+              className='size-6 mr-3'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                d='M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z'
+              />
+            </svg>
+            <span className='mt-1'>Đổi mật khẩu</span>
+          </div>
+        </Button>
+
+        <ChangePassword isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
       </div>
     </div>
   )

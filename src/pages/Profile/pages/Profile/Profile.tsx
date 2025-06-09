@@ -1,19 +1,20 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
-import React, { useContext, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Controller, useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+
 import { toast } from 'react-toastify'
 import customerApi from 'src/apis/customer.api'
 import Button from 'src/components/Button'
 import DateSelect from 'src/components/DateSelect'
 import Input from 'src/components/Input'
 import InputNumber from 'src/components/InputNumber'
+
 import { paths } from 'src/constants'
 import { AppContext } from 'src/contexts/app.context'
-import { Customer } from 'src/types/customer.type'
+
 import { saveProfileToLS } from 'src/utils/auth'
 import { customerSchema, CustomerSchema } from 'src/utils/rules'
 
@@ -22,6 +23,7 @@ const profileSchema = customerSchema.pick(['name', 'phone', 'date_of_birth'])
 
 export default function Profile() {
   const { setProfile } = useContext(AppContext)
+
   const { data: profileData, refetch } = useQuery({
     queryKey: ['profile'],
     queryFn: () => {
@@ -39,9 +41,7 @@ export default function Profile() {
     control,
     formState: { errors },
     handleSubmit,
-    setValue,
-    watch,
-    setError
+    setValue
   } = useForm<FormData>({
     defaultValues: {
       name: '',
@@ -101,7 +101,7 @@ export default function Profile() {
           </div>
           {profile?.verify === 0 ? (
             <div className='w-[20%]'>
-              <Button type='button' className='pt-3 pl-3 text-xs text-red-500' >
+              <Button type='button' className='pt-3 pl-3 text-xs text-red-500'>
                 Verify tài khoản
               </Button>
             </div>
@@ -137,34 +137,6 @@ export default function Profile() {
             />
           </div>
         </div>
-        <div className='flex flex-wrap'>
-          <div className='w-[20%] truncate pt-3 text-right'>Địa chỉ</div>
-          {profile && (
-            <div className='w-[50%] pl-5'>
-              {profile.addresses && profile.addresses.length > 0 ? (
-                <div className='flex'>
-                  <select className='h-10 w-full rounded-sm border border-black/10 px-3 py-2  cursor-pointer hover:border-red-500'>
-                    <option disabled>Địa chỉ</option>
-                    {profile.addresses.map((item) => (
-                      <option key={item._id} value={item.address}>
-                        {item.address}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <div className='flex items-center'>
-                  <div className='pt-3 text-gray-700'>Chưa có địa chỉ nào</div>
-                </div>
-              )}
-            </div>
-          )}
-          <div className='w-[10%]'>
-            <Link to={paths.Screens.ADDRESS} className='pt-3 pl-3 text-xs text-red-500'>
-              Thêm địa chỉ
-            </Link>
-          </div>
-        </div>
         <Controller
           control={control}
           name='date_of_birth'
@@ -178,9 +150,9 @@ export default function Profile() {
           <div className='w-[50%] pl-5'>
             <Button
               type='submit'
-              className='flex h-9 px-5  uppercase text-white bg-red-500 text-sm hover:bg-red-600 flex items-center justify-center'
+              className='flex h-9 px-5  uppercase text-white bg-red-500 text-sm hover:bg-red-600 flex items-center justify-center rounded-md'
             >
-              Lưu
+              Cập nhật
             </Button>
           </div>
         </div>

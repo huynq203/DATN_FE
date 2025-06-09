@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Dropdown, Layout, Menu, theme } from 'antd'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -10,14 +10,14 @@ import { toast } from 'react-toastify'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { MESSAGE } from 'src/constants/messages'
+import ModalChangePasswordAdmin from '../ModalChangePasswordAdmin'
 const { Header } = Layout
 export default function HeaderAdmin() {
   const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)
-
   const refresh_token = localStorage.getItem('refresh_token') || ''
-  const navigate = useNavigate()
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const {
-    token: { colorBgContainer, borderRadiusLG }
+    token: { colorBgContainer }
   } = theme.useToken()
   const logoutMutation = useMutation({
     mutationFn: () => userApi.logoutUser({ refresh_token }),
@@ -44,6 +44,7 @@ export default function HeaderAdmin() {
       logoutMutation.mutate()
     }
     if (data.key === 'change-password') {
+      setIsModalOpen(true)
     }
   }
   return (
@@ -57,6 +58,7 @@ export default function HeaderAdmin() {
           </Dropdown>
         )}
       </div>
+      <ModalChangePasswordAdmin isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </Header>
   )
 }

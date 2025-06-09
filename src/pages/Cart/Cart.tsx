@@ -7,15 +7,21 @@ import Button from 'src/components/Button'
 import QuantityController from 'src/components/QuantityController'
 import { paths } from 'src/constants'
 import { CartStatus } from 'src/constants/enum'
-import { formatCurrency, generateNameId } from 'src/utils/utils'
+import { formatCurrency, generateNameId, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { produce } from 'immer'
 import { keyBy } from 'lodash'
 import { AppContext } from 'src/contexts/app.context'
 import { toast } from 'react-toastify'
+import voucherApi from 'src/apis/voucher.api'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import { MESSAGE } from 'src/constants/messages'
 
 export default function Cart() {
   const { extendedCarts, setExtendedCarts, profile } = useContext(AppContext)
   const [isLoading, setIsLoading] = useState(false)
+  const [code, setCode] = useState('')
+  const [discount, setDiscount] = useState(0)
+  const [codeVoucher, setCodeVoucher] = useState<string>('')
   const navigate = useNavigate()
 
   const { data: CartData, refetch } = useQuery({
@@ -55,6 +61,9 @@ export default function Cart() {
       }, 0),
     [checkedCarts]
   )
+  const totalAfterDiscountPrice = useMemo(() => {
+    return totalCheckedCartPrice - discount
+  }, [totalCheckedCartPrice, discount])
   const totalCheckedCartServingPrice = useMemo(
     () =>
       checkedCarts.reduce((result, current) => {
@@ -67,6 +76,9 @@ export default function Cart() {
       }, 0),
     [checkedCarts]
   )
+  const TotalDiscount = useMemo(() => {
+    return totalCheckedCartServingPrice + discount
+  }, [totalCheckedCartServingPrice, discount])
   useEffect(() => {
     setExtendedCarts((prev) => {
       const extendedCartsObject = keyBy(prev, '_id')
@@ -115,7 +127,8 @@ export default function Cart() {
         product_id: cart.product_id._id,
         size: cart.size,
         color: cart.color,
-        quantity: value
+        quantity: value,
+        cost_price: cart.cost_price
       })
     }
   }
@@ -154,16 +167,46 @@ export default function Cart() {
         product_id: item.product_id,
         size: item.size,
         color: item.color,
-        quantity: item.quantity
+        quantity: item.quantity,
+        cost_price: item.cost_price
       }))
       setIsLoading(true)
       setTimeout(() => {
         setIsLoading(false)
         navigate(paths.Screens.CHECKOUT, {
-          state: { buyProducts: body, totalCheckedCartPrice, totalCheckedCartServingPrice }
+          state: { buyProducts: body, totalAfterDiscountPrice, TotalDiscount, codeVoucher }
         })
       }, 3000)
     }
+  }
+
+  const saveVoucherMutation = useMutation({
+    mutationFn: voucherApi.saveVoucher
+  })
+
+  const handleSaveVoucher = () => {
+    saveVoucherMutation.mutate(
+      { code },
+      {
+        onSuccess: (data) => {
+          toast.success(data.data.message, { autoClose: 1000 })
+          setDiscount(Number(data.data.result))
+          setCodeVoucher(code)
+        },
+        onError: (error) => {
+          if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+            const formError = error.response?.data.errors
+            if (formError) {
+              Object.keys(formError).forEach((key) => {
+                toast.error(formError[key].msg, { autoClose: 1000 })
+              })
+            }
+          } else {
+            toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
+          }
+        }
+      }
+    )
   }
   return (
     <div className='bg-neutral-100'>
@@ -266,17 +309,17 @@ export default function Cart() {
                           </div>
                           <div className='col-span-1 '>
                             <QuantityController
-                              max={100}
+                              max={10}
                               value={item.quantity as number}
                               classNameWrapper='flex items-center'
-                              onIncrease={(value) => handleQuantity(index, value, value <= 100)}
+                              onIncrease={(value) => handleQuantity(index, value, value <= 10)}
                               onDecrease={(value) => handleQuantity(index, value, value >= 1)}
                               onType={handleTypeQuantity(index)}
                               onFocusOut={(value) =>
                                 handleQuantity(
                                   index,
                                   value,
-                                  value >= 1 && value <= 100 && value !== productInCart?.carts[index]?.quantity
+                                  value >= 1 && value <= 10 && value !== productInCart?.carts[index]?.quantity
                                 )
                               }
                               disabled={item.disabled}
@@ -305,24 +348,30 @@ export default function Cart() {
               </div>
             </div>
             <div className='sticky bottom-0 border border-gray-300 mt-5 '>
-              <div className='flex flex-col sm:flex-row bg-white px-3 py-4'>
+              <div className='flex flex-col sm:flex-row bg-white px-3 py-2'>
                 <span className='mt-2'>Mã giảm giá:</span>
                 <input
                   type='text'
-                  className='border border-gray-500 px-1 outline-none ml-5 mt-2 sm:mt-0'
+                  className='border border-gray-500 px-1 outline-none ml-5 mt-2 sm:mt-0 rounded-md'
                   placeholder='Nhập mã giảm giá'
+                  name='code'
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
                 />
-                <button className='ml-5 px-2 py-2 bg-red-500 text-white rounded-md flex flex-col sm:flex-row mt-2 sm:mt-0'>
+                <Button
+                  className='ml-5 px-2 py-2 bg-red-500 text-white rounded-md flex flex-col sm:flex-row mt-2 sm:mt-0'
+                  onClick={handleSaveVoucher}
+                >
                   Áp dụng
-                </button>
+                </Button>
               </div>
               <div className='border border-t-gray-300'></div>
-              <div className=' flex flex-col sm:flex-row sm:items-center rounded-sm bg-white p-5 shadow'>
-                <div className='flex items-center'>
-                  <div className='flex flex-shrink-0 items-center justify-center pr-3'>
+              <div className=' flex flex-col sm:flex-row sm:items-center rounded-sm bg-white p-2 shadow '>
+                <div className='flex -mt-20 ml-3'>
+                  <div className='flex flex-shrink-0 pr-3'>
                     <input
                       type='checkbox'
-                      className='h-5 w-5 accent-black ml-5'
+                      className='h-6 w-6 accent-black ml-5'
                       checked={isAllChecked}
                       onChange={handleCheckAll}
                     />
@@ -337,23 +386,36 @@ export default function Cart() {
 
                 <div className='ml-auto mt-5 sm:mt-0 flex flex-col sm:flex-row items-center'>
                   <div>
-                    <div className='flex items-center justify-end'>
-                      <div>Tổng thanh toán ({checkedCartsCount} sản phẩm):</div>
-                      <div className='ml-2 text-2xl text-orange-600'>₫{formatCurrency(totalCheckedCartPrice)}</div>
+                    <div className='flex justify-between items-center mb-2'>
+                      <div className='text-base'>Tổng thanh toán ({checkedCartsCount} sản phẩm):</div>
+                      <div className='text-2xl text-orange-600 font-semibold'>
+                        {checkedCartsCount > 0 ? `₫${formatCurrency(totalCheckedCartPrice)}` : '₫0'}
+                      </div>
                     </div>
-                    <div className='flex items-center justify-end text-sm'>
+                    <div className='flex justify-between items-center text-sm mb-1'>
+                      <div className='text-gray-500'>Giảm giá</div>
+                      <div className='text-orange-600'>
+                        {checkedCartsCount > 0 ? `₫ ${formatCurrency(discount)}` : '₫0'}
+                      </div>
+                    </div>
+                    <div className='flex justify-between items-center text-sm mb-4'>
                       <div className='text-gray-500'>Tiết kiệm</div>
-                      <div className='ml-6 text-orange-600'>₫{formatCurrency(totalCheckedCartServingPrice)}</div>
+                      <div className='text-orange-600'>
+                        {checkedCartsCount > 0 ? `₫${formatCurrency(TotalDiscount)}` : '₫0'}
+                      </div>
+                    </div>
+
+                    <div className='flex justify-end'>
+                      <Button
+                        className='ml-5 mt-5 sm:mt-0 h-10  w-52 uppercase text-white bg-red-500 text-sm hover:bg-red-600 rounded-xl flex items-center justify-center'
+                        onClick={handleBuyCart}
+                        disabled={isLoading}
+                        loading={isLoading}
+                      >
+                        Mua hàng
+                      </Button>
                     </div>
                   </div>
-                  <Button
-                    className='ml-5 mt-5 sm:mt-0 h-10  w-52 uppercase text-white bg-red-500 text-sm hover:bg-red-600 rounded-xl flex items-center justify-center'
-                    onClick={handleBuyCart}
-                    disabled={isLoading}
-                    loading={isLoading}
-                  >
-                    Mua hàng
-                  </Button>
                 </div>
               </div>
             </div>

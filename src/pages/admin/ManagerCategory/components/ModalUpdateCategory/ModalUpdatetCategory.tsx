@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import categoryApi from 'src/apis/category.api'
 import { MESSAGE } from 'src/constants/messages'
+import { Category } from 'src/types/category.type'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import swalAlert from 'src/utils/SwalAlert'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
@@ -23,8 +24,9 @@ interface Props {
   isModalOpen: boolean
   setIsModalOpen: (isOpen: boolean) => void
   categoryDetail: DataType
+  onUpdateSuccess: (ListCategories: Category[]) => void
 }
-export default function ModalUpdatetCategory({ isModalOpen, setIsModalOpen, categoryDetail }: Props) {
+export default function ModalUpdatetCategory({ isModalOpen, setIsModalOpen, categoryDetail, onUpdateSuccess }: Props) {
   const [form] = Form.useForm()
   const { refetch } = useQuery({
     queryKey: ['categories'],
@@ -51,11 +53,12 @@ export default function ModalUpdatetCategory({ isModalOpen, setIsModalOpen, cate
             category_id: categoryDetail.key
           },
           {
-            onSuccess: (data) => {
+            onSuccess: async (data) => {
               toast.success(data.data.message)
               form.resetFields()
               setIsModalOpen(false)
-              refetch()
+              const result = await refetch()
+              onUpdateSuccess(result.data?.data.result as Category[])
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
@@ -79,6 +82,7 @@ export default function ModalUpdatetCategory({ isModalOpen, setIsModalOpen, cate
     <Modal
       title='Cập nhật danh mục'
       closable={{ 'aria-label': 'Custom Close Button' }}
+      centered
       open={isModalOpen}
       onOk={handleOk}
       onCancel={handleCancel}

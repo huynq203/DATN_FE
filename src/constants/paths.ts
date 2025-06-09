@@ -12,10 +12,13 @@ const paths = {
     CUSTOMER_FORGOT_PASSWORD: '/customers/forgot-password',
     CUSTOMER_VERIFY_FORGOT_PASSWORD: '/customers/verify-forgot-password',
     CUSTOMER_RESET_PASSWORD: '/customers/reset-password',
+    CHANGE_PASSWORD_CUSTOMER: '/customers/change-password',
+    CUSTOMER_VERIFY_EMAIL: '/customers/verify-email',
 
     //
     //Category
     CATEGORY_URL: '/categories',
+    CATEGORY_MANAGER_URL: '/categories/manager',
     CREATE_CATEGORY: '/categories/create',
     UPDATE_CATEGORY: '/categories/update',
     DELETE_CATEGORY: '/categories/delete',
@@ -26,30 +29,43 @@ const paths = {
     DELETE_PRODUCT: '/products/delete',
     GET_PRODUCT_MANAGER: '/products/manager',
     UPLOAD_IMAGE: '/products/upload-image',
+    UPLOAD_IMAGE_VARIANT_COLOR: '/products/upload-image-variant-color',
     PURCHASES_PRODUCT: '/products/create-purchases',
     GET_OPTION_PRODUCT: '/products/get-option-products',
+    CHANGE_STATUS_PRODUCT: '/products/change-status',
+    CHANGE_STATUS_OPTION_PRODUCT: '/products/change-status-option-product',
     CREATE_OPTION_PRODUCT: '/products/create-option-product',
     UPDATE_OPTION_PRODUCT: '/products/update-option-product',
     DELETE_OPTION_PRODUCT: '/products/delete-option-product',
     EXPORT_FILE_PRODUCT: '/products/export-file',
+    CHECK_STOCK_OPTION_PRODUCT: '/products/check-stock-option-product',
 
     //Cart
     CART_URL: '/carts',
     CART_ADD_TO_CART: '/carts/add-to-cart',
     CART_BUY_PRODUCT: '/carts/buy-products',
     CART_UPDATE_PRODUCT: '/carts/update-product',
+
+    //Order
     ORDER_URL: '/orders',
     CREATE_ORDER_COD: '/orders/create-order-cod',
     CREATE_ORDER_MOMO: '/orders/create-order-momo',
     CREATE_ORDER_VNPAY: '/orders/create-order-vnpay',
     RETURN_VNPAY: '/orders/return-vnpay',
-
+    GET_ORDER_BY_CUSTOMER: '/orders/get-order-by-customer',
+    GET_ORDER_MANAGER: '/orders/get-order-manager',
+    //Profile
     GET_PROFILE: '/customers/profile',
     UPDATE_PROFILE: '/customers/profile',
 
     //Address
     GET_ADDRESS: '/addresses',
     GET_ADDRESS_BY_CUSTOMER: '/addresses/address-by-customer',
+    GET_ADDRESS_DETAIL: '/addresses/get-address-by-id',
+    CREATE_ADDRESS: '/addresses/create',
+    UPDATE_ADDRESS: '/addresses/update',
+    DELETE_ADDRESS: '/addresses/delete',
+    SET_DEFAULT_ADDRESS: '/addresses/set-default-address',
 
     //Admin
     LOGIN_USER: '/users/login',
@@ -65,9 +81,22 @@ const paths = {
     UPDATE_USER: '/users/update',
     DELETE_USER: '/users/delete',
     GET_USER_BY_ID: '/users/get-user-by-id',
+    EXPORT_FILE_USER: '/users/export-file',
+    CHANGE_PASSWORD_USER: '/users/change-password',
+    //Voucher
+    GET_VOUCHERS: '/vouchers',
+    CREATE_VOUCHER: '/vouchers/create',
+    UPDATE_VOUCHER: '/vouchers/update',
+    DELETE_VOUCHER: '/vouchers/delete',
+    GET_VOUCHER_BY_ID: '/vouchers/get-voucher-by-id',
+    SAVE_VOUCHER: '/vouchers/save-voucher',
 
     //Role
-    GET_ROLE_USER: '/roles'
+    GET_ROLE_USER: '/roles',
+
+    // Purchase Order
+    CREATE_PURCHASE_ORDER: '/purchase-orders/create',
+    DELETE_PURCHASE_ORDER: '/purchase-orders/delete'
   },
   Screens: {
     //Site
@@ -82,7 +111,10 @@ const paths = {
     HOME: '/', // Trang chủ
     PRODUCT: '/products', // Sản phẩm
     PRODUCT_DETAIL: '/products/:nameId', // Chi tiết sản phẩm
-    BLOG: '/blog', // Blog
+    VOUCHER: '/voucher', // Blog
+    MEN: '/men',
+    WOMEN: '/women',
+    KIDS: '/kids',
     INTRODUCE: '/introduce', // Giới thiệu
     CONTACT: '/contact', // Liên hệ
     CART: '/cart', // Giỏ hàng
@@ -95,9 +127,11 @@ const paths = {
     CHANGE_PASSWORD: '/customer/change-password',
     HISTORY_ORDER: '/customer/history-order', // Đơn hàng
     WISH_LIST: '/customer/wish-list', // Danh sách yêu thích
+
     //Admin
 
     ADMIN_DASHBOARD: '/admin',
+    ADMIN_PROFILE: '/admin/profile',
     ADMIN_MANAGER_CUSTOMER: '/admin/manager-customers',
     ADMIN_CUSTOMER_DETAIL: '/admin/manager-customers/:customer_id',
     ADMIN_MANAGER_USER: '/admin/manager-users',

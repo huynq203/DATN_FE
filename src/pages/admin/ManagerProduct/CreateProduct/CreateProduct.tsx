@@ -15,14 +15,16 @@ import { productsSchema, ProductSchema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import productApi from 'src/apis/product.api'
 import { Helmet } from 'react-helmet-async'
-import { Media } from 'src/types/product.type'
 import { toast } from 'react-toastify'
 import { MESSAGE } from 'src/constants/messages'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
+import GenderSelect from '../components/GenderSelect'
+import TargetSelect from '../components/TargetSelect'
 
-type FormData = ProductSchema
-const productSchema = productsSchema
+type FormData = Pick<ProductSchema, 'category_id' | 'name' | 'price' | 'gender' | 'target_person' | 'description'>
+
+const productSchema = productsSchema.pick(['category_id', 'name', 'price', 'gender', 'target_person', 'description'])
 export default function CreateProduct() {
   const {
     token: { colorBgContainer, borderRadiusLG }
@@ -46,22 +48,20 @@ export default function CreateProduct() {
     control,
     formState: { errors },
     handleSubmit,
-    setValue,
-    watch,
-    setError
+    setValue
   } = useForm<FormData>({
     defaultValues: {
       category_id: '',
       name: '',
-      stock: '',
       price: '',
-      size: '',
-      color: '',
+      gender: '',
+      target_person: '',
       description: ''
     },
     resolver: yupResolver(productSchema)
   })
-  const onSumit = handleSubmit(async (data) => {
+
+  const onSubmit = handleSubmit(async (data) => {
     try {
       if (files) {
         const form = new FormData()
@@ -73,7 +73,10 @@ export default function CreateProduct() {
         await createProductMutation.mutateAsync(
           {
             ...data,
-            url_images: url_images
+            url_images: url_images,
+            price: Number(data.price),
+            gender: Number(data.gender),
+            target_person: Number(data.target_person)
           },
           {
             onSuccess: () => {
@@ -90,7 +93,7 @@ export default function CreateProduct() {
         )
       }
     } catch (error) {
-      toast.error(MESSAGE.CREATE_PRODUCT_FAILED)
+      // toast.error(MESSAGE.CREATE_PRODUCT_FAILED)
     }
   })
 
@@ -107,20 +110,23 @@ export default function CreateProduct() {
   const handleResetForm = () => {
     setValue('category_id', '')
     setValue('name', '')
-    setValue('stock', '')
     setValue('price', '')
-    setValue('size', '')
-    setValue('color', '')
+    setValue('gender', '')
+    setValue('target_person', '')
     setValue('description', '')
     setFiles([])
   }
   return (
     <div>
-      {' '}
-      <Content style={{ margin: '0 16px' }}>
-        <Breadcrumb style={{ margin: '16px 0', paddingTop: 24 }}>
-          <Breadcrumb.Item>
-            <div className='flex items-center gap-2 text-gray-700'>
+      <Helmet>
+        <title>Thêm sản phẩm - YOYO Store</title>
+        <meta name='description' content='Thêm sản phẩm YOYO Store' />
+        <link rel='icon' type='image/svg+xml' href={resources.Images.THUMBNAIL} />
+      </Helmet>
+      <div className='rounded bg-gray-50 p-2 m-2'>
+        <div className='container'>
+          <div className='grid grid-cols-2'>
+            <div className='flex text-lg capitalize font-bold mt-1'>
               <Link
                 to={paths.Screens.ADMIN_MANAGER_PRODUCT}
                 className='flex items-center gap-2 text-gray-700 hover:text-blue-600'
@@ -136,34 +142,25 @@ export default function CreateProduct() {
                   <path stroke-linecap='round' stroke-linejoin='round' d='M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18' />
                 </svg>
               </Link>
-              {paths.Screens.ADMIN_CREATE_PRODUCT}
+              <span className='ml-1'>Thêm sản phẩm</span>
             </div>
-          </Breadcrumb.Item>
-        </Breadcrumb>
+          </div>
+        </div>
+      </div>
+      <Content>
         <div
           style={{
-            padding: 24,
+            padding: 10,
             minHeight: 360,
             background: colorBgContainer,
             borderRadius: borderRadiusLG
           }}
         >
           <div className='container'>
-            <Helmet>
-              <title>Thêm sản phẩm - YOYO Store</title>
-              <meta name='description' content='Thêm sản phẩm YOYO Store' />
-              <link rel='icon' type='image/svg+xml' href={resources.Images.THUMBNAIL} />
-            </Helmet>
-            <div className='rounded bg-gray-50 p-4 mt-5'>
-              <div className='grid grid-cols-2'>
-                <div className='flex text-lg capitalize mt-1'>Thêm sản phẩm</div>
-                <div className='flex justify-end'></div>
-              </div>
-            </div>
-            <form className='flex-grow md:mt-0' encType='multipart/form-data' onSubmit={onSumit}>
-              <div className='flex flex-wrap mt-5 gap-y-5'>
-                <div className='flex w-full md:w-1/2'>
-                  <label className='w-1/4 pt-3 text-right'>Danh mục</label>
+            <form className='flex-grow md:mt-0' encType='multipart/form-data' onSubmit={onSubmit}>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-2 mt-5'>
+                <div className='flex'>
+                  <label className='w-1/4 mt-2 font-medium text-right'>Danh mục</label>
                   <div className='w-3/4 pl-5'>
                     <Controller
                       name='category_id'
@@ -178,22 +175,8 @@ export default function CreateProduct() {
                     />
                   </div>
                 </div>
-                <div className='flex w-full md:w-1/2'>
-                  <label className='w-1/4 pt-3 text-right'>Số lượng</label>
-                  <div className='w-3/4 pl-5'>
-                    <Input
-                      classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
-                      register={register}
-                      name='stock'
-                      errorMessage={errors.stock?.message}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className='flex flex-wrap gap-y-5'>
-                <div className='flex w-full md:w-1/2'>
-                  <label className='w-1/4 pt-3 text-right'>Tên sản phẩm</label>
+                <div className='flex'>
+                  <label className='w-1/4 font-medium text-right mt-2'>Tên sản phẩm</label>
                   <div className='w-3/4 pl-5'>
                     <Input
                       classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
@@ -203,8 +186,40 @@ export default function CreateProduct() {
                     />
                   </div>
                 </div>
-                <div className='flex w-full md:w-1/2'>
-                  <label className='w-1/4 pt-3 text-right'>Giá sản phẩm</label>
+                <div className='flex'>
+                  <label className='w-1/4 mt-2 font-medium text-right'>Giới tính</label>
+                  <div className='w-3/4 pl-5'>
+                    <Controller
+                      name='gender'
+                      control={control}
+                      render={({ field }) => (
+                        <GenderSelect
+                          errorMessage={errors.gender?.message}
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className='flex'>
+                  <label className='w-1/4 mt-2 font-medium text-right'>Đối tượng</label>
+                  <div className='w-3/4 pl-5'>
+                    <Controller
+                      name='target_person'
+                      control={control}
+                      render={({ field }) => (
+                        <TargetSelect
+                          errorMessage={errors.target_person?.message}
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className='flex '>
+                  <label className='w-1/4 font-medium text-right mt-2'>Giá sản phẩm</label>
                   <div className='w-3/4 pl-5'>
                     <Input
                       classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
@@ -214,64 +229,55 @@ export default function CreateProduct() {
                     />
                   </div>
                 </div>
-              </div>
-
-              <div className='flex flex-wrap gap-y-5'>
-                <div className='flex w-full md:w-1/2'>
-                  <label className='w-1/4 pt-3 text-right'>Kích thước</label>
-                  <div className='w-3/4 pl-5'>
-                    <Input
-                      classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
-                      register={register}
-                      name='size'
-                      errorMessage={errors.size?.message}
-                    />
-                  </div>
-                </div>
-                <div className='flex w-full md:w-1/2'>
-                  <label className='w-1/4 pt-3 text-right'>Màu sắc</label>
-                  <div className='w-3/4 pl-5'>
-                    <Input
-                      classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
-                      register={register}
-                      name='color'
-                      errorMessage={errors.color?.message}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className='flex flex-wrap gap-y-5'>
-                <div className='flex w-full md:w-1/2'>
-                  <label className='w-1/4 pt-3 text-right'>Mô tả</label>
+                <div className='flex '>
+                  <label className='w-1/4 font-medium text-right mt-2'>Mô tả sản phẩm</label>
                   <div className='w-3/4 pl-5'>
                     <Textarea
-                      classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
+                      classNameInput='w-full h-52 rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
                       register={register}
                       name='description'
                       errorMessage={errors.description?.message}
                     />
                   </div>
                 </div>
-                <div className='flex w-full md:w-1/2'>
-                  <label className='w-1/4 pt-3 text-right'>Hình ảnh</label>
-                  <div className='w-3/4 pl-5 flex flex-col gap-2'>
-                    <input
-                      className='hidden'
-                      type='file'
-                      accept='.jpg,.jpeg,.png'
-                      multiple
-                      ref={fileInputRef}
-                      onChange={onFileChange}
-                    />
-                    <button
-                      className='h-10 w-fit rounded-sm border bg-white px-6 text-sm text-gray-600 shadow-sm'
-                      type='button'
-                      onClick={handleUpload}
-                    >
-                      Chọn ảnh
-                    </button>
-                    <div className='text-xs text-gray-400'>Dung lượng tối đa file là 1MB. Định dạng: .JPEG, .PNG</div>
+                <div className='flex flex-col -mt-44'>
+                  <div className='flex'>
+                    <label className='w-1/4 font-medium text-right'>Hình ảnh sản phẩm</label>
+                    <div className='flex flex-col gap-2 ml-5'>
+                      <input
+                        className='hidden'
+                        type='file'
+                        accept='.jpg,.jpeg,.png'
+                        multiple
+                        ref={fileInputRef}
+                        onChange={onFileChange}
+                      />
+                      <button
+                        className='h-10 w-fit rounded-sm border bg-white px-6 text-sm text-gray-600 hover:border-black hover:text-black transition-colors duration-200 shadow-sm'
+                        type='button'
+                        onClick={handleUpload}
+                      >
+                        Chọn ảnh
+                      </button>
+                      <div className='text-xs text-gray-400 flex flex-col'>
+                        <span>Dung lượng tối đa file là 1MB.</span>
+                        <span> Định dạng: .JPEG, .PNG</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex'>
+                    <label className='w-1/4 font-medium text-right mt-2'>Xem trước hình ảnh</label>
+                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 ml-5'>
+                      {previewImages &&
+                        previewImages.map((image, index) => (
+                          <img
+                            key={index}
+                            className='h-24 w-24 object-cover rounded-xl shadow-md border'
+                            src={image}
+                            alt='preview'
+                          />
+                        ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -280,30 +286,17 @@ export default function CreateProduct() {
                 <div className='flex items-center space-x-4 ml-28'>
                   <Button
                     type='button'
-                    className='h-9 px-5 uppercase text-white bg-blue-500/90 text-sm hover:bg-blue-400/90 flex items-center justify-center rounded-sm'
+                    className='h-9 px-5 uppercase text-white bg-blue-500/90 text-sm hover:bg-blue-400/90 flex items-center justify-center rounded-md'
                     onClick={handleResetForm}
                   >
                     Làm mới
                   </Button>
                   <Button
                     type='submit'
-                    className='h-9 px-5 uppercase text-white bg-red-500 text-sm hover:bg-red-600 flex items-center justify-center rounded-sm'
+                    className='h-9 px-5 uppercase text-white bg-red-500 text-sm hover:bg-red-600 flex items-center justify-center rounded-md'
                   >
-                    Lưu
+                    Thêm mới
                   </Button>
-                </div>
-
-                {/* Cột 2: Hình ảnh preview */}
-                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4'>
-                  {previewImages &&
-                    previewImages.map((image, index) => (
-                      <img
-                        key={index}
-                        className='h-24 w-24 object-cover rounded-xl shadow-md border'
-                        src={image}
-                        alt='preview'
-                      />
-                    ))}
                 </div>
               </div>
             </form>

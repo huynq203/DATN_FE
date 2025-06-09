@@ -1,13 +1,13 @@
 import http from 'src/utils/http'
-import { AuthRespone } from 'src/types/auth.type'
+import { AuthLoginBody, AuthRegisterBody, AuthResetPasswordBody, AuthRespone } from 'src/types/auth.type'
 import { paths } from 'src/constants'
 
 class AuthApi {
-  registerCustomer(body: { name: string; phone: string; email: string; password: string }) {
+  registerCustomer(body: AuthRegisterBody) {
     return http.post<AuthRespone>(paths.ApiPath.CUSTOMER_REGISTER, body)
   }
 
-  loginCustomer(body: { email: string; password: string }) {
+  loginCustomer(body: AuthLoginBody) {
     return http.post<AuthRespone>(paths.ApiPath.CUSTOMER_LOGIN, body)
   }
   logoutCustomer(body: { refresh_token: string }) {
@@ -22,7 +22,7 @@ class AuthApi {
   verifyForgotPasswordCustomer(body: { forgot_password_token: string }) {
     return http.post(paths.ApiPath.CUSTOMER_VERIFY_FORGOT_PASSWORD, body)
   }
-  resetPasswordCustomer(body: { new_password: string; confirm_new_password: string; forgot_password_token: string }) {
+  resetPasswordCustomer(body: AuthResetPasswordBody) {
     return http.post(paths.ApiPath.CUSTOMER_RESET_PASSWORD, body)
   }
 }

@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Form, Input, Modal, Select } from 'antd'
-import React from 'react'
 import { toast } from 'react-toastify'
 import roleApi from 'src/apis/role.api'
 import userApi from 'src/apis/user.api'
 import { MESSAGE } from 'src/constants/messages'
+import { User } from 'src/types/user.type'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
@@ -20,8 +20,9 @@ type FieldType = {
 interface Props {
   isModalOpen: boolean
   setIsModalOpen: (isOpen: boolean) => void
+  onUpdateSuccess?: (ListUsers: User[]) => void
 }
-export default function ModalCreateUser({ isModalOpen, setIsModalOpen }: Props) {
+export default function ModalCreateUser({ isModalOpen, setIsModalOpen, onUpdateSuccess }: Props) {
   const [form] = Form.useForm()
   const handleOk = () => {
     form.submit()
@@ -32,7 +33,7 @@ export default function ModalCreateUser({ isModalOpen, setIsModalOpen }: Props) 
   const { refetch } = useQuery({
     queryKey: ['users'],
     queryFn: () => {
-      return userApi.getAllUsers()
+      return userApi.getAllUsers({})
     }
   })
   const { data: listRole } = useQuery({
@@ -47,11 +48,12 @@ export default function ModalCreateUser({ isModalOpen, setIsModalOpen }: Props) 
   })
   const onFinish = (values: FieldType) => {
     createUserMutation.mutate(values, {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         toast.success(data.data.message, { autoClose: 1000 })
         setIsModalOpen(false)
         form.resetFields()
-        refetch()
+        const result = await refetch()
+        onUpdateSuccess?.(result.data?.data.result as User[])
         // setIsModalOpen(false)
       },
       onError: (error) => {
@@ -72,6 +74,7 @@ export default function ModalCreateUser({ isModalOpen, setIsModalOpen }: Props) 
     <Modal
       title='Thêm tài khoản'
       closable={{ 'aria-label': 'Custom Close Button' }}
+      centered
       open={isModalOpen}
       onOk={handleOk}
       onCancel={handleCancel}

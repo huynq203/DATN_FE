@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { createSearchParams, Link } from 'react-router-dom'
 import { paths } from 'src/constants'
-import { QueryConfig } from 'src/pages/ProductList/ProductList'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 interface Props {
   queryConfig: QueryConfig
 
@@ -71,7 +71,7 @@ export default function Paginate({ queryConfig, total_page }: Props) {
   return (
     <div className='flex flex-wrap mt-40 justify-center'>
       {page === 1 ? (
-        <span className='bg-gray-300 rounded px-3 py-2 shadow-sm border'>Prev</span>
+        <span className='bg-gray-100 rounded px-3 py-2 shadow-sm border'>Prev</span>
       ) : (
         <Link
           to={{
@@ -89,7 +89,7 @@ export default function Paginate({ queryConfig, total_page }: Props) {
 
       {renderPagination()}
       {page === total_page ? (
-        <span className='bg-gray-300 rounded px-3 py-2 shadow-sm  border'>Next</span>
+        <span className='bg-gray-100 rounded px-3 py-2 shadow-sm  border'>Next</span>
       ) : (
         <Link
           to={{

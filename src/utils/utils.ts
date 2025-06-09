@@ -11,6 +11,10 @@ export function isAxiosUnprocessableEntityError<FormError>(error: unknown): erro
   return isAxiosErrorFunc(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
 
+export function isAxiosForbiddenError<FormError>(error: unknown): error is AxiosError<FormError> {
+  return isAxiosErrorFunc(error) && error.response?.status === HttpStatusCode.Forbidden
+}
+
 export function formatCurrency(currency: number) {
   return new Intl.NumberFormat('de-DE').format(currency)
 }

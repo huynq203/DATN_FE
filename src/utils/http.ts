@@ -16,6 +16,7 @@ import {
 } from './auth'
 import { Customer } from 'src/types/customer.type'
 import { MESSAGE } from 'src/constants/messages'
+import swalAlert from './SwalAlert'
 
 export enum ContentType {
   JSON = 'application/json',
@@ -86,7 +87,7 @@ class Http {
           //toast.error(message, { autoClose: 1000 })
         }
         if (error.response?.status === HttpStatusCode.Unauthorized) {
-          toast.error(MESSAGE.TOKEN_IS_EXPIRED, { autoClose: 1000 })
+          swalAlert.notifyError('Thông báo', MESSAGE.TOKEN_IS_EXPIRED)
           clearLS()
           // window.location.href = paths.Screens.AUTH_LOGIN
         }

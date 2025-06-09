@@ -14,13 +14,13 @@ import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { useContext, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import Button from 'src/components/Button'
-import Loading from '../Loading'
+import { Spin } from 'antd'
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
+
 export default function Login() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const [isLoading, setIsLoading] = useState(false)
-
 
   const getGoogleAuthUrl = () => {
     const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
@@ -73,15 +73,13 @@ export default function Login() {
               })
             }
           }
-          setIsLoading(false)
         }
       })
     }, 2000)
   })
   return (
-    <div className={`${isLoading ? 'filter brightness-50 pointer-events-none' : ''}`}>
-      <Loading loading={isLoading} color='black' top='50%' />
-      <div className='bg-amber-50'>
+    <Spin tip='Loading' size='large' spinning={isLoading}>
+      <div className=''>
         <Helmet>
           <title>Đăng nhập - YOYO Store</title>
           <meta name='description' content='Đăng nhập tài khoản YOYO Store' />
@@ -91,7 +89,7 @@ export default function Login() {
         <div className='container px-4'>
           <div className='grid grid-cols-1 lg:grid-cols-5 lg:py-10 lg:pr-10 gap-4'>
             {/* IMAGE */}
-            <div className='lg:col-span-3 flex justify-center pt-5'>
+            <div className='lg:col-span-3 flex justify-center'>
               <img
                 src={resources.Images.THUMBNAIL}
                 alt='Login illustration'
@@ -181,6 +179,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </div>
+    </Spin>
   )
 }

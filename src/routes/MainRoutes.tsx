@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { paths } from 'src/constants'
 import MainLayout from 'src/layouts/MainLayout'
-import Blog from 'src/pages/Menu/Blog'
+
 import Cart from 'src/pages/Cart'
 
 import Checkout from 'src/pages/Checkout'
@@ -16,10 +16,12 @@ import Profile from 'src/pages/Profile/pages/Profile'
 import HistoryOrder from 'src/pages/Profile/pages/HistoryOrder'
 
 import CustomerLayout from 'src/pages/Profile/layouts/CustomerLayout'
-import path from 'path'
+
 import Address from 'src/pages/Profile/pages/Address'
-import ChangePassword from 'src/pages/Profile/pages/ChangePassword'
 import WishList from 'src/pages/Profile/pages/WishList'
+import Voucher from 'src/pages/Menu/Voucher'
+import Men from 'src/pages/Menu/Men'
+import Women from 'src/pages/Menu/Women'
 
 export default function MainRoutes() {
   const mainRoutes = [
@@ -55,11 +57,31 @@ export default function MainRoutes() {
       )
     },
     {
-      path: paths.Screens.BLOG,
+      path: paths.Screens.MEN,
       element: (
         <MainLayout>
           <Suspense>
-            <Blog />
+            <Men />
+          </Suspense>
+        </MainLayout>
+      )
+    },
+    {
+      path: paths.Screens.WOMEN,
+      element: (
+        <MainLayout>
+          <Suspense>
+            <Women />
+          </Suspense>
+        </MainLayout>
+      )
+    },
+    {
+      path: paths.Screens.VOUCHER,
+      element: (
+        <MainLayout>
+          <Suspense>
+            <Voucher />
           </Suspense>
         </MainLayout>
       )
@@ -148,14 +170,6 @@ export default function MainRoutes() {
               element: (
                 <Suspense>
                   <HistoryOrder />
-                </Suspense>
-              )
-            },
-            {
-              path: paths.Screens.CHANGE_PASSWORD,
-              element: (
-                <Suspense>
-                  <ChangePassword />
                 </Suspense>
               )
             },

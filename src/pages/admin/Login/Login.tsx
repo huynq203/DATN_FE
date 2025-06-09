@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
+import { Spin } from 'antd'
 import React, { useContext, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
@@ -61,54 +62,56 @@ export default function Login() {
   })
 
   return (
-    <div className='flex h-screen items-center justify-center bg-gray-100'>
-      <Helmet>
-        <title>Đăng nhập quản trị - YOYO Store</title>
-        <meta name='description' content='Đăng nhập tài khoản YOYO Store' />
-        <link rel='icon' type='image/svg+xml' href={resources.Images.THUMBNAIL} />
-      </Helmet>
-      <div className='w-full max-w-md bg-white rounded-xl shadow-md p-8'>
-        <h2 className='text-2xl font-bold text-center mb-6 text-gray-800'>Admin Login</h2>
+    <Spin tip='Loading' size='large' spinning={isLoading}>
+      <div className='flex h-screen items-center justify-center bg-gray-100'>
+        <Helmet>
+          <title>Đăng nhập quản trị - YOYO Store</title>
+          <meta name='description' content='Đăng nhập tài khoản YOYO Store' />
+          <link rel='icon' type='image/svg+xml' href={resources.Images.THUMBNAIL} />
+        </Helmet>
+        <div className='w-full max-w-md bg-white rounded-xl shadow-md p-8'>
+          <h2 className='text-2xl font-bold text-center mb-6 text-gray-800'>Admin Login</h2>
 
-        {/* {error && <p className='text-red-500 mb-4 text-center'>{error}</p>} */}
+          {/* {error && <p className='text-red-500 mb-4 text-center'>{error}</p>} */}
 
-        <form onSubmit={onSubmit}>
-          <div>
-            <label htmlFor='email' className='block mb-1 font-medium text-gray-700'>
-              Email
-            </label>
-            <Input
-              classNameInput='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300 outline-none'
-              type='email'
-              name='email'
-              register={register}
-              errorMessage={errors.email?.message}
-            />
-          </div>
+          <form onSubmit={onSubmit}>
+            <div>
+              <label htmlFor='email' className='block mb-1 font-medium text-gray-700'>
+                Email
+              </label>
+              <Input
+                classNameInput='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300 outline-none'
+                type='email'
+                name='email'
+                register={register}
+                errorMessage={errors.email?.message}
+              />
+            </div>
 
-          <div>
-            <label htmlFor='password' className='block mb-1 font-medium text-gray-700'>
-              Mật khẩu
-            </label>
-            <Input
-              classNameInput='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300 outline-none'
-              type='password'
-              name='password'
-              register={register}
-              errorMessage={errors.password?.message}
-            />
-          </div>
+            <div>
+              <label htmlFor='password' className='block mb-1 font-medium text-gray-700'>
+                Mật khẩu
+              </label>
+              <Input
+                classNameInput='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300 outline-none'
+                type='password'
+                name='password'
+                register={register}
+                errorMessage={errors.password?.message}
+              />
+            </div>
 
-          <Button
-            type='submit'
-            className='w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition flex items-center justify-center'
-            loading={isLoading}
-            disabled={isLoading}
-          >
-            Đăng nhập
-          </Button>
-        </form>
+            <Button
+              type='submit'
+              className='w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition flex items-center justify-center'
+              loading={isLoading}
+              disabled={isLoading}
+            >
+              Đăng nhập
+            </Button>
+          </form>
+        </div>
       </div>
-    </div>
+    </Spin>
   )
 }

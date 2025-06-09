@@ -1,15 +1,18 @@
-import React from 'react'
-import { createSearchParams, Link, useNavigate } from 'react-router-dom'
+import { createSearchParams, Link, NavLink, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button'
 import { paths } from 'src/constants'
-import { QueryConfig } from '../../ProductList'
-import { Category, CategoryList } from 'src/types/category.type'
+import { Category } from 'src/types/category.type'
 import classNames from 'classnames'
 import InputNumber from 'src/components/InputNumber'
 import { useForm, Controller } from 'react-hook-form'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { NoUnderfinedField } from 'src/types/utils.type'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
+import { Checkbox, Collapse, CollapseProps } from 'antd'
+import { hover } from 'framer-motion'
+import { useState } from 'react'
+import { GenderType } from 'src/constants/enum'
 interface Props {
   queryConfig: QueryConfig
   categories: Category[]
@@ -19,7 +22,11 @@ type FormData = NoUnderfinedField<Pick<Schema, 'price_min' | 'price_max'>>
 const priceSchema = schema.pick(['price_min', 'price_max'])
 export default function AsideFilter({ queryConfig, categories }: Props) {
   const navigate = useNavigate()
+
   const { category_id } = queryConfig
+  const { gender } = queryConfig
+  const { target_person } = queryConfig
+
   const {
     control,
     handleSubmit,
@@ -43,76 +50,244 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       }).toString()
     })
   })
-  return (
-    <div className='py-4 '>
-      <Link to={paths.Screens.PRODUCT} className='flex imtes-center font-bold'>
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          fill='none'
-          viewBox='0 0 24 24'
-          stroke-width='1.5'
-          stroke='currentColor'
-          className='size-6'
-        >
-          <path stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12' />
-        </svg>
-        <span
-          className={classNames('ml-1 mt-1 font-bold', {
-            'text-red-500': category_id === undefined
+  const itemsCategories: CollapseProps['items'] = [
+    {
+      key: '1',
+      label: 'Tất cả danh mục',
+      children: (
+        <ul className='space-y-1'>
+          <li className='relative'>
+            <Link
+              to={paths.Screens.PRODUCT}
+              className={classNames(
+                'group flex items-center px-5 py-2 rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-black hover:font-bold',
+                {
+                  'bg-gray-200  text-black font-bold': category_id === undefined,
+                  'text-gray-700': category_id !== undefined
+                }
+              )}
+            >
+              {category_id === undefined && (
+                <svg viewBox='0 0 4 7' className='absolute left-2 top-1/2 h-2 w-2 -translate-y-1/2 fill-black'>
+                  <polygon points='4 3.5 0 0 0 7' />
+                </svg>
+              )}
+              <span className='ml-4'>Tất cả danh mục</span>
+            </Link>
+          </li>
+
+          {categories.map((categoryItem) => {
+            const isActive = category_id === categoryItem._id
+            return (
+              <li key={categoryItem._id} className='relative'>
+                <Link
+                  to={{
+                    pathname: paths.Screens.PRODUCT,
+                    search: createSearchParams({
+                      ...queryConfig,
+                      category_id: categoryItem._id
+                    }).toString()
+                  }}
+                  className={classNames(
+                    'group flex items-center px-5 py-2 rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-black hover:font-bold',
+                    {
+                      'bg-gray-200  text-black font-bold': isActive,
+                      'text-gray-700': !isActive
+                    }
+                  )}
+                >
+                  {isActive && (
+                    <svg viewBox='0 0 4 7' className='absolute left-2 top-1/2 h-2 w-2 -translate-y-1/2 fill-black'>
+                      <polygon points='4 3.5 0 0 0 7' />
+                    </svg>
+                  )}
+                  <span className='ml-4'>{categoryItem.name}</span>
+                </Link>
+              </li>
+            )
           })}
-        >
-          Tất cả danh mục
-        </span>
-      </Link>
-      <div className='bg-gray-300 h-[1px] my-4 ' />
-      <ul>
-        {categories.map((categoryItem) => {
-          const isActive = category_id === categoryItem._id
-          return (
-            <li className='py-2 pl-2' key={categoryItem._id}>
-              <Link
-                to={{
-                  pathname: paths.Screens.PRODUCT,
-                  search: createSearchParams({
-                    ...queryConfig,
-                    category_id: categoryItem._id
-                  }).toString()
-                }}
-                className={classNames('flex relative px-2', {
-                  'text-red-500  font-bold': isActive
+        </ul>
+      )
+    }
+  ]
+
+  const itemsGenders: CollapseProps['items'] = [
+    {
+      key: '1',
+      label: 'Giới tính',
+      className: '',
+      children: (
+        <ul>
+          <li className='flex hover:font-bold hover:text-black mt-3'>
+            <input type='checkbox' className='h-5 w-5 accent-black' value={0} checked={gender === GenderType.Women} />
+            <Link
+              to={{
+                pathname: paths.Screens.PRODUCT,
+                search: createSearchParams({
+                  ...queryConfig,
+                  gender: GenderType.Women
+                }).toString()
+              }}
+              className='hover:text-black'
+            >
+              <span
+                className={classNames('ml-4', {
+                  'font-bold': gender === GenderType.Women
                 })}
               >
-                {isActive && (
-                  <svg viewBox='0 0 4 7' className='h-2 w-2 absolute top-1 left-[10px] fill-red-500'>
-                    <polygon points='4 3.5 0 0 0 7' />
-                  </svg>
-                )}
-                <span className='ml-4'>{categoryItem.name}</span>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-      <Link to={paths.Screens.PRODUCT} className='flex items-center font-bold mt-4 uppercase'>
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          fill='none'
-          viewBox='0 0 24 24'
-          stroke-width='1.5'
-          stroke='currentColor'
-          className='size-6'
-        >
-          <path
-            stroke-linecap='round'
-            stroke-linejoin='round'
-            d='m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
-          />
-        </svg>
-        Bộ lọc tìm kiếm
-      </Link>
-      <div className='bg-gray-300 h-[1px] my-4' />
-      <div className='my-5'>
-        <span>Khoảng giá</span>
+                Nữ
+              </span>
+            </Link>
+          </li>
+          <li className='flex hover:font-bold hover:text-black mt-3'>
+            <input type='checkbox' className='h-5 w-5 accent-black' value={0} checked={gender === GenderType.Men} />
+            <Link
+              to={{
+                pathname: paths.Screens.PRODUCT,
+                search: createSearchParams({
+                  ...queryConfig,
+                  gender: GenderType.Men
+                }).toString()
+              }}
+              className='hover:text-black'
+            >
+              <span
+                className={classNames('ml-4', {
+                  'font-bold': gender === GenderType.Men
+                })}
+              >
+                Nam
+              </span>
+            </Link>
+          </li>
+          <li className='flex hover:font-bold hover:text-black mt-3'>
+            <input type='checkbox' className='h-5 w-5 accent-black' value={2} checked={gender === GenderType.Unisex} />
+            <Link
+              to={{
+                pathname: paths.Screens.PRODUCT,
+                search: createSearchParams({
+                  ...queryConfig,
+                  gender: GenderType.Unisex
+                }).toString()
+              }}
+              className='hover:text-black'
+            >
+              <span
+                className={classNames('ml-4', {
+                  'font-bold': gender === GenderType.Unisex
+                })}
+              >
+                Nam và nữ
+              </span>
+            </Link>
+          </li>
+          <li className='flex hover:font-bold hover:text-black mt-3'>
+            <input type='checkbox' className='h-5 w-5 accent-black' value={2} checked={gender === GenderType.All} />
+            <Link
+              to={{
+                pathname: paths.Screens.PRODUCT,
+                search: createSearchParams({
+                  ...queryConfig,
+                  gender: GenderType.All
+                }).toString()
+              }}
+              className='hover:text-black'
+            >
+              <span
+                className={classNames('ml-4', {
+                  'font-bold': gender === GenderType.All
+                })}
+              >
+                Tất cả
+              </span>
+            </Link>
+          </li>
+        </ul>
+      )
+    }
+  ]
+
+  const itemsTarget: CollapseProps['items'] = [
+    {
+      key: '1',
+      label: 'Đối tượng',
+      className: '',
+      children: (
+        <ul>
+          <li className='flex hover:font-bold hover:text-black mt-3'>
+            <input type='checkbox' className='h-5 w-5 accent-black' value={0} checked={target_person === '0'} />
+            <Link
+              to={{
+                pathname: paths.Screens.PRODUCT,
+                search: createSearchParams({
+                  ...queryConfig,
+                  target_person: '0'
+                }).toString()
+              }}
+              className='hover:text-black'
+            >
+              <span
+                className={classNames('ml-4', {
+                  'font-bold': target_person === '0'
+                })}
+              >
+                Trẻ em
+              </span>
+            </Link>
+          </li>
+          <li className='flex hover:font-bold hover:text-black mt-3'>
+            <input type='checkbox' className='h-5 w-5 accent-black' value={1} checked={target_person === '1'} />
+            <Link
+              to={{
+                pathname: paths.Screens.PRODUCT,
+                search: createSearchParams({
+                  ...queryConfig,
+                  target_person: '1'
+                }).toString()
+              }}
+              className='hover:text-black'
+            >
+              <span
+                className={classNames('ml-4', {
+                  'font-bold': target_person === '1'
+                })}
+              >
+                Người lớn
+              </span>
+            </Link>
+          </li>
+          <li className='flex hover:font-bold hover:text-black mt-3'>
+            <input type='checkbox' className='h-5 w-5 accent-black' value={1} checked={target_person === '2'} />
+            <Link
+              to={{
+                pathname: paths.Screens.PRODUCT,
+                search: createSearchParams({
+                  ...queryConfig,
+                  target_person: '2'
+                }).toString()
+              }}
+              className='hover:text-black'
+            >
+              <span
+                className={classNames('ml-4', {
+                  'font-bold': target_person === '2'
+                })}
+              >
+                Tất cả
+              </span>
+            </Link>
+          </li>
+        </ul>
+      )
+    }
+  ]
+
+  const itemsPrices: CollapseProps['items'] = [
+    {
+      key: '1',
+      label: 'Khoảng giá',
+      className: '',
+      children: (
         <form className='mt-2' onSubmit={onSubmit}>
           <div className='flex items-start'>
             <Controller
@@ -124,7 +299,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                     type='text'
                     className='grow'
                     placeholder='đ Từ'
-                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-2xl'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-700 rounded-md'
                     classNameError='hidden'
                     {...field}
                     onChange={(event) => {
@@ -146,7 +321,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                     type='text'
                     className='grow'
                     placeholder='đ Từ'
-                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-2xl'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-700 rounded-md'
                     classNameError='hidden'
                     {...field}
                     onChange={(event) => {
@@ -159,12 +334,43 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             />
           </div>
           <div className='mt-1 text-red-600 min-h-[1.25rem] text-sm'>{errors.price_min?.message}</div>
-          <Button className='w-full p-2 uppercase bg-red-400 hover:bg-red-600 text-white text-sm rounded-md flex justify-center items-center'>
+          <Button className='w-full p-2 border border-2 border-black text-black text-lg hover:bg-black hover:text-white transition-all duration-300  rounded-md flex justify-center items-center'>
             Áp dụng
           </Button>
         </form>
-      </div>
-      <div className='bg-gray-300 h-[1px] my-4' />
+      )
+    }
+  ]
+
+  return (
+    <div className='hidden md:block  md:py-4 '>
+      <Collapse items={itemsCategories} defaultActiveKey={['1']} />
+      <div className='mt-3'></div>
+      <Collapse items={itemsGenders} defaultActiveKey={['1']} />
+      <div className='mt-3'></div>
+      <Collapse items={itemsTarget} defaultActiveKey={['1']} />
+      <div className='mt-3'></div>
+      <Collapse items={itemsPrices} defaultActiveKey={['1']} />
+
+      {/* <Link to={paths.Screens.PRODUCT} className='flex items-center font-bold mt-4'>
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          fill='none'
+          viewBox='0 0 24 24'
+          stroke-width='1.5'
+          stroke='currentColor'
+          className='size-5'
+        >
+          <path
+            stroke-linecap='round'
+            stroke-linejoin='round'
+            d='m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z'
+          />
+        </svg>
+        <span className='ml-1'>Bộ lọc tìm kiếm</span>
+      </Link> */}
+      {/* <div className='bg-gray-300 h-[1px] my-4' /> */}
+
       {/* <span>Đánh giá</span>
       <ul className='my-3'>
         <li className='py-1 pl-2'>

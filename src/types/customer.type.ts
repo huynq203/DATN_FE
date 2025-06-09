@@ -1,5 +1,4 @@
-import { Addresses } from "./address.type"
-
+import { Addresses } from './address.type'
 
 export interface Customer {
   _id: string
@@ -18,4 +17,17 @@ export interface UpdateCustomer {
   name: string
   phone: string
   date_of_birth: string
+}
+
+export interface ChangePasswordBody {
+  old_password: string
+  new_password: string
+  confirm_new_password: string
+}
+
+export interface CustomerFilter {
+  key_search?: string
+  status?: string
+  dateStart?: string
+  dateEnd?: string
 }

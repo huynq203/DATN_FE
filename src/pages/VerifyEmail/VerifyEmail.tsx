@@ -1,4 +1,3 @@
-import React from 'react'
 import useQueryParams from 'src/hooks/useQueryParams'
 
 export default function VerifyEmail() {

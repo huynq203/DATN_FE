@@ -16,7 +16,7 @@ export default function CategorySelect({ onChange, value, errorMessage }: Props)
       return categoryApi.getCategory()
     }
   })
-  const dataCategories = listCategories?.data.result.categories
+  const dataCategories = listCategories?.data.result
 
   useEffect(() => {
     if (value) {

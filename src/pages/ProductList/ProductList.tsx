@@ -10,17 +10,12 @@ import { ProductListConfig } from 'src/types/product.type'
 import categoryApi from 'src/apis/category.api'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { Helmet } from 'react-helmet-async'
-import { useEffect, useState } from 'react'
-import Loading from '../Loading'
-
-export type QueryConfig = {
-  [key in keyof ProductListConfig]: string
-}
+import { Spin } from 'antd'
 
 export default function ProductList() {
   const queryConfig = useQueryConfig()
-  const [isLoading, setIsLoading] = useState(true)
-  const { data: listProduct } = useQuery({
+
+  const { data: listProduct, isLoading } = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => {
       return productApi.getProducts(queryConfig as ProductListConfig)
@@ -30,7 +25,6 @@ export default function ProductList() {
   })
   const productData = listProduct?.data.result.products
   const totalPage = listProduct?.data.result.paginate.total_page
- 
 
   const { data: listCategory } = useQuery({
     queryKey: ['categories'],
@@ -38,11 +32,7 @@ export default function ProductList() {
       return categoryApi.getCategory()
     }
   })
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
-  }, [])
+  
   return (
     <div className='bg-white'>
       <Helmet>
@@ -50,27 +40,32 @@ export default function ProductList() {
         <meta name='description' content='Cửa hàng Yoyo' />
       </Helmet>
       <div className='container'>
-        <div className='overflow-auto py-5'>
-          {' '}
+        <div className='overflow-auto pt-1 pb-5'>
           {productData && (
-            <div className='grid grid-cols-12 gap-6'>
+            <div className='grid grid-cols-12 gap-1'>
               <div className='col-span-2'>
-                {listCategory && (
-                  <AsideFilter queryConfig={queryConfig} categories={listCategory?.data.result.categories} />
-                )}
+                {listCategory && <AsideFilter queryConfig={queryConfig} categories={listCategory?.data.result} />}
               </div>
               <div className='col-span-10 ml-10'>
                 {totalPage && <SortProductList queryConfig={queryConfig} total_page={totalPage} />}
-                <div className='mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3'>
-                  {productData.map((product) => (
-                    <div className='col-span-1' key={product._id}>
-                      <Product product={product} />
-                    </div>
-                  ))}
-                </div>
-                {totalPage && <Paginate queryConfig={queryConfig} total_page={totalPage} />}
+                <Spin size='large' tip='Đang tải...' spinning={isLoading}>
+                  <div className='mt-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-1'>
+                    {productData.map((product) => (
+                      <div className='col-span-1' key={product._id}>
+                        <Product product={product} />
+                      </div>
+                    ))}
+                  </div>
+                </Spin>
               </div>
             </div>
+          )}
+          {totalPage ? (
+            <div className='flex justify-center items-center'>
+              <Paginate queryConfig={queryConfig} total_page={totalPage} />{' '}
+            </div>
+          ) : (
+            ''
           )}
         </div>
       </div>

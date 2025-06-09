@@ -1,59 +1,50 @@
 import React, { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import Loading from '../Loading'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import Button from 'src/components/Button'
 import { formatCurrency, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { Cart as Carts } from 'src/types/cart.type'
-import { Customer } from 'src/types/customer.type'
 import { paths, resources } from 'src/constants'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import orderApi from 'src/apis/order.api'
 import { toast } from 'react-toastify'
-import { CartStatus, PaymentMethod } from 'src/constants/enum'
-import cartApi from 'src/apis/cart.api'
-import customerApi from 'src/apis/customer.api'
+import { PaymentMethod } from 'src/constants/enum'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import addressApi from 'src/apis/address.api'
+import useQueryConfig from 'src/hooks/useQueryConfig'
+import ModalGetAllAdresses from 'src/components/Addresses/ModalGetAllAdresses'
 
 interface CheckoutState {
   buyProducts: Carts[]
-  totalCheckedCartPrice: number
-  totalCheckedCartServingPrice: number
+  totalAfterDiscountPrice: number
+  TotalDiscount: number
+  codeVoucher?: string
 }
 
 export default function Checkout() {
-  const { data: listAddress } = useQuery({
-    queryKey: ['addresses'],
-    queryFn: () => {
-      return addressApi.getAddressbyCustomer()
-    }
-  })
-  console.log(listAddress)
-
-  const addresses = listAddress?.data.result
   const [isLoading, setIsLoading] = useState(false)
+  const [isModelOpen, setIsModalOpen] = useState(false)
   const location = useLocation()
-  const { buyProducts, totalCheckedCartPrice } = location.state as CheckoutState
+  const { buyProducts, totalAfterDiscountPrice, TotalDiscount, codeVoucher } = location.state as CheckoutState
 
-  const getProfile = localStorage.getItem('profile')
-  const profile = JSON.parse(getProfile || '{}') as Customer
   const [selectedPayment, setSelectedPayment] = useState(0)
-  const [selectedAddress, setSelectedAddress] = useState(addresses?.[0]?.address || '')
+
   const navigate = useNavigate()
 
   const handleChangePayment = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target
     setSelectedPayment(Number(value))
   }
-  const { refetch } = useQuery({
-    queryKey: ['cart', { status: CartStatus.InCart }],
-    queryFn: () => cartApi.getCart({ status: CartStatus.InCart })
+
+  const { data: listAddresses } = useQuery({
+    queryKey: ['addresses'],
+    queryFn: () => {
+      return addressApi.getAddressbyCustomer()
+    }
   })
-  const handleChangeAddress = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target
-    setSelectedAddress(value)
-  }
+  const addressesData = listAddresses?.data.result
+
+  const addressDefault = addressesData?.find((item) => item.isDefault)
 
   const createOrderCodeMutation = useMutation({
     mutationFn: orderApi.createCodOrder
@@ -72,11 +63,14 @@ export default function Checkout() {
         product_id: item.product_id._id,
         quantity: item.quantity,
         size: item.size,
-        color: item.color
+        color: item.color,
+        cost_price: item.cost_price
       })),
-      total_price: totalCheckedCartPrice,
+      total_price: totalAfterDiscountPrice,
       payment_method: selectedPayment,
-      address: selectedAddress
+      address: addressDefault?._id as string,
+      discount_price: TotalDiscount ? TotalDiscount : 0,
+      code_voucher: codeVoucher ? codeVoucher : ''
     }
     if (selectedPayment === PaymentMethod.COD) {
       createOrderCodeMutation.mutate(orderData, {
@@ -85,13 +79,11 @@ export default function Checkout() {
             setIsLoading(false)
             toast.success(res.data.message)
             history.replaceState(null, '')
-            // window.location.href = paths.Screens.CHECK_ORDER
             navigate(paths.Screens.CHECK_ORDER, {
               state: {
                 payment_method: PaymentMethod.COD
               }
             })
-            refetch()
           }, 3000)
         },
         onError: (error) => {
@@ -107,8 +99,6 @@ export default function Checkout() {
     } else if (selectedPayment === PaymentMethod.MOMO) {
       createOrderMomoMutation.mutate(orderData, {
         onSuccess: (res) => {
-          console.log(res)
-
           // window.location.href = res.data.result
           // navigate(paths.Screens.CHECK_ORDER)
         }
@@ -134,14 +124,14 @@ export default function Checkout() {
       </Helmet>
       {buyProducts && (
         <div className='container'>
-          {isLoading && (
+          {/* {isLoading && (
             <div className='fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50'>
               <div className='text-xl font-semibold animate-pulse text-black-700'>Đang tải dữ liệu</div>
               <div className='ml-48 mt-2'>
                 <Loading loading={isLoading} color='black' top='50%' />
               </div>
             </div>
-          )}
+          )} */}
           <div className='bg-white pt-10 pb-5 flex justify-center items-center'>
             <div className='container mx-auto flex flex-col md:flex-row bg-gray-100 rounded-lg shadow-lg p-6'>
               <div className='flex-1 md:mr-6'>
@@ -195,6 +185,7 @@ export default function Checkout() {
                       <img src={resources.Images.MOMO} alt='' className='h-4 w-4 mr-1' />
                       Momo
                     </label> */}
+
                     <label className='flex ml-5 items-center'>
                       <input type='radio' name='payment' value={2} className='mr-2' onChange={handleChangePayment} />
                       <img src={resources.Images.VN_PAY} alt='' className='h-4 w-4 mr-1' />
@@ -202,38 +193,42 @@ export default function Checkout() {
                     </label>
                   </div>
                 </div>
-                <div>
-                  {' '}
-                  <h3 className='text-lg font-bold mt-1'>Giao tới</h3>
-                  <p className='ml-1'>{profile.name}</p>
-                  <p className='ml-1'>{profile.phone}</p>
-                  {addresses ? (
-                    <div>
-                      <select onChange={handleChangeAddress}>
-                        {addresses.map((item) => (
-                          <option value={item.address}>{item.address}</option>
-                        ))}
-                      </select>
-                      <span className='ml-3 border border-red-500 text-xs text-red-500'>Mặc định</span>
+
+                <div key={addressDefault?._id} className='grid grid-cols-4 border-b py-2 flex flex-row gap-1'>
+                  <div className='col-span-3'>
+                    <div className='font-semibold'>
+                      {addressDefault?.name} | {addressDefault?.phone}
+                      <span className='ml-2 text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded'>
+                        Mặc định
+                      </span>
                     </div>
-                  ) : (
-                    <p className='ml-1 text-xs text-red-600'>
-                      <Link to={paths.Screens.ADDRESS}>Thêm địa chỉ giao hàng</Link>
-                    </p>
-                  )}
+                    <div className='text-sm text-gray-700'>{addressDefault?.address}</div>
+                  </div>
+                  <div className='mt-2 space-x-2 col-span-1 flex items-center'>
+                    <Button
+                      type='button'
+                      className='px-3 py-1 bg-blue-600/90 hover:bg-blue-700/90 text-white rounded-md'
+                      onClick={() => {
+                        setIsModalOpen(true)
+                      }}
+                    >
+                      Thay đổi
+                    </Button>
+                    <ModalGetAllAdresses isModalOpen={isModelOpen} setIsModalOpen={setIsModalOpen} />
+                  </div>
                 </div>
                 <div className='bg-gray-100 p-4 rounded-lg mt-4'>
                   <p>
-                    Tổng tiền hàng: <span className='font-bold'>{formatCurrency(totalCheckedCartPrice)} đ</span>
+                    Tổng tiền hàng: <span className='font-bold'>{formatCurrency(totalAfterDiscountPrice)} đ</span>
                   </p>
                   <p>
                     Phí vận chuyển: <span className='font-bold'>Miễn phí</span>
                   </p>
                   <p>
-                    Giảm giá: <span className='font-bold'>0 đ</span>
+                    Giảm giá: <span className='font-bold'>{formatCurrency(TotalDiscount)} đ</span>
                   </p>
                   <p className='mt-3 font-bold text-xl text-red-400'>
-                    Tổng tiền thanh toán: {formatCurrency(totalCheckedCartPrice)} đ
+                    Tổng tiền thanh toán: {formatCurrency(totalAfterDiscountPrice)} đ
                   </p>
                   <p className='text-sm mt-2'>
                     (Giá này đã bao gồm thuế GTGT, phí đóng gói, phí vận chuyển và các chi phí phát sinh khác)

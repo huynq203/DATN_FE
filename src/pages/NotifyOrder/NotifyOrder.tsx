@@ -8,6 +8,7 @@ import Loading from '../Loading'
 import { Helmet } from 'react-helmet-async'
 import { CartStatus, PaymentMethod, VnPayStatus } from 'src/constants/enum'
 import cartApi from 'src/apis/cart.api'
+import productApi from 'src/apis/product.api'
 
 export default function NotifyOrder() {
   const location = useLocation()
@@ -18,17 +19,21 @@ export default function NotifyOrder() {
   const [isLoading, setIsLoading] = useState(true)
   const { payment_method } = location.state || ''
 
-  const { refetch } = useQuery({
+  const { refetch: refetchCart } = useQuery({
     queryKey: ['cart', { status: CartStatus.InCart }],
     queryFn: () => cartApi.getCart({ status: CartStatus.InCart })
   })
-
+  const { refetch: refetchProduct } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => {
+      return productApi.getProducts({})
+    }
+  })
   const { data: checkOrderVnpay } = useQuery({
     queryKey: ['', searchParams.toString()],
     queryFn: () => orderApi.checkVnpayOrder(Object.fromEntries(searchParams.entries()))
   })
   const checkOrderVnp = checkOrderVnpay?.data.result
-  console.log(checkOrderVnp)
 
   useEffect(() => {
     setTimeout(() => {
@@ -38,19 +43,22 @@ export default function NotifyOrder() {
         if (checkOrderVnp?.vnp_ResponseCode === VnPayStatus.Success) {
           setStatus('success')
           setTitle('Thanh toán thành công')
-          setSubTitle('Đơn hàng của bạn đã được thanh toán thành công')
-          refetch()
+          setSubTitle('Đơn hàng của bạn đã được thanh toán thành công và sẽ được giao trong thời gian sớm nhất')
+          refetchCart()
+          refetchProduct()
         } else if (checkOrderVnp?.vnp_ResponseCode === VnPayStatus.Cancel) {
           setStatus('error')
           setTitle('Thanh toán thất bại')
           setSubTitle('Đơn hàng của bạn đã bị hủy')
-          refetch()
+          refetchCart()
+          refetchProduct()
         }
       } else if (payment_method === PaymentMethod.COD) {
         setStatus('success')
-        setTitle('Thanh toán thành công')
-        setSubTitle('Đơn hàng của bạn đã được thanh toán thành công')
-        refetch()
+        setTitle('Đặt hàng thành công')
+        setSubTitle('Đơn hàng của bạn đã được đặt thành công và sẽ được giao trong thời gian sớm nhất')
+        refetchCart()
+        refetchProduct()
       }
     }, 3000)
   }, [searchParams])
@@ -72,7 +80,7 @@ export default function NotifyOrder() {
               to={paths.Screens.PRODUCT}
               className=' bg-red-500 text-white rounded-md p-3 hover:bg-red-500/90 hover:text-white/90 transition-all duration-300 '
             >
-              Mua hàng
+              Kiểm tra đơn hàng
             </Link>
           ]}
         />

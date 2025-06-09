@@ -1,11 +1,14 @@
 import http from 'src/utils/http'
 import { paths } from 'src/constants'
-import { Category, CategoryList, CategoryReqBody, CategoryUpdateReqBody } from 'src/types/category.type'
+import { Category, CategoryReqBody, CategoryUpdateReqBody } from 'src/types/category.type'
 import { SuccessResponseApi } from 'src/types/utils.type'
 
 class CategoryApi {
   getCategory() {
-    return http.get<SuccessResponseApi<CategoryList>>(paths.ApiPath.CATEGORY_URL)
+    return http.get<SuccessResponseApi<Category[]>>(paths.ApiPath.CATEGORY_URL)
+  }
+  getCategoryManager(params: { key_search?: string }) {
+    return http.get<SuccessResponseApi<Category[]>>(paths.ApiPath.CATEGORY_MANAGER_URL, { params })
   }
   getProductDetail(category_id: string) {
     return http.get<SuccessResponseApi<Category>>(`${paths.ApiPath.CATEGORY_URL}/${category_id}`)

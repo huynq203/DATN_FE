@@ -5,8 +5,8 @@ import productApi from 'src/apis/product.api'
 import ProductRating from 'src/components/ProductRating'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/utils'
 import DOMPurify from 'dompurify'
-import { useEffect, useMemo, useState } from 'react'
-import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
+import { useEffect, useState } from 'react'
+import { ProductListConfig } from 'src/types/product.type'
 import classNames from 'classnames'
 import Product from '../ProductList/components/Product'
 import QuantityController from 'src/components/QuantityController'
@@ -16,15 +16,19 @@ import { MESSAGE } from 'src/constants/messages'
 
 import { paths } from 'src/constants'
 import { CartStatus } from 'src/constants/enum'
+import ImageProduct from './components/ImageProduct'
+import CommentProduct from './components/CommentProduct'
+import DescriptionProduct from './components/DescriptionProduct'
+import SimilarProducts from './components/SimilarProducts'
 
 export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState(1)
-  const [sizeName, setSizeName] = useState(0)
+  const [sizeName, setSizeName] = useState(1)
   const [colorName, setColorName] = useState('')
-  const [stock, setStock] = useState<number>()
-  const [activeImage, setActiveImage] = useState('')
+  const [stock, setStock] = useState<number | null>(null)
   const [activeFlagSize, setActiveFlagSize] = useState(0)
   const [activeFlagColor, setActiveFlagColor] = useState('')
+  const [imageVariantColor, setImageVariantColor] = useState('')
 
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -36,70 +40,62 @@ export default function ProductDetail() {
     staleTime: 3 * 60 * 1000
   })
 
-  const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
-
-  const product = ProductDetail?.data.result
-
-  const currentImages = useMemo(
-    () => (product ? product.url_images.slice(...currentIndexImages) : []),
-    [product, currentIndexImages]
-  )
-  const queryConfig: ProductListConfig = { limit: '10', page: '1', category_id: product?.category_id._id }
-  const { data: listProduct } = useQuery({
-    queryKey: ['products', queryConfig],
-    queryFn: () => {
-      return productApi.getProducts(queryConfig as ProductListConfig)
-    },
-    enabled: Boolean(product),
-    staleTime: 3 * 60 * 1000
-  })
+  const product = ProductDetail?.data.result.product
+  const inventories = ProductDetail?.data.result.inventories
 
   const addToCartMutation = useMutation({
     mutationFn: cartApi.addToCart
   })
 
-  useEffect(() => {
-    if (product && product.url_images.length > 0) {
-      setActiveImage(product.url_images[0].url)
-    }
-  }, [product])
-
-  const chooseActiveImage = (image: string) => {
-    setActiveImage(image)
-  }
-
-  const next = () => {
-    if (currentIndexImages[1] < (product as ProductType)?.url_images.length) {
-      setCurrentIndexImages((next) => [next[0] + 1, next[1] + 1])
-    }
-  }
-  const prev = () => {
-    if (currentIndexImages[0] > 0) {
-      setCurrentIndexImages((prev) => [prev[0] - 1, prev[1] - 1])
-    }
-  }
-
   const handleBuyCount = (value: number) => {
     setBuyCount(value)
   }
-
-  const handleBuySize = (value: number) => {
-    setSizeName(value)
-    setActiveFlagSize(value)
-    updateStock(colorName, value.toString())
-  }
   const handleBuyColor = (value: string) => {
-    setColorName(value)
-    setActiveFlagColor(value)
-    updateStock(value, sizeName.toString())
+    const isSame = activeFlagColor === value
+    if (isSame) {
+      setActiveFlagColor('')
+      setColorName('')
+      setImageVariantColor('')
+      setStock(null)
+    } else {
+      setActiveFlagColor(value)
+      setColorName(value)
+
+      if (sizeName !== 0) {
+        updateStock(value, sizeName.toString())
+      }
+    }
   }
-  const updateStock = (color: string, size: string) => {
-    const result = product?.option_products.find((item) => item.color === color && item.size.toString() === size)
-    setStock(result ? result.stock : 0)
+  const handleBuySize = (value: number) => {
+    const isSame = activeFlagSize === value
+    if (isSame) {
+      setActiveFlagSize(0)
+      setSizeName(1)
+      setImageVariantColor('')
+      setStock(null)
+    } else {
+      setActiveFlagSize(value)
+      setSizeName(value)
+
+      if (colorName) {
+        updateStock(colorName, value.toString())
+      }
+    }
   }
 
-  const uniqueColors = Array.from(new Set(product?.option_products.map((item) => item.color)))
-  const uniqueSizes = Array.from(new Set(product?.option_products.map((item) => item.size))).sort((a, b) => a - b)
+  const updateStock = (color: string, size: string) => {
+    if (!color || !size) {
+      setStock(null)
+      setImageVariantColor('')
+      return
+    }
+    const result = inventories?.find((item) => item.color === color && item.size.toString() === size)
+    setStock(result ? result.stock : null)
+    setImageVariantColor(result?.image_variant_color[0].url || '')
+  }
+
+  const uniqueColors = Array.from(new Set(inventories?.map((item) => item.color)))
+  const uniqueSizes = Array.from(new Set(inventories?.map((item) => item.size))).sort((a, b) => a - b)
 
   const handleAddToCart = () => {
     if (sizeName === 0) {
@@ -115,6 +111,9 @@ export default function ProductDetail() {
         product_id: product_id,
         size: sizeName,
         color: colorName,
+        cost_price: inventories?.find(
+          (item) => item.color === colorName && item.size.toString() === sizeName.toString()
+        )?.cost_price as number,
         quantity: buyCount
       },
       {
@@ -138,6 +137,8 @@ export default function ProductDetail() {
       product_id: product_id,
       size: sizeName,
       color: colorName,
+      cost_price: inventories?.find((item) => item.color === colorName && item.size.toString() === sizeName.toString())
+        ?.cost_price as number,
       quantity: buyCount
     })
     const cart = res.data.result
@@ -150,6 +151,7 @@ export default function ProductDetail() {
 
   if (!product) return null
   const accessToken = localStorage.getItem('access_token')
+
   return (
     <div className='bg-gray-200 py-2 '>
       <Helmet>
@@ -157,66 +159,9 @@ export default function ProductDetail() {
         <meta name='description' content='Cửa hàng Yoyo' />
       </Helmet>
       <div className='container '>
-        <div className='p-4 shadow bg-white'>
+        <div className='p-4 shadow bg-white rounded-lg'>
           <div className='grid grid-cols-12 gap-9'>
-            <div className='col-span-4'>
-              <div className='relative w-full pt-[100%] shadow'>
-                <img
-                  src={activeImage}
-                  alt={product.name}
-                  className='absolute top-0 left-0 w-full h-full object-cover'
-                />
-              </div>
-              <div className='relative mt-4 grid grid-cols-5 gap-1'>
-                <button
-                  className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-t-1/2 bg-black/20 text-white hover:text-black'
-                  onClick={prev}
-                >
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke-width='1.5'
-                    stroke='currentColor'
-                    className='h-5 w-5'
-                  >
-                    <path stroke-linecap='round' stroke-linejoin='round' d='M15.75 19.5 8.25 12l7.5-7.5' />
-                  </svg>
-                </button>
-                {currentImages.map((img) => {
-                  const isActive = img.url === activeImage
-                  return (
-                    <div
-                      className=' relative w-full pt-[100%]'
-                      key={img.url}
-                      onMouseEnter={() => chooseActiveImage(img.url)}
-                    >
-                      <img
-                        src={img.url}
-                        alt={product.name}
-                        className='absolute top-0 left-0 w-full h-full cursor-pointer object-cover'
-                      />
-                      {isActive && <div className='absolute inset-0 border-2 border-black' />}
-                    </div>
-                  )
-                })}
-                <button
-                  className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-t-1/2 bg-black/20 text-white hover:text-black'
-                  onClick={next}
-                >
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke-width='1.5'
-                    stroke='currentColor'
-                    className='h-5 w-5'
-                  >
-                    <path stroke-linecap='round' stroke-linejoin='round' d='m8.25 4.5 7.5 7.5-7.5 7.5' />
-                  </svg>
-                </button>
-              </div>
-            </div>
+            <ImageProduct product={product} image_variant_color={imageVariantColor} stock={stock as number} />
             <div className='col-span-8'>
               <h1 className='text-xl  uppercase font-bold'>
                 {product.promotion_price > 0 ? '[Giảm giá]' : ''} {product.name}{' '}
@@ -237,10 +182,6 @@ export default function ProductDetail() {
                   </div>
                 </div>
               </div>
-              <div className='mt-8 flex items-center pl-5 text-lg'>
-                <span>Loại: </span>
-                <span className='ml-20'>{product.category_id.name}</span>
-              </div>
               <div className='mt-3 flex items-center  bg-gray-50 px-5 py-4  font-semibold'>
                 <div
                   className={` ml-1 ${product.promotion_price > 0 ? 'text-lg text-gray-500 line-through' : ' text-3xl text-black'}`}
@@ -258,20 +199,23 @@ export default function ProductDetail() {
                   </>
                 )}
               </div>
-              <div className='mt-3 flex items-center  pl-5'>
-                <span className='text-lg'>Kích thước </span>
-                <div className='flex ml-5 visible'>
+              <div className='mt-8 flex items-center pl-5 text-lg'>
+                <span className='text-base font-semibold block mr-5'>Thương hiệu: </span>
+                <span className=''>{product.category_id.name}</span>
+              </div>
+              <div className='mt-4 pl-5 flex '>
+                <span className='text-base font-semibold block mb-3 mr-5'>Kích thước</span>
+                <div className='grid grid-cols-5 gap-3 w-[320px] ml-5'>
                   {uniqueSizes.map((item) => {
                     const isFlagSize = item === activeFlagSize
                     return (
                       <button
                         key={item}
-                        className={classNames(
-                          'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
-                          {
-                            'text-red-500 border-red-500': isFlagSize
-                          }
-                        )}
+                        className={classNames('w-full h-10 rounded-md border text-sm font-medium transition-colors', {
+                          'border-black text-black': isFlagSize,
+                          'border-gray-300 text-gray-700 hover:border-black hover:text-black transition-colors duration-300':
+                            !isFlagSize
+                        })}
                         onClick={() => handleBuySize(item)}
                       >
                         {item}
@@ -280,18 +224,20 @@ export default function ProductDetail() {
                   })}
                 </div>
               </div>
-              <div className='mt-3 flex items-center  pl-5'>
-                <span className='text-lg'>Màu sắc </span>
-                <div className='flex ml-5 visible'>
+              <div className='mt-4 pl-5 flex'>
+                <span className='text-base font-semibold block mb-3 mr-10'>Màu sắc</span>
+                <div className='flex flex-wrap gap-3 w-[320px] ml-5'>
                   {uniqueColors.map((item) => {
                     const isFlagColor = item === activeFlagColor
                     return (
                       <button
                         key={item}
                         className={classNames(
-                          'ml-2 px-5 py-2  items-center justify-center rounded-sm border border-gray-300 text-gray-600 hover:text-red-500 hover:border-red-500 overflow-y-auto',
+                          'min-w-[60px] h-10 px-4 py-2 rounded-md border text-sm font-medium transition-colors',
                           {
-                            'text-red-500 border-red-500': isFlagColor
+                            'border-black text-black': isFlagColor,
+                            'border-gray-300 text-gray-700 hover:border-black hover:text-black transition-colors duration-300':
+                              !isFlagColor
                           }
                         )}
                         onClick={() => handleBuyColor(item)}
@@ -302,25 +248,32 @@ export default function ProductDetail() {
                   })}
                 </div>
               </div>
-              {activeFlagColor && activeFlagSize && (
-                <div className='mt-5 flex items-center text-lg pl-5'>
-                  <span className=' text-black'>Số lượng</span>
-                  <QuantityController
-                    max={stock}
-                    onDecrease={handleBuyCount}
-                    onIncrease={handleBuyCount}
-                    onType={handleBuyCount}
-                    value={buyCount}
-                  />
-                  <div className={`ml-8 text-sm ${stock && stock > 0 ? 'text-gray-600' : 'text-red-600'}`}>
-                    {stock && stock > 0 ? `Hàng còn: ${stock} sản phẩm` : `Hết hàng`}
+
+              <div className='mt-5 pl-5'>
+                <div className='flex items-center '>
+                  <span className='text-base font-semibold text-black w-[80px]'>Số lượng</span>
+                  <div className='flex items-center gap-1 ml-1'>
+                    <QuantityController
+                      max={10}
+                      onDecrease={handleBuyCount}
+                      onIncrease={handleBuyCount}
+                      onType={handleBuyCount}
+                      value={buyCount}
+                    />
+
+                    {stock !== null && (
+                      <div className={`ml-2 text-sm ${stock > 0 ? 'text-gray-600' : 'text-red-600'}`}>
+                        {stock > 0 ? `${stock} sản phẩm có sẵn` : 'Hết hàng'}
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
+
               <div className='mt-5 pl-5 flex items-center'>
                 {accessToken ? (
                   <button
-                    className='flex h-12 items-center justify-center rounded-sm border border-green-600 bg-green-600 text-white shadow-sm hover:bg-green-600/90'
+                    className='flex h-12 items-center justify-center rounded-md border border-gray-300  text-black shadow-sm hover:border-black transition-colors duration-300'
                     onClick={handleAddToCart}
                     disabled={stock === 0}
                   >
@@ -342,7 +295,7 @@ export default function ProductDetail() {
                   </button>
                 ) : (
                   <Link
-                    className='flex h-12 items-center justify-center rounded-sm border border-green-600 bg-green-600 text-white shadow-sm hover:bg-green-600/90'
+                    className='flex h-12 items-center justify-center rounded-sm border border-gray-300 text-black shadow-sm hover:border-black transition-colors duration-300'
                     to={paths.Screens.AUTH_LOGIN}
                   >
                     <svg
@@ -364,7 +317,7 @@ export default function ProductDetail() {
                 )}
 
                 <button
-                  className='flex ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-red-600 px-5 capitalize text-white shadow-sm outline-none hover:bg-red-500/90'
+                  className='flex ml-4 h-12 min-w-[5rem] items-center justify-center rounded-md bg-black px-5 capitalize text-white shadow-sm outline-none hover:bg-gray-500 trasition-colors duration-300'
                   onClick={handleBuyNow}
                 >
                   Mua ngay
@@ -373,36 +326,9 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
-        <div className='mt-4 p-4 shadow bg-white'>
-          <div className='rounded bg-gray-50 p-4 text-lg capitalize'>Mô tả sản phẩm</div>
-          <div className='mx-4 mt-5 mb-4 text-sm leading-loose'>
-            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description.replace(/\n/g, '<br>')) }} />
-          </div>
-        </div>
-        <div className='mt-4 p-4 shadow bg-white'>
-          <div className='rounded bg-gray-50 p-4 text-lg capitalize'>Đánh giá sản phẩm</div>
-          <div className='mx-4 mt-5 mb-4 text-sm leading-loose'>
-            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }} />
-          </div>
-        </div>
-        <div className='mt-4 p-4 shadow bg-white'>
-          <div className='rounded bg-gray-50 p-4 text-lg capitalize'>Sản phẩm tương tự</div>
-          <div className='mx-4 mt-5 mb-4 text-sm leading-loose'>
-            {listProduct && (
-              <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
-                {listProduct.data.result.products.map((product) => {
-                  if (product._id !== product_id) {
-                    return (
-                      <div className='col-span-1' key={product._id}>
-                        <Product product={product} />
-                      </div>
-                    )
-                  }
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+        <DescriptionProduct product={product} />
+        <CommentProduct product={product} />
+        <SimilarProducts product_id={product._id} category_id={product.category_id._id} />
       </div>
     </div>
   )

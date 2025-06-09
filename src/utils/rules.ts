@@ -147,9 +147,10 @@ export const customerSchema = yup.object({
 })
 
 export const productsSchema = yup.object({
-  category_id: yup.string().required('Danh mục không được để trống'),
+  category_id: yup.string().required('Yêu cầu chon danh mục sản phẩm'),
   name: yup.string().required('Tên sản phẩm không được để trống'),
   price: yup.string().typeError('Giá không hợp lệ').min(0, 'Giá không hợp lệ').required('Giá không được để trống'),
+  promotion_price: yup.string().typeError('Giá không hợp lệ').required('Giá không được để trống'),
   stock: yup
     .string()
     .typeError('Số lượng không hợp lệ')
@@ -157,8 +158,12 @@ export const productsSchema = yup.object({
     .required('Số lượng không được để trống'),
   size: yup.string().required('Kích thước không được để trống'),
   color: yup.string().required('Màu sắc không được để trống'),
-  description: yup.string().required('Mô tả không được để trống')
+  description: yup.string().required('Mô tả không được để trống'),
+  gender: yup.string().required('Vui lòng chọn giới tính'),
+  target_person: yup.string().required('Vui lòng chọn đối tượng')
 })
+
+export const createProductSchema = yup.object({})
 
 export type ProductSchema = yup.InferType<typeof productsSchema>
 export type CustomerSchema = yup.InferType<typeof customerSchema>

@@ -12,6 +12,7 @@ export interface User {
     role_name: string
   }
   status: StatusType
+  verify: StatusType
   created_by: {
     _id: string
     name: string
@@ -40,4 +41,17 @@ export interface UserUpdateRequest {
     role_name: string
   }
   user_id_change: string
+}
+
+export interface ChangePasswordBody {
+  old_password: string
+  new_password: string
+  confirm_new_password: string
+}
+
+export interface UserFilter {
+  key_search?: string
+  status?: string
+  dateStart?: string
+  dateEnd?: string
 }

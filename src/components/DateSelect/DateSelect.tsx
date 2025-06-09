@@ -8,7 +8,6 @@ interface Props {
 }
 
 export default function DateSelect({ onChange, value, errorMessage }: Props) {
-
   const [date, setDate] = useState({
     day: value?.getDate() || 1,
     month: value?.getMonth() || 0,
@@ -35,7 +34,7 @@ export default function DateSelect({ onChange, value, errorMessage }: Props) {
     onChange && onChange(new Date(newDate.year, newDate.month, newDate.day))
   }
   return (
-    <div className='flex flex-wrap mt-6 sm:flex-row'>
+    <div className='flex flex-wrap sm:flex-row'>
       <div className='w-[20%] truncate pt-3 text-right capitalize'>Ngày sinh</div>
       <div className='flex justify-between w-[50%]'>
         <div className='w-[35%] pl-5'>

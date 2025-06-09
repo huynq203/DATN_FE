@@ -2,21 +2,24 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Popover from '../Popover'
 
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa'
-import { MdMail } from 'react-icons/md'
+import { MdMail, MdOutlineDoneAll } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 import { paths } from 'src/constants'
 import authApi from 'src/apis/auth.api'
 import { toast } from 'react-toastify'
 import { CartStatus } from 'src/constants/enum'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { MESSAGE } from 'src/constants/messages'
+import Button from '../Button'
+import ChangePassword from './components/ChangePassword'
 
 export default function NavHeader() {
   const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)
   const refresh_token = localStorage.getItem('refresh_token') || ''
+  
   const queryClient = useQueryClient()
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logoutCustomer({ refresh_token }),
@@ -115,11 +118,11 @@ export default function NavHeader() {
                   </>
                 }
                 renderPopover={
-                  <div className='bg-white relative z-50 shadow-md rounded-sm border border-gray-200 -translate-x-10 text-center -mt-2'>
+                  <div className='bg-white relative z-50 shadow-md rounded-sm border border-gray-200 -translate-x-5 text-center -mt-2'>
                     <div className='flex flex-col'>
                       <Link
                         to={paths.Screens.PROFILE}
-                        className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left '
+                        className='py-3 px-10 hover:bg-gray-200 border-b-2 text-gray-500 hover:text-black text-left '
                       >
                         Tài khoản của tôi
                       </Link>
@@ -127,23 +130,16 @@ export default function NavHeader() {
                     <div className='flex flex-col'>
                       <Link
                         to={paths.Screens.HISTORY_ORDER}
-                        className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left '
+                        className='py-3 px-10 hover:bg-gray-200 border-b-2 text-gray-500 hover:text-black text-left '
                       >
                         Đơn mua
                       </Link>
                     </div>
-                    <div className='flex flex-col'>
-                      <Link
-                        to={paths.Screens.CHANGE_PASSWORD}
-                        className='py-3 px-10 hover:bg-gray-200 border-b-2  hover:text-green-500 text-left '
-                      >
-                        Đổi mật khẩu
-                      </Link>
-                    </div>
+
                     <div className='flex flex-col'>
                       <button
                         onClick={handleLogout}
-                        className='py-3 px-10 hover:bg-gray-200  hover:text-green-500 text-left '
+                        className='py-3 px-10 hover:bg-gray-200 text-gray-500 hover:text-black text-left '
                       >
                         Đăng xuất
                       </button>

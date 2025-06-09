@@ -22,3 +22,21 @@ export type UserRespone = SuccessResponseApi<{
   user: User
   role: string
 }>
+
+export interface AuthRegisterBody {
+  name: string
+  phone: string
+  email: string
+  password: string
+}
+
+export interface AuthLoginBody {
+  email: string
+  password: string
+}
+
+export interface AuthResetPasswordBody {
+  new_password: string
+  confirm_new_password: string
+  forgot_password_token: string
+}

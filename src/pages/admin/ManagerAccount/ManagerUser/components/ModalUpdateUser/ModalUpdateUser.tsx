@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import roleApi from 'src/apis/role.api'
 import userApi from 'src/apis/user.api'
 import { MESSAGE } from 'src/constants/messages'
+import { User } from 'src/types/user.type'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import swalAlert from 'src/utils/SwalAlert'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
@@ -25,8 +26,9 @@ interface Props {
   isModalOpen: boolean
   setIsModalOpen: (isOpen: boolean) => void
   userDetail: FieldType
+  onUpdateSuccess?: (ListUsers: User[]) => void
 }
-export default function ModalUpdateUser({ isModalOpen, setIsModalOpen, userDetail }: Props) {
+export default function ModalUpdateUser({ isModalOpen, setIsModalOpen, userDetail, onUpdateSuccess }: Props) {
   const [form] = Form.useForm()
   const handleOk = () => {
     form.submit()
@@ -42,10 +44,11 @@ export default function ModalUpdateUser({ isModalOpen, setIsModalOpen, userDetai
     }
   })
   const roleData = listRole?.data.result
+
   const { refetch } = useQuery({
-    queryKey: ['users'],
+    queryKey: ['users', {}],
     queryFn: () => {
-      return userApi.getAllUsers()
+      return userApi.getAllUsers({})
     }
   })
   const updateUserMutation = useMutation({
@@ -53,8 +56,6 @@ export default function ModalUpdateUser({ isModalOpen, setIsModalOpen, userDetai
   })
 
   const onFinish = (values: FieldType) => {
-
-
     swalAlert.showConfirm().then((result) => {
       if (result.isConfirmed) {
         updateUserMutation.mutate(
@@ -68,11 +69,12 @@ export default function ModalUpdateUser({ isModalOpen, setIsModalOpen, userDetai
             role_id: values.role
           },
           {
-            onSuccess: (data) => {
+            onSuccess: async (data) => {
               toast.success(data.data.message)
               form.resetFields()
               setIsModalOpen(false)
-              refetch()
+              const result = await refetch()
+              onUpdateSuccess?.(result.data?.data.result as User[])
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
@@ -99,8 +101,9 @@ export default function ModalUpdateUser({ isModalOpen, setIsModalOpen, userDetai
   }, [userDetail])
   return (
     <Modal
-      title='Thêm tài khoản'
+      title='Cập nhật tài khoản'
       closable={{ 'aria-label': 'Custom Close Button' }}
+      centered
       open={isModalOpen}
       onOk={handleOk}
       onCancel={handleCancel}

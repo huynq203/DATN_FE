@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { paths } from 'src/constants'
+import { paths, resources } from 'src/constants'
 import Loading from '../../Loading'
+import { Link } from 'react-router-dom'
+import SideBar from 'src/components/Home/SideBar'
+import SeasonShopSection from 'src/components/Home/SeasonShopSection'
+import DiscoverFootwearSection from 'src/components/Home/DiscoverFootwearSection/DiscoverFootwearSection'
+import RecommendedSection from 'src/components/Home/RecommendedSection'
 
 export default function Home() {
   const [isLoading, setIsLoading] = React.useState(true)
@@ -10,6 +15,7 @@ export default function Home() {
       setIsLoading(false)
     }, 3000)
   }, [])
+
   return (
     <>
       <Helmet>
@@ -17,15 +23,13 @@ export default function Home() {
         <meta name='description' content='Trang chủ | Yoyo Store' />
         <link rel='canonical' href={paths.Screens.HOME} />
       </Helmet>
-      {isLoading && (
-        <div className='fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50'>
-          <div className='text-xl font-semibold animate-pulse text-black-700'>Đang tải dữ liệu</div>
-          <div className='ml-48 mt-2'>
-            <Loading loading={isLoading} color='black' top='50%' />
-          </div>
-        </div>
-      )}
-      Trang Home
+
+      <div className='container'>
+        <SideBar />
+        <SeasonShopSection />
+        <DiscoverFootwearSection />
+        <RecommendedSection />
+      </div>
     </>
   )
 }

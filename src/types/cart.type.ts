@@ -9,6 +9,7 @@ export interface Cart {
   quantity: number
   size: CartStatus
   color: string
+  cost_price: number
   created_at: string
   updated_at: string
 }
@@ -21,4 +22,26 @@ export interface CartList {
 export interface ExtendedCarts extends Cart {
   disabled: boolean
   checked: boolean
+}
+
+export interface AddtoCart {
+  product_id: string
+  size: number
+  color: string
+  cost_price: number
+  quantity: number
+}
+
+export interface CartUpdate {
+  product_id: string
+  size: number
+  color: string
+  quantity: number
+  cost_price: number
+}
+
+export interface CartDelete {
+  product_id: string
+  size: number
+  color: string
 }

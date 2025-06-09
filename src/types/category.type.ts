@@ -11,15 +11,6 @@ export interface Category {
   updated_at: string
 }
 
-export interface CategoryList {
-  categories: Category[]
-  pagination: {
-    page: number
-    limit: number
-    total_page: number
-  }
-}
-
 export interface CategoryListConfig {
   page?: number
   limit?: number

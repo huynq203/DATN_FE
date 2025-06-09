@@ -1,10 +1,11 @@
 import { sortBy, order as orderConstant } from 'src/constants/product'
-import { QueryConfig } from '../../ProductList'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 import classNames from 'classnames'
 import { ProductListConfig } from 'src/types/product.type'
-import { createSearchParams, useNavigate } from 'react-router-dom'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import { paths } from 'src/constants'
 import { omit } from 'lodash'
+import { Dropdown, MenuProps, Space } from 'antd'
 
 interface Props {
   queryConfig: QueryConfig
@@ -41,67 +42,87 @@ export default function SortProductList({ queryConfig, total_page }: Props) {
       }).toString()
     })
   }
+  const items: MenuProps['items'] = [
+    {
+      label: (
+        <button className={'h-8 text-sm text-center '} onClick={() => handleSort(sortBy.view)}>
+          Lượt xem
+        </button>
+      ),
+      key: '0'
+    },
+    {
+      label: (
+        <button className='h-8 capitalize  text-sm text-center ' onClick={() => handleSort(sortBy.created_at)}>
+          Mới nhất
+        </button>
+      ),
+      key: '1'
+    },
+    {
+      label: (
+        <button className='h-8 capitalize  text-sm text-center ' onClick={() => handleSort(sortBy.sold)}>
+          Bán chạy
+        </button>
+      ),
+      key: '2'
+    },
+    {
+      label: (
+        <button className='h-8 capitalize  text-sm text-center ' onClick={() => handleSort(sortBy.promotion_price)}>
+          Giảm giá
+        </button>
+      ),
+      key: '3'
+    },
+    {
+      label: (
+        <button
+          className='h-8 capitalize  text-sm text-center '
+          onClick={() => handlePriceOrder(orderConstant.asc as Exclude<ProductListConfig['order'], undefined>)}
+        >
+          Giá từ thấp đến cao
+        </button>
+      ),
+      key: '4'
+    },
+    {
+      label: (
+        <button
+          className='h-8 capitalize  text-sm text-center '
+          onClick={() => handlePriceOrder(orderConstant.desc as Exclude<ProductListConfig['order'], undefined>)}
+        >
+          Giá từ cao đến thấp
+        </button>
+      ),
+      key: '5'
+    }
+  ]
+  
   return (
-    <div className='bg-gray-300/40 py-4 px-3'>
-      <div className='flex flex-wrap items-center justify-between gap-2'>
-        <div className='flex flex-wrap items-center gap-2'>
-          <div className=''>Sắp xếp theo</div>
-          <button
-            className={classNames('h-8 px-4 text-xs text-center ', {
-              'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.view),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.view)
-            })}
-            onClick={() => handleSort(sortBy.view)}
-          >
-            Lượt xem
-          </button>
-          <button
-            className={classNames('h-8 px-4 capitalize  text-xs text-center ', {
-              'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.created_at),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.created_at)
-            })}
-            onClick={() => handleSort(sortBy.created_at)}
-          >
-            Mới nhất
-          </button>
-          <button
-            className={classNames('h-8 px-4 capitalize  text-xs text-center ', {
-              'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.sold),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.sold)
-            })}
-            onClick={() => handleSort(sortBy.sold)}
-          >
-            Bán chạy
-          </button>
-          <button
-            className={classNames('h-8 px-4 capitalize  text-xs text-center ', {
-              'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.promotion_price),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.promotion_price)
-            })}
-            onClick={() => handleSort(sortBy.promotion_price)}
-          >
-            Giảm giá
-          </button>
-          <select
-            className={classNames('h-8 px-4  text-xs ', {
-              'bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.price),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
-            })}
-            value={order || ''}
-            onChange={(event) => handlePriceOrder(event.target.value as Exclude<ProductListConfig['order'], undefined>)}
-          >
-            <option className='bg-white text-black' value='' disabled>
-              Giá
-            </option>
-            <option className='bg-white text-black' value={orderConstant.asc}>
-              Giá từ thấp đến cao
-            </option>
-            <option className='bg-white text-black' value={orderConstant.desc}>
-              Giá từ cao đến thấp
-            </option>
-          </select>
+    <>
+      <div className='hidden md:flex justify-between'>
+        <div></div>
+        <div>
+          <Dropdown menu={{ items }} trigger={['click']}>
+            <a onClick={(e) => e.preventDefault()}>
+              <Space>
+                Sắp xếp
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke-width='1.5'
+                  stroke='currentColor'
+                  className='size-6'
+                >
+                  <path stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
+                </svg>
+              </Space>
+            </a>
+          </Dropdown>
         </div>
       </div>
-    </div>
+    </>
   )
 }

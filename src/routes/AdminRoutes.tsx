@@ -9,10 +9,12 @@ import ListCustomer from 'src/pages/admin/ManagerAccount/ManagerCustomer/ListCus
 import ListUsers from 'src/pages/admin/ManagerAccount/ManagerUser/ListUsers'
 import ListCategories from 'src/pages/admin/ManagerCategory/ListCategories'
 import ManagerOrder from 'src/pages/admin/ManagerOrder'
+import ManagerPosts from 'src/pages/admin/ManagerPosts'
 import CreateProduct from 'src/pages/admin/ManagerProduct/CreateProduct'
 import ListProducts from 'src/pages/admin/ManagerProduct/ListProducts'
 import UpdateProduct from 'src/pages/admin/ManagerProduct/UpdateProduct/UpdateProduct'
 import ManagerRecceipt from 'src/pages/admin/ManagerRecceipt'
+import ManagerVouchers from 'src/pages/admin/ManagerVouchers'
 
 export default function AdminRoutes() {
   const adminRoutes = [
@@ -127,6 +129,26 @@ export default function AdminRoutes() {
             <>
               <MainLayout>
                 <ListCategories />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_VOUCHER,
+          element: (
+            <>
+              <MainLayout>
+                <ManagerVouchers />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_POST,
+          element: (
+            <>
+              <MainLayout>
+                <ManagerPosts />
               </MainLayout>
             </>
           )

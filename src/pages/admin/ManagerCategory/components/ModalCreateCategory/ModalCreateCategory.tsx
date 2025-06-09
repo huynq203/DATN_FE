@@ -3,7 +3,7 @@ import { Form, Input, Modal } from 'antd'
 import { toast } from 'react-toastify'
 import categoryApi from 'src/apis/category.api'
 import { MESSAGE } from 'src/constants/messages'
-import { CategoryReqBody } from 'src/types/category.type'
+import { Category, CategoryReqBody } from 'src/types/category.type'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
@@ -14,8 +14,9 @@ type FieldType = {
 interface Props {
   isModalOpen: boolean
   setIsModalOpen: (isOpen: boolean) => void
+  onUpdateSuccess: (ListCategories: Category[]) => void
 }
-export default function ModalCreateCategory({ isModalOpen, setIsModalOpen }: Props) {
+export default function ModalCreateCategory({ isModalOpen, setIsModalOpen, onUpdateSuccess }: Props) {
   const [form] = Form.useForm()
   const { refetch } = useQuery({
     queryKey: ['categories'],
@@ -35,11 +36,12 @@ export default function ModalCreateCategory({ isModalOpen, setIsModalOpen }: Pro
   })
   const onFinish = async (values: CategoryReqBody) => {
     createCategoryMutation.mutate(values, {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         toast.success(data.data.message)
         form.resetFields()
         setIsModalOpen(false)
-        refetch()
+        const result = await refetch()
+        onUpdateSuccess(result.data?.data.result as Category[])
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
@@ -54,6 +56,7 @@ export default function ModalCreateCategory({ isModalOpen, setIsModalOpen }: Pro
     <Modal
       title='Thêm danh mục'
       closable={{ 'aria-label': 'Custom Close Button' }}
+      centered
       open={isModalOpen}
       onOk={handleOk}
       onCancel={handleCancel}
