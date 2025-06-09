@@ -1,6 +1,6 @@
 import { paths } from 'src/constants'
 import { StatusType } from 'src/constants/enum'
-import { Customer, UpdateCustomer } from 'src/types/customer.type'
+import { ChangePasswordBody, Customer, CustomerFilter, UpdateCustomer } from 'src/types/customer.type'
 import { SuccessResponseApi } from 'src/types/utils.type'
 import http from 'src/utils/http'
 
@@ -8,12 +8,12 @@ class CustomerApi {
   getProfile() {
     return http.get<SuccessResponseApi<Customer>>(paths.ApiPath.GET_PROFILE)
   }
-  updateProfile(data: UpdateCustomer) {
-    return http.patch<SuccessResponseApi<Customer>>(paths.ApiPath.UPDATE_PROFILE, data)
+  updateProfile(body: UpdateCustomer) {
+    return http.patch<SuccessResponseApi<Customer>>(paths.ApiPath.UPDATE_PROFILE, body)
   }
 
-  getAllCustomers() {
-    return http.get<SuccessResponseApi<Customer[]>>(paths.ApiPath.GET_ALL_CUSTOMERS)
+  getAllCustomers(params: CustomerFilter) {
+    return http.get<SuccessResponseApi<Customer[]>>(paths.ApiPath.GET_ALL_CUSTOMERS, { params })
   }
   getCustomerDetail(customer_id: string) {
     return http.get<SuccessResponseApi<Customer>>(`${paths.ApiPath.GET_ALL_CUSTOMERS}/${customer_id}`)
@@ -24,10 +24,17 @@ class CustomerApi {
   changeStatusCustomer(body: { customer_id: string; status: StatusType }) {
     return http.patch<SuccessResponseApi<{ message: string }>>(`${paths.ApiPath.CHANGE_STATUS_CUSTOMER}`, body)
   }
-  exportFileCustomer() {
-    return http.get(paths.ApiPath.EXPORT_FILE_CUSTOMER, {
-      responseType: 'blob'
-    })
+  exportFileCustomer(customer_ids: string[]) {
+    return http.post(
+      paths.ApiPath.EXPORT_FILE_CUSTOMER,
+      { customer_ids },
+      {
+        responseType: 'blob'
+      }
+    )
+  }
+  changePassword(body: ChangePasswordBody) {
+    return http.put<SuccessResponseApi<{ message: string }>>(paths.ApiPath.CHANGE_PASSWORD_CUSTOMER, body)
   }
 }
 
