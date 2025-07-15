@@ -44,9 +44,10 @@ export default function ChangePassword({ isModalOpen, setIsModalOpen }: Props) {
                   toast.error(formError[key].msg, { autoClose: 1000 })
                 })
               }
-            }
-            if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+            } else if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
               toast.error(error.response?.data.message, { autoClose: 1000 })
+            } else {
+              toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
             }
           }
         })

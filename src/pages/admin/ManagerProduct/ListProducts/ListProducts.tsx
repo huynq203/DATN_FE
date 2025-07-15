@@ -9,7 +9,7 @@ import { createStyles } from 'antd-style'
 import Button from 'src/components/Button'
 import swalAlert from 'src/utils/SwalAlert'
 import { Helmet } from 'react-helmet-async'
-import { formatCurrency, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { formatCurrency, isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { saveAs } from 'file-saver'
 import { GenderType, StatusType, TargetType } from 'src/constants/enum'
 import { ErrorResponseApi } from 'src/types/utils.type'
@@ -18,16 +18,17 @@ import { toast } from 'react-toastify'
 import ModalManagerOptionProduct from '../components/ModalManagerOptionProduct'
 import categoryApi from 'src/apis/category.api'
 import { ProductManagerList } from 'src/types/product.type'
+import ModalAutoScheduleDiscount from '../components/ModalAutoScheduleDiscount'
 
 interface DataType {
   key: string
   category_id: string
   code_product: string
   name: string
-  image: JSX.Element
+  image: string
   price: string
   promotion_price?: string
-  stock: number
+  total_stock: number
   status: number
   gender: number
   target_person: number
@@ -61,6 +62,7 @@ export default function ListProducts() {
   const [listProducts, setListProducts] = useState<ProductManagerList[]>([])
   const [isModalManagerOptionProduct, setIsModalManagerOptionProduct] = useState(false)
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
+  const [isModalAutoScheduleDiscount, setIsModalAutoScheduleDiscount] = useState(false)
   const [productId, setProductId] = useState('')
   const [rowSelectionIds, setRowSelectionIds] = useState<string[]>([])
   const [keySearch, setKeySearch] = useState('')
@@ -68,6 +70,7 @@ export default function ListProducts() {
   const [status, setStatus] = useState('')
   const [gender, setGender] = useState('')
   const [targetPerson, setTargetPerson] = useState('')
+  const [filterStock, setFilterStock] = useState('')
   const [priceMin, setPriceMin] = useState('')
   const [priceMax, setPriceMax] = useState('')
 
@@ -85,7 +88,8 @@ export default function ListProducts() {
         gender: gender,
         targetPerson: targetPerson,
         priceMin: priceMin,
-        priceMax: priceMax
+        priceMax: priceMax,
+        stock: filterStock
       }
     ],
     queryFn: () => {
@@ -96,7 +100,8 @@ export default function ListProducts() {
         gender: gender,
         target_person: targetPerson,
         price_min: priceMin,
-        price_max: priceMax
+        price_max: priceMax,
+        stock: filterStock
       })
     }
   })
@@ -129,6 +134,10 @@ export default function ListProducts() {
     { value: StatusType.Active.toString(), label: 'Active' },
     { value: '', label: 'Tất cả' }
   ]
+  const dataSourceStock = [
+    { value: '0', label: 'Hết hàng' },
+    { value: '1', label: 'Còn hàng' }
+  ]
 
   const deleteProductMutation = useMutation({
     mutationFn: productApi.deleteProduct,
@@ -140,7 +149,7 @@ export default function ListProducts() {
     swalAlert.showConfirmDelete().then((result) => {
       if (result.isConfirmed) {
         deleteProductMutation.mutate({ product_id })
-        swalAlert.notifySuccess('Thông báo', 'Bạn đã xóa bản ghi thành công')
+        swalAlert.notifySuccess('Bạn đã xóa bản ghi thành công')
       }
     })
   }
@@ -153,13 +162,24 @@ export default function ListProducts() {
   })
   const handleExportFile = () => {
     if (rowSelectionIds.length === 0) {
-      swalAlert.notifyError('Thông báo', 'Vui lòng chọn sản phẩm để xuất dữ liệu')
+      swalAlert.notifyError('Vui lòng chọn sản phẩm để xuất dữ liệu')
       return
     } else {
       swalAlert.showConfirmExportFile(rowSelectionIds.length, 'sản phẩm').then((result) => {
         if (result.isConfirmed) {
-          exportFileMutation.mutate(rowSelectionIds)
-          swalAlert.notifySuccess('Thông báo', 'Đang xuất dữ liệu, vui lòng đợi trong giây lát')
+          exportFileMutation.mutate(rowSelectionIds, {
+            onSuccess: () => {
+              swalAlert.notifySuccess('Đang xuất dữ liệu, vui lòng đợi trong giây lát')
+            },
+            onError: (error) => {
+              if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+                swalAlert.notifyError(error.response?.data.message as string)
+              }
+              if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+                toast.error(error.response?.data.message, { autoClose: 1000 })
+              }
+            }
+          })
         }
       })
     }
@@ -174,12 +194,12 @@ export default function ListProducts() {
           { product_id, status },
           {
             onSuccess: (res) => {
-              swalAlert.notifySuccess('Thông báo', res.data.message)
+              swalAlert.notifySuccess(res.data.message)
               refetch()
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
                 toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
               }
@@ -195,8 +215,10 @@ export default function ListProducts() {
     setStatus('')
     setGender('')
     setTargetPerson('')
+    setFilterStock('')
     setPriceMin('')
     setPriceMax('')
+    setFilterStock('')
     refetch()
   }
 
@@ -216,12 +238,24 @@ export default function ListProducts() {
   const handleFilterChangeTargetPerson = (value: string) => {
     setTargetPerson(value)
   }
+  const handleFilterChangeStock = (value: string) => {
+    setFilterStock(value)
+  }
 
   const handleFilterChangePriceMin = (event: any) => {
     setPriceMin(event.target.value)
   }
   const handleFilterChangePriceMax = (event: any) => {
     setPriceMax(event.target.value)
+  }
+
+  const handleScheduleDiscount = () => {
+    if (rowSelectionIds.length === 0) {
+      swalAlert.notifyError('Vui lòng chọn sản phẩm để đặt lịch giảm giá')
+      return
+    } else {
+      setIsModalAutoScheduleDiscount(true)
+    }
   }
 
   const rowSelection: TableProps<DataType>['rowSelection'] = {
@@ -239,9 +273,11 @@ export default function ListProducts() {
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (_, record: DataType) => {
         return (
-          <div className='flex items-center justify-center'>
-            <img src={record.image.props.src} alt={record.name} className='w-20 h-20 object-cover' />
-            <div className='flex flex-col'>
+          <div className=' grid grid-cols-4'>
+            <div className='col-span-1'>
+              <img src={record.image as string} alt={record.name} className='w-20 h-20 object-cover' />
+            </div>
+            <div className='col-span-3 flex flex-col'>
               <span className='ml-2 line-clamp-2'> {record.name} </span>
               <span className='ml-2 text-gray-500'>Mã SP: {record.code_product}</span>
             </div>
@@ -268,10 +304,10 @@ export default function ListProducts() {
     {
       title: 'Tồn kho',
       width: 100,
-      dataIndex: 'stock',
+      dataIndex: 'total_stock',
       align: 'center',
       key: '3',
-      sorter: (a, b) => a.stock - b.stock
+      sorter: (a, b) => a.total_stock - b.total_stock
     },
     {
       title: 'Giới tính',
@@ -354,10 +390,10 @@ export default function ListProducts() {
       width: 180,
       render: (_, record: DataType) => (
         <div className='flex gap-2 justify-center'>
-          <Tooltip title='Quản lý tùy chọn sản phẩm'>
+          <Tooltip title='Quản lý thuộc tính sản phẩm'>
             {' '}
             <Button
-              className='flex h-9 px-3 text-white bg-blue-500/90 text-sm hover:bg-blue-400 hover:text-white items-center justify-center rounded-md '
+              className='flex h-9 px-3 text-white bg-gray-400/90 text-sm hover:bg-gray-500 hover:text-white items-center justify-center rounded-md '
               onClick={() => {
                 setIsModalManagerOptionProduct(true)
                 setProductId(record.key as string)
@@ -434,18 +470,13 @@ export default function ListProducts() {
       category_id: item.category_id.name,
       code_product: item.code_product,
       name: item.name,
-      image:
-        item.url_images.length > 0 ? (
-          <img src={item?.url_images[0].url} alt={item.name} className='w-20 h-20' />
-        ) : (
-          <img src='' alt={item.name} className='w-20 h-20' />
-        ),
-      price: formatCurrency(item.price) + ' đ',
-      promotion_price: formatCurrency(item.promotion_price) + ' đ',
+      image: item.url_images.length > 0 ? item?.url_images[0].url : '',
+      price: item.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
+      promotion_price: item.promotion_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
       status: item.status,
       gender: item.gender,
       target_person: item.target_person,
-      stock: item.stock,
+      total_stock: item.total_stock,
       created_by: item.created_by.name,
       created_at: new Date(item.created_at).toLocaleTimeString('vi-VN', {
         year: 'numeric',
@@ -537,6 +568,7 @@ export default function ListProducts() {
                   value={keySearch || undefined}
                 />
               </div>
+
               <div className='flex  col-span-2 capitalize mt-1 ml-3'>
                 <Select
                   showSearch
@@ -562,29 +594,19 @@ export default function ListProducts() {
               <div className='flex col-span-2 capitalize mt-1 ml-3'>
                 <Select
                   showSearch
-                  placeholder='Chọn giới tính'
+                  placeholder='Tồn kho'
                   filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                   className='w-full'
-                  options={dataSourceGender}
-                  onChange={handleFilterChangeGender}
-                  value={gender || undefined}
+                  options={dataSourceStock}
+                  onChange={handleFilterChangeStock}
+                  value={filterStock || undefined}
                 />
               </div>
-              <div className='flex col-span-2  capitalize mt-1 ml-3'>
-                <Select
-                  showSearch
-                  placeholder='Chọn đối tượng'
-                  filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-                  className='w-full'
-                  options={dataSourceTargetPerson}
-                  onChange={handleFilterChangeTargetPerson}
-                  value={targetPerson || undefined}
-                />
-              </div>
-              <div className='flex col-span-1  capitalize mt-1 ml-3'>
+
+              <div className='flex col-span-1 capitalize mt-1 ml-3'>
                 <Tooltip title='Reset bộ lọc tìm kiếm'>
                   <Button
-                    className='flex h-8 px-2 text-black bg-gray-200 hover:bg-gray-300 text-sm  items-center justify-center rounded-md mr-3'
+                    className='flex h-8 px-2 text-black bg-gray-200 hover:bg-gray-300 text-sm  items-center justify-center rounded-md mr-1'
                     onClick={handleResetFilter}
                   >
                     <svg
@@ -603,10 +625,11 @@ export default function ListProducts() {
                     </svg>
                   </Button>
                 </Tooltip>
+
                 <Tooltip title='Tìm kiếm nâng cao'>
                   {' '}
                   <Button
-                    className='flex h-8 px-2 text-black bg-gray-200 hover:bg-gray-300 items-center justify-center rounded-md'
+                    className='flex h-8 px-2 text-black bg-gray-200 hover:bg-gray-300 items-center justify-center rounded-md mr-1'
                     onClick={() => setIsOpenDrawer(true)}
                   >
                     <svg
@@ -625,10 +648,30 @@ export default function ListProducts() {
                     </svg>
                   </Button>
                 </Tooltip>
+                <Tooltip title='Đặt lịch giảm giá'>
+                  <Button
+                    className='flex h-8 px-2 text-black bg-gray-200 hover:bg-gray-300 text-sm  items-center justify-center rounded-md mr-1'
+                    onClick={handleScheduleDiscount}
+                  >
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke-width='1.5'
+                      stroke='currentColor'
+                      className='size-6'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z'
+                      />
+                    </svg>
+                  </Button>
+                </Tooltip>
               </div>
             </div>
           </div>
-
           <div className='mt-5'>
             <Spin tip='Đang tải...' size='large' spinning={isLoading}>
               <Table<DataType>
@@ -659,12 +702,35 @@ export default function ListProducts() {
             open={isOpenDrawer}
             key={'right'}
           >
+            <div className='flex text-lg capitalize mt-3'>
+              <Select
+                showSearch
+                placeholder='Chọn giới tính'
+                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                className='w-full'
+                options={dataSourceGender}
+                onChange={handleFilterChangeGender}
+                value={gender || undefined}
+              />
+            </div>
+            <div className='flex text-lg capitalize mt-3'>
+              <Select
+                showSearch
+                placeholder='Chọn đối tượng'
+                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                className='w-full'
+                options={dataSourceTargetPerson}
+                onChange={handleFilterChangeTargetPerson}
+                value={targetPerson || undefined}
+              />
+            </div>
             <div className='flex text-lg capitalize mt-1'>
               <Input placeholder='Giá min' onChange={handleFilterChangePriceMin} value={priceMin || undefined} />
             </div>
             <div className='flex text-lg capitalize mt-3'>
               <Input placeholder='Giá max' onChange={handleFilterChangePriceMax} value={priceMax || undefined} />
             </div>
+
             <div className='flex justify-end text-lg capitalize mt-3'>
               <Button
                 className='bg-blue-500 text-white hover:bg-blue-600 px-3 py-1 rounded-md font-bold'
@@ -676,6 +742,12 @@ export default function ListProducts() {
           </Drawer>
         </div>
       </Content>
+      <ModalAutoScheduleDiscount
+        isModalOpen={isModalAutoScheduleDiscount}
+        setIsModalOpen={setIsModalAutoScheduleDiscount}
+        total_selected={rowSelectionIds.length}
+        rowSelectionIds={rowSelectionIds}
+      />
     </div>
   )
 }

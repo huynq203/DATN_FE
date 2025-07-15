@@ -94,11 +94,7 @@ export default function Cart() {
       )
     })
   }, [productInCart, choosenCartIdFromLocation])
-  // useEffect(() => {
-  //   return () => {
-  //     history.replaceState(null, '')
-  //   }
-  // })
+
   const handleCheck = (cartIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setExtendedCarts(
       produce((draft) => {
@@ -160,23 +156,25 @@ export default function Cart() {
   const handleBuyCart = () => {
     if (profile?.verify === 0) {
       toast.error('Vui lòng xác thực tài khoản trước khi mua hàng')
-    }
-    if (checkedCarts.length > 0) {
-      const body = checkedCarts.map((item) => ({
-        _id: item._id,
-        product_id: item.product_id,
-        size: item.size,
-        color: item.color,
-        quantity: item.quantity,
-        cost_price: item.cost_price
-      }))
-      setIsLoading(true)
-      setTimeout(() => {
-        setIsLoading(false)
-        navigate(paths.Screens.CHECKOUT, {
-          state: { buyProducts: body, totalAfterDiscountPrice, TotalDiscount, codeVoucher }
-        })
-      }, 3000)
+    } else {
+      if (checkedCarts.length > 0) {
+        const body = checkedCarts.map((item) => ({
+          _id: item._id,
+          product_id: item.product_id,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity,
+          cost_price: item.cost_price,
+          image: item.image
+        }))
+        setIsLoading(true)
+        setTimeout(() => {
+          setIsLoading(false)
+          navigate(paths.Screens.CHECKOUT, {
+            state: { buyProducts: body, totalAfterDiscountPrice, TotalDiscount, codeVoucher }
+          })
+        }, 3000)
+      }
     }
   }
 
@@ -185,28 +183,30 @@ export default function Cart() {
   })
 
   const handleSaveVoucher = () => {
-    saveVoucherMutation.mutate(
-      { code },
-      {
-        onSuccess: (data) => {
-          toast.success(data.data.message, { autoClose: 1000 })
-          setDiscount(Number(data.data.result))
-          setCodeVoucher(code)
-        },
-        onError: (error) => {
-          if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-            const formError = error.response?.data.errors
-            if (formError) {
-              Object.keys(formError).forEach((key) => {
-                toast.error(formError[key].msg, { autoClose: 1000 })
-              })
+    if (checkedCarts.length > 0) {
+      saveVoucherMutation.mutate(
+        { code },
+        {
+          onSuccess: (data) => {
+            toast.success(data.data.message, { autoClose: 1000 })
+            setDiscount(Number(data.data.result))
+            setCodeVoucher(code)
+          },
+          onError: (error) => {
+            if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+              const formError = error.response?.data.errors
+              if (formError) {
+                Object.keys(formError).forEach((key) => {
+                  toast.error(formError[key].msg, { autoClose: 1000 })
+                })
+              }
+            } else {
+              toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
             }
-          } else {
-            toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
           }
         }
-      }
-    )
+      )
+    }
   }
   return (
     <div className='bg-neutral-100'>
@@ -263,13 +263,9 @@ export default function Cart() {
                             <div className='flex'>
                               <Link
                                 to={`${paths.Screens.PRODUCT}/${generateNameId({ name: item.product_id.slug, id: item.product_id._id })}`}
-                                className='h-20 w-20 flex-shrink-0 ml-5'
+                                className='h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-md  hover:opacity-80 transition-opacity duration-200 mr-3'
                               >
-                                <img
-                                  src={item.product_id.url_images?.[0]?.url}
-                                  alt='Image'
-                                  className='rounded-md object-cover'
-                                />
+                                <img src={item.image} alt='Image' className='rounded-md ' />
                               </Link>
                               <div className='flex-grow px-2 pt-1 pb-2 text-left'>
                                 <Link
@@ -361,6 +357,7 @@ export default function Cart() {
                 <Button
                   className='ml-5 px-2 py-2 bg-red-500 text-white rounded-md flex flex-col sm:flex-row mt-2 sm:mt-0'
                   onClick={handleSaveVoucher}
+                  disabled={checkedCarts.length === 0}
                 >
                   Áp dụng
                 </Button>
@@ -388,20 +385,20 @@ export default function Cart() {
                   <div>
                     <div className='flex justify-between items-center mb-2'>
                       <div className='text-base'>Tổng thanh toán ({checkedCartsCount} sản phẩm):</div>
-                      <div className='text-2xl text-orange-600 font-semibold'>
-                        {checkedCartsCount > 0 ? `₫${formatCurrency(totalCheckedCartPrice)}` : '₫0'}
+                      <div className='text-2xl text-black font-semibold ml-3'>
+                        {checkedCartsCount > 0 ? `${formatCurrency(totalCheckedCartPrice)} ₫` : '₫0'}
                       </div>
                     </div>
                     <div className='flex justify-between items-center text-sm mb-1'>
                       <div className='text-gray-500'>Giảm giá</div>
-                      <div className='text-orange-600'>
-                        {checkedCartsCount > 0 ? `₫ ${formatCurrency(discount)}` : '₫0'}
+                      <div className='text-red-600'>
+                        {checkedCartsCount > 0 ? `${formatCurrency(discount)} ₫` : '0₫'}
                       </div>
                     </div>
                     <div className='flex justify-between items-center text-sm mb-4'>
                       <div className='text-gray-500'>Tiết kiệm</div>
-                      <div className='text-orange-600'>
-                        {checkedCartsCount > 0 ? `₫${formatCurrency(TotalDiscount)}` : '₫0'}
+                      <div className='text-red-600'>
+                        {checkedCartsCount > 0 ? `₫${formatCurrency(TotalDiscount)} ₫` : '0₫'}
                       </div>
                     </div>
 
@@ -409,7 +406,7 @@ export default function Cart() {
                       <Button
                         className='ml-5 mt-5 sm:mt-0 h-10  w-52 uppercase text-white bg-red-500 text-sm hover:bg-red-600 rounded-xl flex items-center justify-center'
                         onClick={handleBuyCart}
-                        disabled={isLoading}
+                        disabled={checkedCarts.length === 0}
                         loading={isLoading}
                       >
                         Mua hàng

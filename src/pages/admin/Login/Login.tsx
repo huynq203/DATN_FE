@@ -62,7 +62,7 @@ export default function Login() {
   })
 
   return (
-    <Spin tip='Loading' size='large' spinning={isLoading}>
+    <Spin tip='Loading' size='large' spinning={isLoading} style={{ minHeight: '100vh' }}>
       <div className='flex h-screen items-center justify-center bg-gray-100'>
         <Helmet>
           <title>Đăng nhập quản trị - YOYO Store</title>

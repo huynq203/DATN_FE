@@ -87,7 +87,7 @@ class Http {
           //toast.error(message, { autoClose: 1000 })
         }
         if (error.response?.status === HttpStatusCode.Unauthorized) {
-          swalAlert.notifyError('Thông báo', MESSAGE.TOKEN_IS_EXPIRED)
+          swalAlert.notifyError( MESSAGE.TOKEN_IS_EXPIRED)
           clearLS()
           // window.location.href = paths.Screens.AUTH_LOGIN
         }

@@ -39,6 +39,9 @@ const paths = {
     DELETE_OPTION_PRODUCT: '/products/delete-option-product',
     EXPORT_FILE_PRODUCT: '/products/export-file',
     CHECK_STOCK_OPTION_PRODUCT: '/products/check-stock-option-product',
+    GET_PRODUCT_BY_DISCOUNT: '/products/get-product-by-discount',
+    GET_PRODUCT_BY_MEN: '/products/get-product-by-men',
+    GET_PRODUCT_BY_KID: '/products/get-product-by-kid',
 
     //Cart
     CART_URL: '/carts',
@@ -50,10 +53,20 @@ const paths = {
     ORDER_URL: '/orders',
     CREATE_ORDER_COD: '/orders/create-order-cod',
     CREATE_ORDER_MOMO: '/orders/create-order-momo',
+    RETURN_MOMO: '/orders/return-momo',
     CREATE_ORDER_VNPAY: '/orders/create-order-vnpay',
     RETURN_VNPAY: '/orders/return-vnpay',
-    GET_ORDER_BY_CUSTOMER: '/orders/get-order-by-customer',
+    CANCEL_ORDER: '/orders/cancel-order',
+    GET_ORDER_STATUS_COUNT: '/orders/get-order-status-count',
+    GET_TOTAL_PROFIT_TO_MONTH: '/orders/get-total-profit-to-month',
+    GET_TOTAL_PROFIT_TO_DAY_NOW: '/orders/get-total-profit-to-day-now',
+
     GET_ORDER_MANAGER: '/orders/get-order-manager',
+    GET_ORDER_DETAIL: '/orders/get-order-detail',
+    CHANGE_ORDER_STATUS: '/orders/change-order-status',
+    EXPORT_FILE_ORDER: '/orders/export-file-order',
+    GET_ORDER_BY_CUSTOMER: '/orders/get-order-by-customer',
+
     //Profile
     GET_PROFILE: '/customers/profile',
     UPDATE_PROFILE: '/customers/profile',
@@ -93,10 +106,39 @@ const paths = {
 
     //Role
     GET_ROLE_USER: '/roles',
+    GET_ROLE_BY_ID: '/roles/get-role-by-id',
+    CREATE_ROLE_USER: '/roles/create',
+    UPDATE_ROLE_USER: '/roles/update',
+    DELETE_ROLE_USER: '/roles/delete',
 
     // Purchase Order
     CREATE_PURCHASE_ORDER: '/purchase-orders/create',
-    DELETE_PURCHASE_ORDER: '/purchase-orders/delete'
+    DELETE_PURCHASE_ORDER: '/purchase-orders/delete',
+    SET_IS_PUSH_INVENTORY: '/purchase-orders/push-inventory',
+
+    //Schedule Product
+    // SCHEDULE_PRODUCT: '/schedule-products',
+    CREATE_SCHEDULE_PRODUCT: '/schedule-products/create',
+    UPDATE_SCHEDULE_PRODUCT: '/schedule-products/update',
+    DELETE_SCHEDULE_PRODUCT: '/schedule-products/delete',
+    GET_ALL_SCHEDULE_PRODUCT: '/schedule-products',
+    GET_SCHEDULE_PRODUCT_BY_ID: '/schedule-products/get-schedule-product-by-id',
+
+    // Rating
+    CREATE_RATING: '/ratings/create',
+    GET_RATING_BY_PRODUCT: '/ratings/get-rating-by-product',
+
+    //Wish list
+    GET_WISH_LIST_BY_PRODUCT: '/wishlists/get-wishlist-by-product',
+    GET_WISH_LIST_BY_CUSTOMER: '/wishlists/get-wishlist-by-customer',
+    CHANE_WISH_LIST_FAVORITE: '/wishlists/change-wishlist-favorite',
+    DELETE_WISH_LIST_BY_CUSTOMER: '/wishlists/delete-wishlist-by-customer',
+
+    //Image sliders
+    UPLOAD_IMAGE_SLIDER: '/image-sliders/upload-image-slider',
+    GET_ALL_IMAGE_SLIDER: '/image-sliders',
+    CREATE_IMAGE_SLIDER: '/image-sliders/create',
+    DELETE_IMAGE_SLIDER: '/image-sliders/delete'
   },
   Screens: {
     //Site
@@ -142,9 +184,12 @@ const paths = {
     ADMIN_MANAGER_ORDER: '/admin/manager-orders',
     ADMIN_MANAGER_CATEGORY: '/admin/manager-categories',
     ADMIN_MANAGER_VOUCHER: '/admin/manager-vouchers',
+    ADMIN_MANAGER_SCHEDULE_PRODUCT: '/admin/manager-schedule-products',
     ADMIN_MANAGER_POST: '/admin/manager-posts',
     ADMIN_MANAGER_RECCEIPTES: '/admin/manager-receiptes',
+    ADMIN_MANAGER_ROLE: '/admin/manager-roles',
     ADMIN_MANAGER_THEME: '/admin/manager-themes',
+    ADMIN_MANAGER_IMAGE_SLIDER: '/admin/manager-image-sliders',
     //AUTH
     ADMIN_LOGIN: '/admin/login',
     ADMIN_LOGOUT: '/admin/logout',

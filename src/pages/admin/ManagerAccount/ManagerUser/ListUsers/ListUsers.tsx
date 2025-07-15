@@ -11,7 +11,7 @@ import { StatusType } from 'src/constants/enum'
 import { MESSAGE } from 'src/constants/messages'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import swalAlert from 'src/utils/SwalAlert'
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import ModalCreateUser from '../components/ModalCreateUser'
 import { useEffect, useState } from 'react'
 import ModalUpdateUser from '../components/ModalUpdateUser'
@@ -101,12 +101,12 @@ export default function ListUsers() {
           { user_id_change, status },
           {
             onSuccess: () => {
-              swalAlert.notifySuccess('Thông báo', 'Bạn đã thay đổi trạng thái thành công')
+              swalAlert.notifySuccess('Bạn đã thay đổi trạng thái thành công')
               refetch()
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
                 toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
               }
@@ -125,8 +125,28 @@ export default function ListUsers() {
   const handleDelteUser = (user_id: string) => {
     swalAlert.showConfirmDelete().then((result) => {
       if (result.isConfirmed) {
-        deleteUserMutation.mutate({ user_id })
-        swalAlert.notifySuccess('Thông báo', 'Bạn đã xóa bản ghi thành công')
+        deleteUserMutation.mutate(
+          { user_id },
+          {
+            onSuccess: (res) => {
+              swalAlert.notifySuccess(res.data.message)
+            },
+            onError: (error) => {
+              if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+                const formError = error.response?.data.errors
+                if (formError) {
+                  Object.keys(formError).forEach((key) => {
+                    toast.error(formError[key].msg, { autoClose: 1000 })
+                  })
+                }
+              } else if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+                swalAlert.notifyError(error.response?.data.message as string)
+              } else {
+                toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
+              }
+            }
+          }
+        )
       }
     })
   }
@@ -139,20 +159,20 @@ export default function ListUsers() {
   })
   const handleExportFile = () => {
     if (rowSelectionIds.length === 0) {
-      swalAlert.notifyError('Thông báo', 'Vui lòng chọn tài khoản để xuất dữ liệu')
+      swalAlert.notifyError('Vui lòng chọn tài khoản để xuất dữ liệu')
       return
     } else {
       swalAlert.showConfirmExportFile(rowSelectionIds.length, 'tài khoản hệ thống').then((result) => {
         if (result.isConfirmed) {
           exportFileMutation.mutate(rowSelectionIds, {
             onSuccess: () => {
-              swalAlert.notifySuccess('Thông báo', 'Đang xuất dữ liệu, vui lòng đợi trong giây lát')
+              swalAlert.notifySuccess('Đang xuất dữ liệu, vui lòng đợi trong giây lát')
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
-                swalAlert.notifyError('Thông báo', MESSAGE.SERVER_ERROR)
+                swalAlert.notifyError(MESSAGE.SERVER_ERROR)
               }
             }
           })
@@ -389,7 +409,7 @@ export default function ListUsers() {
                 />
               </svg>
 
-              <span className=''>Tải xuống</span>
+              <span className=''>Xuất dữ liệu</span>
             </div>
           </Button>
           <Button
@@ -413,7 +433,7 @@ export default function ListUsers() {
                   d='M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
                 />
               </svg>
-              <span className='ml-1'>Tạo người dùng</span>
+              <span className='ml-1'>Tạo tài khoản</span>
             </div>
           </Button>
         </div>

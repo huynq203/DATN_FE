@@ -6,7 +6,8 @@ import userApi from 'src/apis/user.api'
 import { MESSAGE } from 'src/constants/messages'
 import { User } from 'src/types/user.type'
 import { ErrorResponseApi } from 'src/types/utils.type'
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import swalAlert from 'src/utils/SwalAlert'
+import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
 type FieldType = {
   name: string
@@ -64,6 +65,8 @@ export default function ModalCreateUser({ isModalOpen, setIsModalOpen, onUpdateS
               toast.error(formError[key].msg, { autoClose: 1000 })
             })
           }
+        } else if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+          swalAlert.notifyError(error.response?.data.message as string)
         } else {
           toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
         }

@@ -12,16 +12,16 @@ class SwalAlert {
       cancelButtonText: 'Hủy bỏ'
     })
   }
-  notifySuccess(title: string, text: string) {
+  notifySuccess(text: string) {
     return Swal.fire({
-      title,
+      title: 'Thông báo',
       text,
       icon: 'success'
     })
   }
-  notifyError(title: string, text: string) {
+  notifyError(text: string) {
     return Swal.fire({
-      title,
+      title: 'Thông báo',
       text,
       icon: 'error'
     })

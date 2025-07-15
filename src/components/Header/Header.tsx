@@ -16,7 +16,8 @@ import Menu from '../Menu'
 import { CartStatus } from 'src/constants/enum'
 import NavHeader from '../NavHeader'
 import { Button, Drawer, DrawerProps, Space } from 'antd'
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { AppContext } from 'src/contexts/app.context'
 type FormData = Pick<Schema, 'search_name'>
 const nameSearchSchema = schema.pick(['search_name'])
 export default function Header() {
@@ -47,6 +48,7 @@ export default function Header() {
   })
   const cartDataByCustomer = CartData?.data.result
 
+
   const onSubmitSearch = handleSubmit((data) => {
     navigate({
       pathname: paths.Screens.PRODUCT,
@@ -71,7 +73,7 @@ export default function Header() {
   ]
 
   return (
-    <header className='w-full shadow-sm bg-white fixed z-10'>
+    <header className='w-full shadow-sm bg-white fixed z-50'>
       <NavHeader />
       <div className='max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center h-16'>
         <div className='text-2xl font-semibold tracking-wide font-serif'>
@@ -147,18 +149,17 @@ export default function Header() {
                           {cartDataByCustomer.carts.slice(0, 5).map((item) => (
                             <div className='mt-1 flex hover:bg-gray-100' key={item._id}>
                               <div className='flex-shrink-0'>
-                                <img
-                                  src={item.product_id.url_images?.[0]?.url}
-                                  alt='Image'
-                                  className='w-16 h-16 rounded-md object-cover'
-                                />
+                                <img src={item.image} alt='Image' className='w-16 h-16 rounded-md object-cover' />
                               </div>
                               <div className='flex flex-col overflow-hidden'>
                                 <div className='ml-2 '>
                                   <div className='truncate'>{item.product_id.name}</div>
                                 </div>
                                 <div className='ml-2'>
-                                  <div className='truncate '>Size: {item.size}</div>
+                                  <div className='truncate text-gray-500 text-xs'>Size: {item.size}</div>
+                                </div>
+                                <div className='ml-2'>
+                                  <div className='truncate text-gray-500 text-xs'>Color: {item.color}</div>
                                 </div>
                               </div>
                               <div className='ml-5 text-right flex-shrink-0'>

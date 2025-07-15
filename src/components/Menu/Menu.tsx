@@ -4,8 +4,8 @@ import { paths } from 'src/constants'
 const navLinks = [
   { label: 'Trang chủ', to: '/' },
   { label: 'Sản phẩm', to: paths.Screens.PRODUCT },
-  { label: 'Giày Nam', to: paths.Screens.MEN },
-  { label: 'Giày Nữ', to: paths.Screens.WOMEN },
+  // { label: 'Giày Nam', to: paths.Screens.MEN },
+  // { label: 'Giày Nữ', to: paths.Screens.WOMEN },
   { label: 'Giới thiệu', to: paths.Screens.INTRODUCE },
   { label: 'Liên hệ', to: paths.Screens.CONTACT }
 ]

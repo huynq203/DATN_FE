@@ -71,16 +71,22 @@ export default function ModalCreateVoucher({ isModalOpen, setIsModalOpen }: Prop
   }
   return (
     <Modal
-      title='Thêm tài khoản'
+      title='Thêm voucher'
       closable={{ 'aria-label': 'Custom Close Button' }}
       centered
       open={isModalOpen}
       onOk={handleOk}
       onCancel={handleCancel}
     >
-      <Form form={form} layout='vertical' onFinish={onFinish} autoComplete='off'>
+      <Form
+        form={form}
+        layout='vertical'
+        onFinish={onFinish}
+        autoComplete='off'
+        initialValues={{ time_start: dayjs() }}
+      >
         <Form.Item<FieldType>
-          label='Name'
+          label='Tên voucher'
           name='name'
           rules={[{ required: true, message: 'Vui lòng nhập tên voucher!' }]}
         >
@@ -94,14 +100,11 @@ export default function ModalCreateVoucher({ isModalOpen, setIsModalOpen }: Prop
           <Input />
         </Form.Item>
         <Form.Item<FieldType>
-          label='Giá giảm'
+          label='Số tiền giảm'
           name='discount'
-          rules={[
-            { required: true, message: 'Vui lòng nhập giá giảm!' }
-            // { type: 'number', min: 0, message: 'Giá giảm phải là số dương' }
-          ]}
+          rules={[{ required: true, message: 'Vui lòng nhập giá giảm!' }]}
         >
-          <Input />
+          <Input type='number' />
         </Form.Item>
         <Form.Item<FieldType>
           label='Số lượng'
@@ -119,7 +122,8 @@ export default function ModalCreateVoucher({ isModalOpen, setIsModalOpen }: Prop
             <DatePicker
               format='YYYY-MM-DD HH:mm:ss'
               showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
-              disabledDate={disabledDate}
+              defaultValue={dayjs()}
+              disabled
             />
           </Form.Item>
           <Form.Item<FieldType>
@@ -127,11 +131,7 @@ export default function ModalCreateVoucher({ isModalOpen, setIsModalOpen }: Prop
             name='time_end'
             rules={[{ required: true, message: 'Vui lòng nhập thời gian kết thúc!' }]}
           >
-            <DatePicker
-              format='YYYY-MM-DD HH:mm:ss'
-              showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
-              disabledDate={disabledDate}
-            />
+            <DatePicker format='YYYY-MM-DD HH:mm:ss' showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }} />
           </Form.Item>
         </div>
       </Form>

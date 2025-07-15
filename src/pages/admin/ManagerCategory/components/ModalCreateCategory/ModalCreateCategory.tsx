@@ -5,7 +5,8 @@ import categoryApi from 'src/apis/category.api'
 import { MESSAGE } from 'src/constants/messages'
 import { Category, CategoryReqBody } from 'src/types/category.type'
 import { ErrorResponseApi } from 'src/types/utils.type'
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import swalAlert from 'src/utils/SwalAlert'
+import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
 type FieldType = {
   name?: string
@@ -45,7 +46,9 @@ export default function ModalCreateCategory({ isModalOpen, setIsModalOpen, onUpd
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-          toast.error(error.response?.data.message)
+          swalAlert.notifyError(error.response?.data.message as string)
+        } else if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+          swalAlert.notifyError(error.response?.data.message as string)
         } else {
           toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
         }

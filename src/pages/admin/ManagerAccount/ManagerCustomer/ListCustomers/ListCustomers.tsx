@@ -101,12 +101,12 @@ export default function ListCustomers() {
           { customer_id },
           {
             onSuccess: () => {
-              swalAlert.notifySuccess('Thông báo', 'Bạn đã xóa bản ghi thành công')
+              swalAlert.notifySuccess('Bạn đã xóa bản ghi thành công')
               refetch()
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
                 toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
               }
@@ -128,14 +128,14 @@ export default function ListCustomers() {
           { customer_id, status },
           {
             onSuccess: () => {
-              swalAlert.notifySuccess('Thông báo', 'Bạn đã thay đổi trạng thái thành công')
+              swalAlert.notifySuccess('Bạn đã thay đổi trạng thái thành công')
               refetch()
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
-                swalAlert.notifyError('Thông báo', MESSAGE.SERVER_ERROR)
+                swalAlert.notifyError(MESSAGE.SERVER_ERROR)
               }
             }
           }
@@ -153,20 +153,20 @@ export default function ListCustomers() {
   })
   const handleExportFile = () => {
     if (rowSelectionIds.length === 0) {
-      swalAlert.notifyError('Thông báo', 'Vui lòng chọn khách hàng để xuất dữ liệu')
+      swalAlert.notifyError('Vui lòng chọn khách hàng để xuất dữ liệu')
       return
     } else {
       swalAlert.showConfirmExportFile(rowSelectionIds.length, 'khách hàng').then((result) => {
         if (result.isConfirmed) {
           exportFileCustomerMutation.mutate(rowSelectionIds, {
             onSuccess: () => {
-              swalAlert.notifySuccess('Thông báo', 'Đang xuất dữ liệu, vui lòng đợi trong giây lát')
+              swalAlert.notifySuccess('Đang xuất dữ liệu, vui lòng đợi trong giây lát')
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
-                swalAlert.notifyError('Thông báo', MESSAGE.SERVER_ERROR)
+                swalAlert.notifyError(MESSAGE.SERVER_ERROR)
               }
             }
           })
@@ -276,7 +276,7 @@ export default function ListCustomers() {
           <Tooltip title='Chi tiết khách hàng'>
             <Link
               to={`${paths.Screens.ADMIN_MANAGER_CUSTOMER}/${record.key}`}
-              className='flex h-9 px-3   text-white bg-blue-500/90 text-sm hover:bg-blue-400 hover:text-white flex items-center justify-center rounded-md'
+              className='flex h-9 px-3   text-white bg-gray-400/90 text-sm hover:bg-gray-500 hover:text-white flex items-center justify-center rounded-md'
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -378,7 +378,7 @@ export default function ListCustomers() {
                 />
               </svg>
 
-              <span className=''>Tải xuống</span>
+              <span className=''>Xuất dữ liệu</span>
             </div>
           </Button>
         </div>

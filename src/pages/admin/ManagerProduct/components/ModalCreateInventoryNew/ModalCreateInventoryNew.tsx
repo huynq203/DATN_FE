@@ -40,6 +40,7 @@ export default function ModalCreateInventoryNew({
   }
   const handleCancel = () => {
     setIsModalOpen(false)
+    form.resetFields()
   }
   const { refetch: refetchListOptionProduct } = useQuery({
     queryKey: ['product_id', product_id],
@@ -91,7 +92,7 @@ export default function ModalCreateInventoryNew({
   })
   return (
     <Modal
-      title='Thêm tài khoản'
+      title='Nhập hàng mới'
       closable={{ 'aria-label': 'Custom Close Button' }}
       centered
       open={isModalOpen}

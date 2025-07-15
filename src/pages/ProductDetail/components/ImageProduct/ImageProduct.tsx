@@ -1,57 +1,92 @@
-import { useEffect, useMemo, useState } from 'react'
+import { use, useEffect, useMemo, useState } from 'react'
 import { Product as ProductType } from 'src/types/product.type'
 interface Props {
   product: ProductType
-  image_variant_color?: string
+  list_images_variant_color?: string[]
   stock?: number
+  sizeName?: number
+  colorName?: string
 }
-export default function ImageProduct({ product, image_variant_color, stock }: Props) {
-
-
+export default function ImageProduct({ product, list_images_variant_color, stock, sizeName, colorName }: Props) {
   const [activeImage, setActiveImage] = useState('')
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const currentImages = useMemo(
-    () => (product ? product.url_images.slice(...currentIndexImages) : []),
-    [product, currentIndexImages]
-  )
-  useEffect(() => {
-    if (product && product.url_images.length > 0) {
-      setActiveImage(product.url_images[0].url)
+  const currentImages = useMemo(() => {
+    if (list_images_variant_color && list_images_variant_color.length > 0) {
+      return list_images_variant_color.slice(...currentIndexImages).map((url) => ({ url }))
+    } else if (product) {
+      return product.url_images.slice(...currentIndexImages).map((url) => ({ url: url.url }))
     }
-  }, [product])
+    return []
+  }, [list_images_variant_color, currentIndexImages, product])
 
   const chooseActiveImage = (image: string) => {
     setActiveImage(image)
   }
 
   const next = () => {
-    const max = product!.url_images.length - 1
-    if (currentImageIndex < max) {
+    if (list_images_variant_color && list_images_variant_color.length > 0) {
+      if (currentImageIndex >= list_images_variant_color.length - 1) return
       const newIndex = currentImageIndex + 1
       setCurrentImageIndex(newIndex)
-      setActiveImage(product!.url_images[newIndex].url)
+      setActiveImage(list_images_variant_color[newIndex])
 
       // Cập nhật thumbnail nếu cần
       if (newIndex >= currentIndexImages[1]) {
         setCurrentIndexImages([currentIndexImages[0] + 1, currentIndexImages[1] + 1])
       }
+      return
+    } else if (product && product.url_images.length > 0) {
+      if (currentImageIndex >= product.url_images.length - 1) return
+      const newIndex = currentImageIndex + 1
+      setCurrentImageIndex(newIndex)
+      setActiveImage(product.url_images[newIndex].url)
+
+      // Cập nhật thumbnail nếu cần
+      if (newIndex >= currentIndexImages[1]) {
+        setCurrentIndexImages([currentIndexImages[0] + 1, currentIndexImages[1] + 1])
+      }
+      return
     }
   }
 
   const prev = () => {
-    if (currentImageIndex > 0) {
+    if (list_images_variant_color && list_images_variant_color.length > 0) {
+      if (currentImageIndex <= 0) return
       const newIndex = currentImageIndex - 1
       setCurrentImageIndex(newIndex)
-      setActiveImage(product!.url_images[newIndex].url)
-
+      setActiveImage(list_images_variant_color[newIndex])
       // Cập nhật thumbnail nếu cần
       if (newIndex < currentIndexImages[0]) {
         setCurrentIndexImages([currentIndexImages[0] - 1, currentIndexImages[1] - 1])
       }
+      return
+    } else if (product && product.url_images.length > 0) {
+      if (currentImageIndex <= 0) return
+      const newIndex = currentImageIndex - 1
+      setCurrentImageIndex(newIndex)
+      setActiveImage(product.url_images[newIndex].url)
+      // Cập nhật thumbnail nếu cần
+      if (newIndex < currentIndexImages[0]) {
+        setCurrentIndexImages([currentIndexImages[0] - 1, currentIndexImages[1] - 1])
+      }
+      return
     }
   }
+  useEffect(() => {
+    if (list_images_variant_color && list_images_variant_color.length > 0) {
+      setActiveImage(list_images_variant_color[0])
+      setCurrentImageIndex(0)
+      setCurrentIndexImages([0, 5])
+      return
+    } else if (product && product.url_images.length > 0) {
+      setActiveImage(product.url_images[0].url)
+      setCurrentImageIndex(0)
+      setCurrentIndexImages([0, 5])
+    }
+  }, [list_images_variant_color, product])
+
   return (
     <div className='col-span-4'>
       <div className='relative w-full pt-[100%] shadow '>
@@ -72,11 +107,11 @@ export default function ImageProduct({ product, image_variant_color, stock }: Pr
         </button>
         <div>
           <img
-            src={image_variant_color ? image_variant_color : activeImage}
+            src={activeImage}
             alt={product.name}
             className='absolute top-0 left-0 w-full h-full object-cover rounded-md'
           />
-          {stock === 0 && (
+          {sizeName !== 0 && colorName !== '' && (!stock || stock === 0) && (
             <div className='absolute inset-0 bg-black/50 flex items-center justify-center rounded-md'>
               <span className='text-white text-sm font-semibold'>Đã hết hàng</span>
             </div>

@@ -1,13 +1,16 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Modal, Table, TableColumnsType, theme, Tooltip } from 'antd'
+import { Modal, Table, TableColumnsType, Tag, theme, Tooltip } from 'antd'
 import { createStyles } from 'antd-style'
 import { useMemo, useState } from 'react'
 import productApi from 'src/apis/product.api'
 import Button from 'src/components/Button'
-import { formatCurrency } from 'src/utils/utils'
+import { formatCurrency, isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import ModalCreateInventoryNew from '../ModalCreateInventoryNew'
 import purchaseOrderApi from 'src/apis/purchaseOrder.api'
 import swalAlert from 'src/utils/SwalAlert'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import { toast } from 'react-toastify'
+import { IsChoose } from 'src/constants/enum'
 
 interface Props {
   isModalOpen: boolean
@@ -24,6 +27,7 @@ interface DataType {
   stock: number
   cost_price: string
   sold: number
+  isChoose: number
   created_by: string
   created_at: string
   updated_at: string
@@ -55,6 +59,7 @@ export default function ModalCheckStock({
 
   const { styles } = useStyle()
   const [isModalOpenCreateInventoryNew, setIsModalOpenCreateInventoryNew] = useState(false)
+
   const { refetch: refetchOptionProductDetail } = useQuery({
     queryKey: ['option_product_id', option_product_id],
     queryFn: () => productApi.getStockOptionProductById(option_product_id as string)
@@ -73,21 +78,60 @@ export default function ModalCheckStock({
   })
   const checkStockOptionProductData = listCheckStockOptionProduct?.data.result
 
-  const deletePurchaseOrderMutation = useMutation({
-    mutationFn: purchaseOrderApi.delePurchaseOrder
+  const isChoosePushInventory = useMutation({
+    mutationFn: purchaseOrderApi.setIsPushInventory
   })
-  const handleDeletePurchaseOrder = (purchase_order_id: string) => {
-    swalAlert.showConfirmDelete().then((result) => {
+  const handleIsChoosePushInventory = (inventory_id: string) => {
+    swalAlert.showConfirm().then((result) => {
       if (result.isConfirmed) {
-        deletePurchaseOrderMutation.mutate({ purchase_order_id })
-        refetchOptionProductDetail()
-        refetchListOptionProduct()
-        refetchListCheckStock()
-        swalAlert.notifySuccess('Thông báo', 'Bạn đã xóa bản ghi thành công')
+        isChoosePushInventory.mutateAsync(
+          { inventory_id },
+          {
+            onSuccess: (res) => {
+              swalAlert.notifySuccess(res.data.message)
+              refetchListCheckStock()
+              refetchOptionProductDetail()
+              refetchListOptionProduct()
+            },
+            onError: (error) => {
+              if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+                const formError = error.response?.data.errors
+                if (formError) {
+                  Object.keys(formError).forEach((key) => {
+                    toast.error(formError[key].msg, { autoClose: 1000 })
+                  })
+                }
+              }
+              if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+                toast.error(error.response?.data.message, { autoClose: 1000 })
+              }
+            }
+          }
+        )
       }
     })
   }
+
   const columns: TableColumnsType<DataType> = [
+    {
+      title: 'Trạng thái đẩy hàng',
+      width: 130,
+      align: 'center',
+      key: '0',
+      render: (_, record: DataType) => (
+        <>
+          {record.isChoose === IsChoose.False ? (
+            <Button type='button'>
+              <Tag color='volcano'> Không hiển thị </Tag>
+            </Button>
+          ) : (
+            <Button type='button'>
+              <Tag color='green'>Đang hiển thị</Tag>
+            </Button>
+          )}
+        </>
+      )
+    },
     {
       title: 'Kích thước',
       width: 100,
@@ -145,32 +189,17 @@ export default function ModalCheckStock({
       key: 'operation',
       fixed: 'right',
       dataIndex: 'key',
-      width: 70,
+      width: 50,
       render: (_, record: DataType) => (
         <div className='flex gap-2 justify-center'>
-          {/* <Tooltip title='Nhập hàng'>
-            <Button className='flex h-9 px-3 text-white bg-blue-500/90 text-sm hover:bg-blue-400  items-center justify-center rounded-md'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke-width='1.5'
-                stroke='currentColor'
-                className='size-6'
-              >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  d='M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5'
-                />
-              </svg>
-            </Button>
-          </Tooltip> */}
-          <Tooltip title='Xoá hàng'>
+          <Tooltip title='Đẩy hàng'>
             {' '}
             <Button
-              className='flex h-9 px-3   text-white bg-red-500/90 text-sm hover:bg-red-600 hover:text-white flex items-center justify-center rounded-md'
-              onClick={() => handleDeletePurchaseOrder(record.key)}
+              className='flex h-9 px-3   text-white bg-green-500/90 text-sm hover:bg-green-600 hover:text-white flex items-center justify-center rounded-md'
+              onClick={() => {
+                handleIsChoosePushInventory(record.key)
+              }}
+              disabled={record.isChoose === IsChoose.True}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -183,7 +212,7 @@ export default function ModalCheckStock({
                 <path
                   stroke-linecap='round'
                   stroke-linejoin='round'
-                  d='m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0'
+                  d='M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5'
                 />
               </svg>
             </Button>
@@ -200,8 +229,9 @@ export default function ModalCheckStock({
         size: item.size,
         color: item.color,
         stock: item.stock,
-        cost_price: formatCurrency(item.cost_price) + ' đ',
+        cost_price: item.cost_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
         sold: item.sold,
+        isChoose: item.isChoose,
         created_by: item.created_by.name,
         created_at: new Date(item.created_at).toLocaleTimeString('vi-VN', {
           year: 'numeric',
@@ -271,7 +301,7 @@ export default function ModalCheckStock({
           dataSource={dataSource}
           bordered
           size='middle'
-          scroll={{ x: 'calc(700px + 50%)', y: 47 * 10 }}
+        
         />
       </div>
       <ModalCreateInventoryNew

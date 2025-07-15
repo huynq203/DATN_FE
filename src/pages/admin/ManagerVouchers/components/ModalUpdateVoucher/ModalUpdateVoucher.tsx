@@ -25,9 +25,7 @@ interface Props {
 }
 export default function ModalUpdateVoucher({ isModalOpen, setIsModalOpen, voucherDetail }: Props) {
   const [form] = Form.useForm()
-  // const disabledDate: RangePickerProps['disabledDate'] = (current) => {
-  //   return current && current < dayjs().endOf('day')
-  // }
+
   const { refetch } = useQuery({
     queryKey: ['vouchers'],
     queryFn: () => {
@@ -55,7 +53,7 @@ export default function ModalUpdateVoucher({ isModalOpen, setIsModalOpen, vouche
           },
           {
             onSuccess: (data) => {
-              swalAlert.notifySuccess('Thông báo', data.data.message)
+              swalAlert.notifySuccess(data.data.message)
               setIsModalOpen(false)
               form.resetFields()
               refetch()
@@ -91,7 +89,7 @@ export default function ModalUpdateVoucher({ isModalOpen, setIsModalOpen, vouche
   }, [voucherDetail])
   return (
     <Modal
-      title='Thêm tài khoản'
+      title='Cập nhật voucher'
       closable={{ 'aria-label': 'Custom Close Button' }}
       centered
       open={isModalOpen}

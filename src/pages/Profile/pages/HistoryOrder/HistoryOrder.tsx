@@ -3,45 +3,54 @@ import { paths } from 'src/constants'
 import { Tabs } from 'antd'
 import type { TabsProps } from 'antd'
 import AllOrder from './components/AllOrder'
-import PendingPayment from './components/PendingPayment'
-import PendingDelivery from './components/PendingDelivery'
+
 import SuccessOrder from './components/SuccessOrder'
 import CancelOrder from './components/CancelOrder'
+import orderApi from 'src/apis/order.api'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { OrderResponse } from 'src/types/order.type'
+import WaittingConfirm from './components/WaittingConfirm'
+import Delevery from './components/Delevery'
+
 export default function HistoryOrder() {
+  const [filterOrderStatus, setFilterOrderStatus] = useState('')
+  const { data: OrderData } = useQuery({
+    queryKey: ['listOrder', { order_status: filterOrderStatus }],
+    queryFn: () => orderApi.getOrderbyCustomerId({ order_status: filterOrderStatus }) // Replace with actual customer ID
+  })
+  const listOrders = OrderData?.data.result
+
   const onChange = (key: string) => {
-    console.log(key)
+    setFilterOrderStatus(key)
   }
 
   const items: TabsProps['items'] = [
     {
-      key: '-1',
+      key: '',
       label: 'Tất cả',
-      children: <AllOrder />
+      children: <AllOrder listOrder={listOrders as OrderResponse[]} />
     },
-    {
-      key: '0',
-      label: 'Chờ thanh toán',
-      children: <PendingPayment />
-    },
+
     {
       key: '1',
       label: 'Chờ xác nhận',
-      children: <></>
+      children: <WaittingConfirm listOrder={listOrders as OrderResponse[]} />
     },
     {
       key: '2',
       label: 'Vận chuyển', // 2,3,4
-      children: <></>
+      children: <Delevery listOrder={listOrders as OrderResponse[]} />
     },
     {
-      key: '3',
+      key: '5',
       label: 'Hoàn thành',
-      children: <SuccessOrder />
+      children: <SuccessOrder listOrder={listOrders as OrderResponse[]} />
     },
     {
-      key: '4',
+      key: '6',
       label: 'Đã hủy',
-      children: <CancelOrder />
+      children: <CancelOrder listOrder={listOrders as OrderResponse[]} />
     }
   ]
 
@@ -55,7 +64,7 @@ export default function HistoryOrder() {
       <div className='border-b border-gray-200 py-6'>
         <h1 className='text-lg font-medium capitalize text-gray-900'>Đơn hàng</h1>
       </div>
-      <Tabs defaultActiveKey='1' items={items} onChange={onChange} />
+      <Tabs defaultActiveKey='' items={items} onChange={onChange} />
     </div>
   )
 }

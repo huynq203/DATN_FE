@@ -8,7 +8,7 @@ import { MESSAGE } from 'src/constants/messages'
 import { User } from 'src/types/user.type'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import swalAlert from 'src/utils/SwalAlert'
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
 type FieldType = {
   key: string
@@ -70,7 +70,7 @@ export default function ModalUpdateUser({ isModalOpen, setIsModalOpen, userDetai
           },
           {
             onSuccess: async (data) => {
-              toast.success(data.data.message)
+              swalAlert.notifySuccess(data.data.message)
               form.resetFields()
               setIsModalOpen(false)
               const result = await refetch()
@@ -78,7 +78,14 @@ export default function ModalUpdateUser({ isModalOpen, setIsModalOpen, userDetai
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                toast.error(error.response?.data.message)
+                const formError = error.response?.data.errors
+                if (formError) {
+                  Object.keys(formError).forEach((key) => {
+                    toast.error(formError[key].msg, { autoClose: 1000 })
+                  })
+                }
+              } else if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
                 toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
               }

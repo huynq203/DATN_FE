@@ -6,6 +6,7 @@ import { AppContext } from 'src/contexts/app.context'
 // nếu đã đăng nhập thì vào trang home còn không thì vào trang login
 export function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
+
   return isAuthenticated ? <Outlet /> : <Navigate to={paths.Screens.AUTH_LOGIN} />
 }
 
@@ -15,5 +16,3 @@ export function RejectedRoute() {
   // Replace with your authentication logic
   return !isAuthenticated ? <Outlet /> : <Navigate to={paths.Screens.HOME} />
 }
-
-

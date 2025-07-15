@@ -119,20 +119,25 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       children: (
         <ul>
           <li className='flex hover:font-bold hover:text-black mt-3'>
-            <input type='checkbox' className='h-5 w-5 accent-black' value={0} checked={gender === GenderType.Women} />
+            <input
+              type='checkbox'
+              className='h-5 w-5 accent-black'
+              value={0}
+              checked={gender === GenderType.Women.toString()}
+            />
             <Link
               to={{
                 pathname: paths.Screens.PRODUCT,
                 search: createSearchParams({
                   ...queryConfig,
-                  gender: GenderType.Women
+                  gender: GenderType.Women.toString()
                 }).toString()
               }}
               className='hover:text-black'
             >
               <span
                 className={classNames('ml-4', {
-                  'font-bold': gender === GenderType.Women
+                  'font-bold': gender === GenderType.Women.toString()
                 })}
               >
                 Nữ
@@ -140,20 +145,25 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             </Link>
           </li>
           <li className='flex hover:font-bold hover:text-black mt-3'>
-            <input type='checkbox' className='h-5 w-5 accent-black' value={0} checked={gender === GenderType.Men} />
+            <input
+              type='checkbox'
+              className='h-5 w-5 accent-black'
+              value={0}
+              checked={gender === GenderType.Men.toString()}
+            />
             <Link
               to={{
                 pathname: paths.Screens.PRODUCT,
                 search: createSearchParams({
                   ...queryConfig,
-                  gender: GenderType.Men
+                  gender: GenderType.Men.toString()
                 }).toString()
               }}
               className='hover:text-black'
             >
               <span
                 className={classNames('ml-4', {
-                  'font-bold': gender === GenderType.Men
+                  'font-bold': gender === GenderType.Men.toString()
                 })}
               >
                 Nam
@@ -161,20 +171,25 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             </Link>
           </li>
           <li className='flex hover:font-bold hover:text-black mt-3'>
-            <input type='checkbox' className='h-5 w-5 accent-black' value={2} checked={gender === GenderType.Unisex} />
+            <input
+              type='checkbox'
+              className='h-5 w-5 accent-black'
+              value={2}
+              checked={gender === GenderType.Unisex.toString()}
+            />
             <Link
               to={{
                 pathname: paths.Screens.PRODUCT,
                 search: createSearchParams({
                   ...queryConfig,
-                  gender: GenderType.Unisex
+                  gender: GenderType.Unisex.toString()
                 }).toString()
               }}
               className='hover:text-black'
             >
               <span
                 className={classNames('ml-4', {
-                  'font-bold': gender === GenderType.Unisex
+                  'font-bold': gender === GenderType.Unisex.toString()
                 })}
               >
                 Nam và nữ
@@ -182,20 +197,25 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             </Link>
           </li>
           <li className='flex hover:font-bold hover:text-black mt-3'>
-            <input type='checkbox' className='h-5 w-5 accent-black' value={2} checked={gender === GenderType.All} />
+            <input
+              type='checkbox'
+              className='h-5 w-5 accent-black'
+              value={2}
+              checked={gender === GenderType.All.toString()}
+            />
             <Link
               to={{
                 pathname: paths.Screens.PRODUCT,
                 search: createSearchParams({
                   ...queryConfig,
-                  gender: GenderType.All
+                  gender: GenderType.All.toString()
                 }).toString()
               }}
               className='hover:text-black'
             >
               <span
                 className={classNames('ml-4', {
-                  'font-bold': gender === GenderType.All
+                  'font-bold': gender === GenderType.All.toString()
                 })}
               >
                 Tất cả

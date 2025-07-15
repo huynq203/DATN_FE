@@ -12,6 +12,9 @@ class PurchaseOrderApi {
       data: body
     })
   }
+  setIsPushInventory(body: { inventory_id: string }) {
+    return http.put<SuccessResponseApi<{ message: string }>>(`${paths.ApiPath.SET_IS_PUSH_INVENTORY}`, body)
+  }
 }
 const purchaseOrderApi = new PurchaseOrderApi()
 export default purchaseOrderApi

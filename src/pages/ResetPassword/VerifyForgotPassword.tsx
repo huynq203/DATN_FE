@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import authApi from 'src/apis/auth.api'

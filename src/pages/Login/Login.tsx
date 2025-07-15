@@ -11,10 +11,12 @@ import { paths, resources } from 'src/constants'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { schema, Schema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import Button from 'src/components/Button'
 import { Spin } from 'antd'
+import AOS from 'aos'
+import 'aos/dist/aos.css'
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
 
@@ -56,50 +58,62 @@ export default function Login() {
   })
   const onSubmit = handleSubmit((res) => {
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      loginCustomerMuTation.mutate(res, {
-        onSuccess: (res) => {
-          setIsAuthenticated(true)
-          setProfile(res.data.result.customer)
-          toast.success(res.data.message, { autoClose: 1000 })
-        },
-        onError: (error) => {
-          if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-            const formError = error.response?.data.errors
-            if (formError) {
-              Object.keys(formError).forEach((key) => {
-                toast.error(formError[key].msg, { autoClose: 1000 })
-              })
-            }
+    loginCustomerMuTation.mutate(res, {
+      onSuccess: (res) => {
+        setIsLoading(false)
+        setIsAuthenticated(true)
+        setProfile(res.data.result.customer)
+        toast.success(res.data.message, { autoClose: 1000 })
+      },
+      onError: (error) => {
+        setIsLoading(false)
+        if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+          const formError = error.response?.data.errors
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              toast.error(formError[key].msg, { autoClose: 1000 })
+            })
           }
         }
-      })
-    }, 2000)
+      }
+    })
   })
+  useEffect(() => {
+    AOS.init({ duration: 800 })
+  }, [])
   return (
-    <Spin tip='Loading' size='large' spinning={isLoading}>
-      <div className=''>
+    <Spin tip='Loading' size='large' spinning={isLoading} style={{ minHeight: '100vh' }}>
+      <div className='container'>
         <Helmet>
           <title>Đăng nhập - YOYO Store</title>
           <meta name='description' content='Đăng nhập tài khoản YOYO Store' />
           <link rel='icon' type='image/svg+xml' href={resources.Images.THUMBNAIL} />
         </Helmet>
 
-        <div className='container px-4'>
-          <div className='grid grid-cols-1 lg:grid-cols-5 lg:py-10 lg:pr-10 gap-4'>
+        <div className='container  min-h-screen flex items-center justify-center '>
+          <div className='grid grid-cols-1 lg:grid-cols-5 lg:pr-10 gap-4'>
             {/* IMAGE */}
             <div className='lg:col-span-3 flex justify-center'>
               <img
                 src={resources.Images.THUMBNAIL}
                 alt='Login illustration'
-                className='max-w-full h-auto object-contain rounded-lg shadow-xl'
+                className='w-full h-auto object-contain rounded-lg shadow-xl'
+                data-aos='fade-right'
+                data-aos-duration='800'
+                data-aos-once='true'
+                data-aos-easing='ease-in-out'
               />
             </div>
 
             {/* FORM */}
-            <div className='lg:col-span-2 lg:col-start-4 lg:pt-20'>
-              <form action='' className='p-6 sm:p-10 rounded-lg bg-white shadow-xl' onSubmit={onSubmit}>
+            <div
+              className='lg:col-span-2 lg:col-start-4 lg:pt-20'
+              data-aos='fade-left'
+              data-aos-duration='800'
+              data-aos-once='true'
+              data-aos-easing='ease-in-out'
+            >
+              <form action='' className='p-6 sm:p-10 rounded-lg bg-gray-100 shadow-xl' onSubmit={onSubmit}>
                 <div className='text-2xl text-center'>Đăng nhập</div>
                 <Input
                   className='mt-8'

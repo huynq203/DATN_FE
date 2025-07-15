@@ -46,7 +46,7 @@ class ProductApi {
     })
   }
   uploadImageVariantColor(body: FormData) {
-    return http.post<SuccessResponseApi<Media>>(paths.ApiPath.UPLOAD_IMAGE_VARIANT_COLOR, body, {
+    return http.post<SuccessResponseApi<Media[]>>(paths.ApiPath.UPLOAD_IMAGE_VARIANT_COLOR, body, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -85,6 +85,15 @@ class ProductApi {
   }
   changeStatusOptionProduct(body: { option_product_id: string; status: number }) {
     return http.patch<SuccessResponseApi<{ message: string }>>(`${paths.ApiPath.CHANGE_STATUS_OPTION_PRODUCT}`, body)
+  }
+  getProductByDiscount() {
+    return http.get<SuccessResponseApi<Product[]>>(paths.ApiPath.GET_PRODUCT_BY_DISCOUNT)
+  }
+  getProductByMen() {
+    return http.get<SuccessResponseApi<Product[]>>(paths.ApiPath.GET_PRODUCT_BY_MEN)
+  }
+  getProductByKid() {
+    return http.get<SuccessResponseApi<Product[]>>(paths.ApiPath.GET_PRODUCT_BY_KID)
   }
 }
 

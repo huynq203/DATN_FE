@@ -19,9 +19,6 @@ import CustomerLayout from 'src/pages/Profile/layouts/CustomerLayout'
 
 import Address from 'src/pages/Profile/pages/Address'
 import WishList from 'src/pages/Profile/pages/WishList'
-import Voucher from 'src/pages/Menu/Voucher'
-import Men from 'src/pages/Menu/Men'
-import Women from 'src/pages/Menu/Women'
 
 export default function MainRoutes() {
   const mainRoutes = [
@@ -56,36 +53,7 @@ export default function MainRoutes() {
         </MainLayout>
       )
     },
-    {
-      path: paths.Screens.MEN,
-      element: (
-        <MainLayout>
-          <Suspense>
-            <Men />
-          </Suspense>
-        </MainLayout>
-      )
-    },
-    {
-      path: paths.Screens.WOMEN,
-      element: (
-        <MainLayout>
-          <Suspense>
-            <Women />
-          </Suspense>
-        </MainLayout>
-      )
-    },
-    {
-      path: paths.Screens.VOUCHER,
-      element: (
-        <MainLayout>
-          <Suspense>
-            <Voucher />
-          </Suspense>
-        </MainLayout>
-      )
-    },
+
     {
       path: paths.Screens.INTRODUCE,
       element: (

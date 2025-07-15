@@ -19,7 +19,7 @@ import ChangePassword from './components/ChangePassword'
 export default function NavHeader() {
   const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)
   const refresh_token = localStorage.getItem('refresh_token') || ''
-  
+
   const queryClient = useQueryClient()
   const logoutMutation = useMutation({
     mutationFn: () => authApi.logoutCustomer({ refresh_token }),
@@ -58,7 +58,7 @@ export default function NavHeader() {
             </span>
           </div>
           <div className='flex'>
-            <Popover
+            {/* <Popover
               className='flex items-center py-2 m-1 mr-3 hover:text-gray-300 cursor-pointer h-full relative z-50'
               classNameSpan='border-x-transparent border-t-transparent border-b-white border-[11px] absolute z-50 -translate-y-6 '
               children={
@@ -100,7 +100,7 @@ export default function NavHeader() {
                   </div>
                 </div>
               }
-            />
+            /> */}
             {isAuthenticated ? (
               <Popover
                 className='flex items-center hover:text-gray-300 cursor-pointer ml-5 relative z-50'
@@ -132,7 +132,7 @@ export default function NavHeader() {
                         to={paths.Screens.HISTORY_ORDER}
                         className='py-3 px-10 hover:bg-gray-200 border-b-2 text-gray-500 hover:text-black text-left '
                       >
-                        Đơn mua
+                        Đơn hàng của tôi
                       </Link>
                     </div>
 

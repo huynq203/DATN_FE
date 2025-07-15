@@ -34,6 +34,11 @@ export enum isDefault {
   True
 }
 
+export enum IsChoose {
+  False,
+  True
+}
+
 export enum OrderStatus {
   //Chờ thanh toán
   WaitPayment, // Chờ thanh toán - 0
@@ -52,10 +57,32 @@ export enum OrderStatus {
 export enum GenderType {
   Women, // Nữ 0
   Men, // Nam 1
-  Unisex //  Tất cả 2
+  Unisex, //  Tất cả 2
+  All
 }
 
 export enum TargetType {
   Kid, // Trẻ em 0
-  Adult // Người lớn 1
+  Adult, // Người lớn 1
+  All
+}
+
+export enum StatusScheduleProduct {
+  Ready, // Sẵn sàng
+  Running, // Đang chạy
+  End // Kết thúc
+}
+
+export enum PromotionPriceType {
+  Percentage, // Giảm theo phần trăm
+  Fixed, // Giảm theo giá cố định
+  Promotion // Giảm giá theo giá khuyến mãi
+}
+
+export enum RateType {
+  Terrible, // Rất tệ - 0
+  Bad, // Tệ - 1
+  Normal, // Bình thường - 0.5
+  Good, // Tốt - 1
+  Wonderful // Xuất sắc - 2
 }

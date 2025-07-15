@@ -8,12 +8,14 @@ import CustomerDetail from 'src/pages/admin/ManagerAccount/ManagerCustomer/Custo
 import ListCustomer from 'src/pages/admin/ManagerAccount/ManagerCustomer/ListCustomers'
 import ListUsers from 'src/pages/admin/ManagerAccount/ManagerUser/ListUsers'
 import ListCategories from 'src/pages/admin/ManagerCategory/ListCategories'
+import ManagerImageSlider from 'src/pages/admin/ManagerImageSlider'
 import ManagerOrder from 'src/pages/admin/ManagerOrder'
-import ManagerPosts from 'src/pages/admin/ManagerPosts'
 import CreateProduct from 'src/pages/admin/ManagerProduct/CreateProduct'
 import ListProducts from 'src/pages/admin/ManagerProduct/ListProducts'
 import UpdateProduct from 'src/pages/admin/ManagerProduct/UpdateProduct/UpdateProduct'
-import ManagerRecceipt from 'src/pages/admin/ManagerRecceipt'
+import ManagerRole from 'src/pages/admin/ManagerRole'
+
+import ManagerScheduleProduct from 'src/pages/admin/ManagerScheduleProduct'
 import ManagerVouchers from 'src/pages/admin/ManagerVouchers'
 
 export default function AdminRoutes() {
@@ -84,11 +86,11 @@ export default function AdminRoutes() {
           )
         },
         {
-          path: paths.Screens.ADMIN_MANAGER_RECCEIPTES,
+          path: paths.Screens.ADMIN_MANAGER_ROLE,
           element: (
             <>
               <MainLayout>
-                <ManagerRecceipt />
+                <ManagerRole />
               </MainLayout>
             </>
           )
@@ -144,11 +146,21 @@ export default function AdminRoutes() {
           )
         },
         {
-          path: paths.Screens.ADMIN_MANAGER_POST,
+          path: paths.Screens.ADMIN_MANAGER_SCHEDULE_PRODUCT,
           element: (
             <>
               <MainLayout>
-                <ManagerPosts />
+                <ManagerScheduleProduct />
+              </MainLayout>
+            </>
+          )
+        },
+        {
+          path: paths.Screens.ADMIN_MANAGER_IMAGE_SLIDER,
+          element: (
+            <>
+              <MainLayout>
+                <ManagerImageSlider />
               </MainLayout>
             </>
           )

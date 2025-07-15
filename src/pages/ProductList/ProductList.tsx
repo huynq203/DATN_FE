@@ -32,7 +32,7 @@ export default function ProductList() {
       return categoryApi.getCategory()
     }
   })
-  
+
   return (
     <div className='bg-white'>
       <Helmet>
@@ -49,13 +49,19 @@ export default function ProductList() {
               <div className='col-span-10 ml-10'>
                 {totalPage && <SortProductList queryConfig={queryConfig} total_page={totalPage} />}
                 <Spin size='large' tip='Đang tải...' spinning={isLoading}>
-                  <div className='mt-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-1'>
-                    {productData.map((product) => (
-                      <div className='col-span-1' key={product._id}>
-                        <Product product={product} />
-                      </div>
-                    ))}
-                  </div>
+                  {productData.length > 0 ? (
+                    <div className='mt-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-1'>
+                      {productData.map((product) => (
+                        <div className='col-span-1' key={product._id}>
+                          <Product product={product} />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className='text-center mt-10 text-gray-500 font-semibold text-lg'>
+                      Không có sản phẩm nào phù hợp
+                    </div>
+                  )}
                 </Spin>
               </div>
             </div>

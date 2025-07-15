@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Form, Input, Modal } from 'antd'
 import { toast } from 'react-toastify'
 import userApi from 'src/apis/user.api'
+import { MESSAGE } from 'src/constants/messages'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import swalAlert from 'src/utils/SwalAlert'
 import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
@@ -43,9 +44,10 @@ export default function ModalChangePasswordAdmin({ isModalOpen, setIsModalOpen }
                   toast.error(formError[key].msg, { autoClose: 1000 })
                 })
               }
-            }
-            if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+            } else if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
               toast.error(error.response?.data.message, { autoClose: 1000 })
+            } else {
+              toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
             }
           }
         })

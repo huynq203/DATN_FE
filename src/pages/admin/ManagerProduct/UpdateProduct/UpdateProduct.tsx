@@ -19,7 +19,7 @@ import { Media } from 'src/types/product.type'
 import { isEqual } from 'lodash'
 import { createStyles } from 'antd-style'
 import ListOptionProduct from '../ListOptionProduct'
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import swalAlert from 'src/utils/SwalAlert'
 import GenderSelect from '../components/GenderSelect'
@@ -45,7 +45,7 @@ export default function UpdateProduct() {
     queryFn: () => productApi.getProductDetail(product_id as string),
     staleTime: 3 * 60 * 1000
   })
-  const product = ProductDetail?.data.result
+  const product = ProductDetail?.data.result.product
 
   const [files, setFiles] = useState<File[]>([])
   const previewImages = useMemo(() => {
@@ -109,9 +109,15 @@ export default function UpdateProduct() {
               },
               onError: (error) => {
                 if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                  toast.error(error.response?.data.message)
-                } else {
-                  toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
+                  const formError = error.response?.data.errors
+                  if (formError) {
+                    Object.keys(formError).forEach((key) => {
+                      toast.error(formError[key].msg, { autoClose: 1000 })
+                    })
+                  }
+                }
+                if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+                  toast.error(error.response?.data.message, { autoClose: 1000 })
                 }
               }
             }

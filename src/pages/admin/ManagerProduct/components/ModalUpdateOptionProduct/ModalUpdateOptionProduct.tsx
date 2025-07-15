@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Button, Form, Input, Modal, Upload, UploadProps } from 'antd'
+import { Button, Form, GetProp, Input, Modal, Upload, UploadFile, UploadProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import productApi from 'src/apis/product.api'
@@ -28,7 +28,7 @@ interface Props {
   optionProductDetail: DataType
   product_id: string
 }
-
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 export default function ModalUpdateOptionProduct({
   isModalOpen,
   setIsModalOpen,
@@ -39,14 +39,18 @@ export default function ModalUpdateOptionProduct({
     queryKey: ['product_id', product_id as string],
     queryFn: () => productApi.getOptionProduct(product_id as string)
   })
-  const [file, setFile] = useState<File>()
+
+  const [files, setFiles] = useState<UploadFile[]>([])
   const props: UploadProps = {
-    beforeUpload: (file) => {
-      setFile(file)
-      return false // Prevent automatic upload
+    onRemove: (file) => {
+      const index = files.indexOf(file)
+      const newFileList = files.slice()
+      newFileList.splice(index, 1)
+      setFiles(newFileList)
     },
-    onRemove: () => {
-      setFile(undefined)
+    beforeUpload: (file) => {
+      setFiles([...files, file])
+      return false
     }
   }
   const [form] = Form.useForm()
@@ -64,9 +68,11 @@ export default function ModalUpdateOptionProduct({
     swalAlert.showConfirm().then(async (result) => {
       if (result.isConfirmed) {
         try {
-          if (file && values) {
+          if (files) {
             const formData = new FormData()
-            formData.append('url_images', file)
+            files.forEach((file) => {
+              formData.append('url_images', file as FileType)
+            })
             const uploadImageRes = await productApi.uploadImageVariantColor(formData)
             const image_variant_color = uploadImageRes.data.result
             updateOptionProductMutation.mutateAsync(
@@ -81,6 +87,7 @@ export default function ModalUpdateOptionProduct({
                   toast.success(data.data.message)
                   form.resetFields()
                   setIsModalOpen(false)
+                  setFiles([]) // Reset files after successful update
                   refetch()
                 },
                 onError: (error: any) => {
@@ -151,7 +158,7 @@ export default function ModalUpdateOptionProduct({
       onOk={handleOk}
       onCancel={handleCancel}
     >
-      <Form form={form} layout='vertical' onFinish={onFinish} autoComplete='off'>
+      <Form form={form} layout='vertical' onFinish={onFinish} autoComplete='off' encType='multipart/form-data'>
         <Form.Item<FieldType>
           label='Kích thước'
           name='size'
@@ -167,7 +174,7 @@ export default function ModalUpdateOptionProduct({
           <Input />
         </Form.Item>
         <Form.Item<FieldType> label='Hình ảnh' name='image_variant_color'>
-          <Upload accept='.jpg,.jpeg,.png' {...props} maxCount={1} showUploadList={true}>
+          <Upload accept='.jpg,.jpeg,.png' {...props} maxCount={10} showUploadList={true}>
             <Button icon={<UploadOutlined />}>Click to Upload</Button>
           </Upload>
         </Form.Item>

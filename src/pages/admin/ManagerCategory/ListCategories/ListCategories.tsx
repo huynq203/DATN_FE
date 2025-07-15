@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import ModalCreateCategory from '../components/ModalCreateCategory'
 import ModalUpdatetCategory from '../components/ModalUpdateCategory'
 import swalAlert from 'src/utils/SwalAlert'
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { toast } from 'react-toastify'
 import { MESSAGE } from 'src/constants/messages'
@@ -74,12 +74,14 @@ export default function ListCategories() {
           { category_id },
           {
             onSuccess: () => {
-              swalAlert.notifySuccess('Thông báo', 'Bạn đã xóa bản ghi thành công')
+              swalAlert.notifySuccess('Bạn đã xóa bản ghi thành công')
               refetch()
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
+              } else if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
                 toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
               }
@@ -269,7 +271,6 @@ export default function ListCategories() {
                 dataSource={dataSource}
                 bordered
                 size='middle'
-                scroll={{ x: 'calc(700px + 50%)', y: 47 * 10 }}
               />
             </Spin>
             <ModalCreateCategory

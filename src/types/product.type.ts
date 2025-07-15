@@ -1,4 +1,4 @@
-import { MediaType, StatusType } from 'src/constants/enum'
+import { IsChoose, MediaType, StatusType } from 'src/constants/enum'
 
 export interface Product {
   _id: string
@@ -17,6 +17,7 @@ export interface Product {
   status: number
   gender: number // 0: unisex, 1: nam, 2: nữ
   target_person: number // 0: trẻ em, 1: người lớn
+  total_stock: number
   view: number
   sold: number
   created_by: {
@@ -37,7 +38,7 @@ export interface ProductList {
 }
 
 export interface ProductManagerList extends Product {
-  stock: number
+  total_stock: number
 }
 
 export interface ProductListConfig {
@@ -63,6 +64,7 @@ export interface ProductFilter {
   target_person?: string // 0: trẻ em, 1: người lớn
   price_min?: string
   price_max?: string
+  stock?: string // 0: hết hàng, 1: còn hàng
 }
 
 export interface ProductCreateReq {
@@ -118,8 +120,7 @@ export interface OptionProductReq {
   product_id: string
   size: number
   color: string
-
-  image_variant_color: Media
+  image_variant_color: Media[]
 }
 
 export interface OptionProductUpdateReq {
@@ -127,7 +128,7 @@ export interface OptionProductUpdateReq {
   product_id: string
   size: number
   color: string
-  image_variant_color: Media
+  image_variant_color: Media[]
 }
 
 export interface CheckStockOptionProduct {
@@ -138,6 +139,7 @@ export interface CheckStockOptionProduct {
   stock: number
   cost_price: number
   sold: number
+  isChoose: IsChoose
   created_by: {
     _id: string
     name: string

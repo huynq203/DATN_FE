@@ -4,9 +4,7 @@ import type { MenuProps } from 'antd'
 import { Layout, Menu } from 'antd'
 const { Sider } = Layout
 type MenuItem = Required<MenuProps>['items'][number]
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCartShopping, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
-import HeaderAdmin from 'src/components/Admin/HeaderAdmin/HeaderAdmin'
+
 import { paths } from 'src/constants'
 import { useNavigate } from 'react-router-dom'
 import FooterAdmin from 'src/components/Admin/FooterAdmin'
@@ -39,7 +37,7 @@ export default function MainLayout({ children }: Props) {
   const items: MenuItem[] = [
     !collapsed ? getItem(<span className='font-bold text-sm uppercase text-white'>Yoyo Store Admin</span>, '') : null,
     getItem(
-      'Dashboard',
+      'Tổng quan',
       paths.Screens.ADMIN_DASHBOARD,
       <svg
         xmlns='http://www.w3.org/2000/svg'
@@ -167,8 +165,8 @@ export default function MainLayout({ children }: Props) {
       </svg>
     ),
     getItem(
-      'Quản lý nhập hàng',
-      paths.Screens.ADMIN_MANAGER_RECCEIPTES,
+      'Quản lý vai trò',
+      paths.Screens.ADMIN_MANAGER_ROLE,
       <svg
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
@@ -180,7 +178,7 @@ export default function MainLayout({ children }: Props) {
         <path
           stroke-linecap='round'
           stroke-linejoin='round'
-          d='m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10'
+          d='M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z'
         />
       </svg>
     ),
@@ -203,8 +201,8 @@ export default function MainLayout({ children }: Props) {
       </svg>
     ),
     getItem(
-      'Quản lý bài đăng',
-      paths.Screens.ADMIN_MANAGER_POST,
+      'Quản lý đặt lịch giảm giá',
+      paths.Screens.ADMIN_MANAGER_SCHEDULE_PRODUCT,
       <svg
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
@@ -216,7 +214,25 @@ export default function MainLayout({ children }: Props) {
         <path
           stroke-linecap='round'
           stroke-linejoin='round'
-          d='m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125'
+          d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z'
+        />
+      </svg>
+    ),
+    getItem(
+      'Quản lý hình ảnh slider',
+      paths.Screens.ADMIN_MANAGER_IMAGE_SLIDER,
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        fill='none'
+        viewBox='0 0 24 24'
+        stroke-width='1.5'
+        stroke='currentColor'
+        className='size-5'
+      >
+        <path
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          d='m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z'
         />
       </svg>
     ),
@@ -302,7 +318,7 @@ export default function MainLayout({ children }: Props) {
   }
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+      <Sider width={240} collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
         {/* <div className='demo-logo-vertical' /> */}
         <Menu theme='dark' selectedKeys={selectedKeys} mode='inline' items={items} onClick={onSelect} />
       </Sider>

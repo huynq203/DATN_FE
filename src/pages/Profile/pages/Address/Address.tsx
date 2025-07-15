@@ -98,71 +98,78 @@ export default function Address() {
           </div>
         </Button>
       </div>
-      <div className='p-4 max-w-5xl mx-auto  '>
-        <div key={addressDefault?._id} className='grid grid-cols-2 border-b py-2 flex justify-between gap-1'>
-          <div className='col-span-1'>
-            <div className='font-semibold'>
-              {addressDefault?.name} | {addressDefault?.phone}
-              <span className='ml-2 text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded'>Mặc định</span>
+      {addressesData && addressesData.length > 0 ? (
+        <div className='p-4 max-w-5xl mx-auto  '>
+          <div key={addressDefault?._id} className='grid grid-cols-2 border-b py-2 flex justify-between gap-1'>
+            <div className='col-span-1'>
+              <div className='font-semibold'>
+                {addressDefault?.name} | {addressDefault?.phone}
+                <span className='ml-2 text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded'>Mặc định</span>
+              </div>
+              <div className='text-sm text-gray-700'>{addressDefault?.address}</div>
             </div>
-            <div className='text-sm text-gray-700'>{addressDefault?.address}</div>
+            <div className='mt-2 space-x-2 col-span-1 flex justify-end items-center'>
+              <Button
+                className='px-3 py-1 bg-blue-600/90 hover:bg-blue-700/90 text-white rounded-md'
+                onClick={() => {
+                  setAddressDetail(addressDefault)
+                  setIsModalUpdateOpen(true)
+                }}
+              >
+                Cập nhật
+              </Button>
+            </div>
           </div>
-          <div className='mt-2 space-x-2 col-span-1 flex justify-end items-center'>
-            <Button
-              className='px-3 py-1 bg-blue-600/90 hover:bg-blue-700/90 text-white rounded-md'
-              onClick={() => {
-                setAddressDetail(addressDefault)
-                setIsModalUpdateOpen(true)
-              }}
-            >
-              Cập nhật
-            </Button>
-          </div>
-        </div>
-        {addressesData &&
-          addressesData.map((item) => (
-            <>
-              {!item.isDefault && (
-                <div key={item._id} className='grid grid-cols-2 border-b py-2 flex justify-between gap-1'>
-                  <div className='col-span-1'>
-                    <div className='font-semibold'>
-                      {item.name} | {item.phone}
-                      {item.isDefault && (
-                        <span className='ml-2 text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded'>
-                          Mặc định
-                        </span>
-                      )}
+          {addressesData &&
+            addressesData.map((item) => (
+              <>
+                {!item.isDefault && (
+                  <div key={item._id} className='grid grid-cols-2 border-b py-2 flex justify-between gap-1'>
+                    <div className='col-span-1'>
+                      <div className='font-semibold'>
+                        {item.name} | {item.phone}
+                        {item.isDefault && (
+                          <span className='ml-2 text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded'>
+                            Mặc định
+                          </span>
+                        )}
+                      </div>
+                      <div className='text-sm text-gray-700'>{item.address}</div>
                     </div>
-                    <div className='text-sm text-gray-700'>{item.address}</div>
+                    <div className='mt-2 space-x-2 col-span-1 flex justify-end items-center'>
+                      <Button
+                        className='px-3 py-1 bg-blue-600/90 hover:bg-blue-700/90 text-white rounded-md'
+                        onClick={() => {
+                          setAddressDetail(item)
+                          setIsModalUpdateOpen(true)
+                        }}
+                      >
+                        Cập nhật
+                      </Button>
+                      <Button
+                        className='px-3 py-1 bg-red-600/90 hover:bg-red-700/90 text-white rounded-md'
+                        onClick={() => handleDeleteAddress(item._id)}
+                      >
+                        Xóa
+                      </Button>
+                      <Button
+                        className='px-3 py-1 border text-sm rounded-md hover:bg-gray-100'
+                        onClick={() => handleSetAddressDefault(item._id)}
+                      >
+                        Thiết lập mặc định
+                      </Button>
+                    </div>
                   </div>
-                  <div className='mt-2 space-x-2 col-span-1 flex justify-end items-center'>
-                    <Button
-                      className='px-3 py-1 bg-blue-600/90 hover:bg-blue-700/90 text-white rounded-md'
-                      onClick={() => {
-                        setAddressDetail(item)
-                        setIsModalUpdateOpen(true)
-                      }}
-                    >
-                      Cập nhật
-                    </Button>
-                    <Button
-                      className='px-3 py-1 bg-red-600/90 hover:bg-red-700/90 text-white rounded-md'
-                      onClick={() => handleDeleteAddress(item._id)}
-                    >
-                      Xóa
-                    </Button>
-                    <Button
-                      className='px-3 py-1 border text-sm rounded-md hover:bg-gray-100'
-                      onClick={() => handleSetAddressDefault(item._id)}
-                    >
-                      Thiết lập mặc định
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </>
-          ))}
-      </div>
+                )}
+              </>
+            ))}
+        </div>
+      ) : (
+        <div className='text-center mt-10 text-gray-500 font-semibold text-lg'>
+          Bạn chưa có địa chỉ nào, hãy thêm địa chỉ để nhận hàng
+        </div>
+      )}
+
       <ModalCreateAddress isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
       <ModalUpdateAddress
         isModalOpen={isModalUpdateOpen}

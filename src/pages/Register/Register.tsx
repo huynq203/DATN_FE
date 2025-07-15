@@ -40,7 +40,7 @@ export default function Register() {
       onSuccess: (res) => {
         setIsAuthenticated(true)
         setProfile(res.data.result.customer)
-        navigate(paths.Screens.HOME)
+        navigate(paths.Screens.AUTH_LOGIN)
         toast.success(res.data.message, { autoClose: 1000 })
       },
       onError: (error) => {
@@ -61,19 +61,23 @@ export default function Register() {
     })
   })
   return (
-    <div className='bg-amber-50'>
+    <div className='bg-amber-50 '>
       <Helmet>
         <title>Đăng ký - YOYO Store</title>
         <meta name='description' content='Đăng ký tài khoản mới tại YOYO Store' />
         <link rel='canonical' href={paths.Screens.AUTH_REGISTER} />
       </Helmet>
-      <div className='container'>
-        <div className='grid grid-cols-1 lg:grid-cols-5 lg:py-32 lg:pr-10 gap-4'>
-          <div className='  lg:col-span-3 flex justify-center'>
-            <img src={resources.Images.THUMBNAIL} alt='Thumbnail' className='max-w-full h-auto object-contain' />
+      <div className='container min-h-screen flex items-center justify-center'>
+        <div className='grid grid-cols-1 lg:grid-cols-5 lg:pr-10 gap-4'>
+          <div className='lg:col-span-3 flex justify-center'>
+            <img
+              src={resources.Images.THUMBNAIL}
+              alt='Thumbnail'
+              className='max-w-full h-auto object-contain rounded-md'
+            />
           </div>
           <div className='lg:col-span-2 lg:col-start-4 pt-10' onSubmit={onSubmit}>
-            <form action='' className='p-10 rounded bg-white shadow-sm' noValidate>
+            <form action='' className='p-10 rounded bg-white shadow-sm rounded-md' noValidate>
               <div className='text-3xl text-center'>Đăng ký</div>
               <Input
                 className='mt-8'

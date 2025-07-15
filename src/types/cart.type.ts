@@ -10,6 +10,7 @@ export interface Cart {
   size: CartStatus
   color: string
   cost_price: number
+  image: string
   created_at: string
   updated_at: string
 }
@@ -30,6 +31,7 @@ export interface AddtoCart {
   color: string
   cost_price: number
   quantity: number
+  image: string
 }
 
 export interface CartUpdate {

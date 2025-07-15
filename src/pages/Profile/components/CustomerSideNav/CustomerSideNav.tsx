@@ -124,7 +124,7 @@ export default function CustomerSideNav() {
             />
           </svg>
 
-          <span className='mt-1'>Đơn hàng</span>
+          <span className='mt-1'>Đơn hàng của tôi</span>
         </NavLink>
         <NavLink
           to={paths.Screens.WISH_LIST}

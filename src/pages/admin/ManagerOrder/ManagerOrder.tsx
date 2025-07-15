@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { Input, Select, Spin, Table, TableColumnsType, TableProps, Tag, theme, Tooltip } from 'antd'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { DatePicker, Input, Select, Spin, Table, TableColumnsType, TableProps, Tag, theme, Tooltip } from 'antd'
 import { createStyles } from 'antd-style'
 import { Content } from 'antd/es/layout/layout'
 import { useEffect, useState } from 'react'
@@ -8,7 +8,17 @@ import orderApi from 'src/apis/order.api'
 import Button from 'src/components/Button'
 import { resources } from 'src/constants'
 import { OrderStatus, PaymentMethod, PaymentStatus } from 'src/constants/enum'
-import { OrderManagerResponse } from 'src/types/order.type'
+import { OrderResponse } from 'src/types/order.type'
+import { formatCurrency, isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { DatePickerProps, RangePickerProps } from 'antd/es/date-picker'
+import dayjs from 'dayjs'
+import ModalListProductDetail from './components/ModalListProductDetail'
+import ModalChangeOrderStatus from './components/ModalChangeOrderStatus'
+import swalAlert from 'src/utils/SwalAlert'
+import { ErrorResponseApi } from 'src/types/utils.type'
+import { MESSAGE } from 'src/constants/messages'
+import { toast } from 'react-toastify'
+import { saveAs } from 'file-saver'
 interface DataType {
   key: string
   code_order: string
@@ -20,9 +30,12 @@ interface DataType {
   order_status: number
   payment_method: number
   payment_status: number
+  total_price: number
+  discount_price: number
   created_at: string
 }
 export default function ManagerOrder() {
+  const { RangePicker } = DatePicker
   const {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken()
@@ -43,9 +56,21 @@ export default function ManagerOrder() {
     }
   })
   const { styles } = useStyle()
-  const [listOrders, setListOrder] = useState<OrderManagerResponse[]>([])
+
+  const [listOrders, setListOrder] = useState<OrderResponse[]>([])
   const [rowSelectionIds, setRowSelectionIds] = useState<string[]>([])
   const [keySearch, setKeySearch] = useState('')
+  const [FilterOrderStatus, setFilterOrderStatus] = useState<string | undefined>(undefined)
+  const [FilterPaymentMethod, setFilterPaymentMethod] = useState<string | undefined>(undefined)
+  const [FilterPaymentStatus, setFilterPaymentStatus] = useState<string | undefined>(undefined)
+  const [dateStart, setDateStart] = useState<string | null | undefined>(null)
+  const [dateEnd, setDateEnd] = useState<string | null | undefined>(null)
+  const [isModelOpen, setIsModalOpen] = useState(false)
+  const [isModelOpenChangeOrderStatus, setIsModelOpenChangeOrderStatus] = useState(false)
+  const [orderDetailId, setOrderDetailId] = useState('')
+  const [orderStatus, setOrderStatus] = useState<number>()
+  const [codeOrder, setCodeOrder] = useState('')
+
   const {
     data: OrderData,
     refetch,
@@ -54,12 +79,22 @@ export default function ManagerOrder() {
     queryKey: [
       'orders',
       {
-        key_search: keySearch
+        key_search: keySearch,
+        order_status: FilterOrderStatus,
+        payment_method: FilterPaymentMethod,
+        payment_status: FilterPaymentStatus,
+        date_start: dateStart,
+        date_end: dateEnd
       }
     ],
     queryFn: () => {
       return orderApi.getOrderManager({
-        key_search: keySearch
+        key_search: keySearch,
+        order_status: FilterOrderStatus as string,
+        payment_method: FilterPaymentMethod as string,
+        payment_status: FilterPaymentStatus as string,
+        date_start: dateStart as string,
+        date_end: dateEnd as string
       })
     }
   })
@@ -117,23 +152,95 @@ export default function ManagerOrder() {
   ]
   const handleResetFilter = () => {
     setKeySearch('')
+    setFilterOrderStatus(undefined)
+    setFilterPaymentMethod(undefined)
+    setFilterPaymentStatus(undefined)
+    setDateStart(null)
+    setDateEnd(null)
     refetch()
   }
   const handleChangeKeySearch = (event: any) => {
     setKeySearch(event.target.value)
+  }
+  const handleChangeOrderStatus = (value: string) => {
+    setFilterOrderStatus(value)
+  }
+  const handleChangePaymentMethod = (value: string) => {
+    setFilterPaymentMethod(value)
+  }
+  const handleChangePaymentStatus = (value: string) => {
+    setFilterPaymentStatus(value)
+  }
+  const onSubmitDate = (value: DatePickerProps['value'] | RangePickerProps['value']) => {
+    if (value && Array.isArray(value)) {
+      setDateStart(value[0]?.toISOString())
+      setDateEnd(value[1]?.toISOString())
+    }
   }
   const rowSelection: TableProps<DataType>['rowSelection'] = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
       setRowSelectionIds(selectedRowKeys as string[])
     }
   }
+  const exportFileMutation = useMutation({
+    mutationFn: orderApi.exportFileOrder,
+    onSuccess: (res) => {
+      const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      saveAs(blob, `${new Date().toISOString()}_orders_list.xlsx`)
+    }
+  })
+  const handleExportFile = () => {
+    if (rowSelectionIds.length === 0) {
+      swalAlert.notifyError('Vui lòng chọn đơn hàng để xuất dữ liệu')
+      return
+    } else {
+      swalAlert.showConfirmExportFile(rowSelectionIds.length, 'đơn hàng').then((result) => {
+        if (result.isConfirmed) {
+          exportFileMutation.mutate(rowSelectionIds, {
+            onSuccess: () => {
+              swalAlert.notifySuccess('Đang xuất dữ liệu, vui lòng đợi trong giây lát')
+            },
+            onError: (error) => {
+              if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
+                swalAlert.notifyError(error.response?.data.message as string)
+              } else if (isAxiosForbiddenError<ErrorResponseApi>(error)) {
+                toast.error(error.response?.data.message, { autoClose: 1000 })
+              } else {
+                toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
+              }
+            }
+          })
+        }
+      })
+    }
+  }
+
   const columns: TableColumnsType<DataType> = [
     {
       title: 'Mã đơn hàng',
-      width: 100,
+      width: 170,
       dataIndex: 'code_order',
-      align: 'center',
-      key: '0'
+      align: 'left',
+      key: '0',
+      render: (_, record: DataType) => {
+        return (
+          <div className='flex flex-col'>
+            <span className='ml-1 text-black font-bold'>{record.code_order}</span>
+            <div className='flex justify-between'>
+              <span className='text-gray-500 ml-1'>Tổng tiền hàng: </span>
+              <span className='ml-3 text-green-500 font-bold'>
+                {record.total_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+              </span>
+            </div>
+            <div className='flex justify-between'>
+              <span className='text-gray-500 ml-1'>Giảm giá: </span>
+              <span className='ml-3 text-red-500 font-bold'>
+                {record.discount_price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+              </span>
+            </div>
+          </div>
+        )
+      }
     },
     {
       title: 'TT người mua',
@@ -156,17 +263,65 @@ export default function ManagerOrder() {
       key: '1',
       render: (_, record: DataType) => {
         return record.order_status === OrderStatus.WaitPayment ? (
-          <Tag color='gray'>Chờ thanh toán</Tag>
+          <Button
+            onClick={() => {
+              setIsModelOpenChangeOrderStatus(true)
+              setOrderDetailId(record.key)
+              setOrderStatus(record.order_status)
+            }}
+          >
+            <Tag color='gray'>Chờ thanh toán</Tag>
+          </Button>
         ) : record.order_status === OrderStatus.WaitConfirmed ? (
-          <Tag color='yellow'>Chờ xác nhận</Tag>
+          <Button
+            onClick={() => {
+              setIsModelOpenChangeOrderStatus(true)
+              setOrderDetailId(record.key)
+              setOrderStatus(record.order_status)
+            }}
+          >
+            <Tag color='yellow'>Chờ xác nhận</Tag>
+          </Button>
         ) : record.order_status === OrderStatus.WaitForGetting ? (
-          <Tag color='blue'>Chờ lấy hàng</Tag>
+          <Button
+            onClick={() => {
+              setIsModelOpenChangeOrderStatus(true)
+              setOrderDetailId(record.key)
+              setOrderStatus(record.order_status)
+            }}
+          >
+            <Tag color='blue'>Chờ lấy hàng</Tag>
+          </Button>
         ) : record.order_status === OrderStatus.WaitDelivery ? (
-          <Tag color='orange'>Chờ giao hàng</Tag>
+          <Button
+            onClick={() => {
+              setIsModelOpenChangeOrderStatus(true)
+              setOrderDetailId(record.key)
+              setOrderStatus(record.order_status)
+            }}
+          >
+            <Tag color='orange'>Chờ giao hàng</Tag>
+          </Button>
         ) : record.order_status === OrderStatus.OnDelevery ? (
-          <Tag color='green'>Đang giao hàng</Tag>
+          <Button
+            onClick={() => {
+              setIsModelOpenChangeOrderStatus(true)
+              setOrderDetailId(record.key)
+              setOrderStatus(record.order_status)
+            }}
+          >
+            <Tag color='green'>Đang giao hàng</Tag>
+          </Button>
         ) : record.order_status === OrderStatus.Success ? (
-          <Tag color='green'>Thành công</Tag>
+          <Button
+            onClick={() => {
+              setIsModelOpenChangeOrderStatus(true)
+              setOrderDetailId(record.key)
+              setOrderStatus(record.order_status)
+            }}
+          >
+            <Tag color='green'>Thành công</Tag>
+          </Button>
         ) : (
           <Tag color='red'>Đã hủy</Tag>
         )
@@ -204,7 +359,6 @@ export default function ManagerOrder() {
         </div>
       )
     },
-
     {
       title: 'Thời gian đặt hàng',
       width: 200,
@@ -224,8 +378,12 @@ export default function ManagerOrder() {
           <Tooltip title='Xem chi tiết đơn hàng'>
             {' '}
             <Button
-              className='flex h-9 px-3 text-white bg-blue-500/90 text-sm hover:bg-blue-400 hover:text-white items-center justify-center rounded-md '
-              onClick={() => {}}
+              className='flex h-9 px-3 text-white bg-gray-400/90 text-sm hover:bg-gray-500 hover:text-white items-center justify-center rounded-md '
+              onClick={() => {
+                setIsModalOpen(true)
+                setOrderDetailId(record.key)
+                setCodeOrder(record.code_order)
+              }}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -247,11 +405,7 @@ export default function ManagerOrder() {
       )
     }
   ]
-  useEffect(() => {
-    if (OrderData?.data.result) {
-      setListOrder(OrderData.data.result)
-    }
-  }, [OrderData])
+
   const dataSource =
     listOrders?.map((item) => ({
       key: item._id,
@@ -264,6 +418,9 @@ export default function ManagerOrder() {
       order_status: item.order_status,
       payment_method: item.payment_method,
       payment_status: item.payment_status,
+      total_price: item.total_price,
+      discount_price: item.discount_price,
+
       created_at: new Date(item.created_at).toLocaleTimeString('vi-VN', {
         year: 'numeric',
         month: '2-digit',
@@ -275,8 +432,12 @@ export default function ManagerOrder() {
         day: '2-digit'
       })
     })) || []
-  console.log(listOrders)
 
+  useEffect(() => {
+    if (OrderData?.data.result) {
+      setListOrder(OrderData.data.result)
+    }
+  }, [OrderData])
   return (
     <div>
       <Helmet>
@@ -287,7 +448,10 @@ export default function ManagerOrder() {
       <div className='rounded-md grid grid-cols-2 bg-gray-50 p-2 m-2'>
         <div className='flex col-span-1 text-lg font-bold capitalize mt-1'>Quản lý đơn hàng</div>
         <div className='flex col-span-1 justify-end'>
-          <Button className='bg-green-500 text-white hover:bg-green-600 px-4 py-2 rounded-md font-bold mr-4'>
+          <Button
+            className='bg-green-500 text-white hover:bg-green-600 px-4 py-2 rounded-md font-bold mr-4'
+            onClick={handleExportFile}
+          >
             <div className='flex'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
@@ -318,10 +482,10 @@ export default function ManagerOrder() {
           }}
         >
           <div className='rounded-md bg-gray-50 p-2 '>
-            <div className=' grid grid-cols-11'>
-              <div className='flex col-span-3 text-lg capitalize mt-1 ml-3'>
+            <div className=' grid grid-cols-12'>
+              <div className='flex col-span-2 text-lg capitalize mt-1 ml-3'>
                 <Input.Search
-                  placeholder='Tìm kiếm mã đh/tên kh/sđt...'
+                  placeholder='Tìm kiếm mã đh/tên/sđt...'
                   onChange={handleChangeKeySearch}
                   value={keySearch || undefined}
                 />
@@ -333,6 +497,8 @@ export default function ManagerOrder() {
                   filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                   className='w-full'
                   options={dataSourceOrderStatus}
+                  onChange={handleChangeOrderStatus}
+                  value={FilterOrderStatus !== null && FilterOrderStatus !== undefined ? FilterOrderStatus : undefined}
                 />
               </div>
               <div className='flex col-span-2  capitalize mt-1 ml-3'>
@@ -342,6 +508,10 @@ export default function ManagerOrder() {
                   filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                   className='w-full'
                   options={dataSourcePaymentMethod}
+                  onChange={handleChangePaymentMethod}
+                  value={
+                    FilterPaymentMethod !== null && FilterPaymentMethod !== undefined ? FilterPaymentMethod : undefined
+                  }
                 />
               </div>
               <div className='flex col-span-2 capitalize mt-1 ml-3'>
@@ -351,9 +521,21 @@ export default function ManagerOrder() {
                   filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                   className='w-full'
                   options={dataSourcePaymentStatus}
+                  onChange={handleChangePaymentStatus}
+                  value={
+                    FilterPaymentStatus !== null && FilterPaymentStatus !== undefined ? FilterPaymentStatus : undefined
+                  }
                 />
               </div>
-              <div className='flex col-span-1  capitalize mt-1 ml-3'>
+              <div className='flex col-span-3 text-lg capitalize mt-1 ml-3'>
+                <RangePicker
+                  showTime={{ format: 'HH:mm' }}
+                  format='YYYY-MM-DD HH:mm'
+                  onOk={onSubmitDate}
+                  value={dateStart && dateEnd ? [dayjs(dateStart), dayjs(dateEnd)] : null}
+                />
+              </div>
+              <div className='flex col-span-1 capitalize mt-1 ml-3'>
                 <Tooltip title='Reset bộ lọc tìm kiếm'>
                   <Button
                     className='flex h-8 px-2 text-black bg-gray-200 hover:bg-gray-300 text-sm  items-center justify-center rounded-md mr-3'
@@ -375,7 +557,7 @@ export default function ManagerOrder() {
                     </svg>
                   </Button>
                 </Tooltip>
-                <Tooltip title='Tìm kiếm nâng cao'>
+                {/* <Tooltip title='Tìm kiếm nâng cao'>
                   {' '}
                   <Button className='flex h-8 px-2 text-black bg-gray-200 hover:bg-gray-300 items-center justify-center rounded-md'>
                     <svg
@@ -393,7 +575,7 @@ export default function ManagerOrder() {
                       />
                     </svg>
                   </Button>
-                </Tooltip>
+                </Tooltip> */}
               </div>
             </div>
           </div>
@@ -410,6 +592,21 @@ export default function ManagerOrder() {
                 scroll={{ x: 'calc(700px + 50%)', y: 47 * 10 }}
               />
             </Spin>
+            <ModalListProductDetail
+              isModalOpen={isModelOpen}
+              setIsModalOpen={setIsModalOpen}
+              orderId={orderDetailId}
+              order_code={codeOrder}
+            />
+            <ModalChangeOrderStatus
+              isModalOpen={isModelOpenChangeOrderStatus}
+              setIsModalOpen={setIsModelOpenChangeOrderStatus}
+              order_id={orderDetailId}
+              order_status={orderStatus}
+              onUpdateSuccess={(listOrder) => {
+                setListOrder(listOrder)
+              }}
+            />
           </div>
         </div>
       </Content>

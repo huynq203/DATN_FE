@@ -55,7 +55,7 @@ export default function ListOptionProduct({ product_id }: Props) {
   const [optionProductId, setOptionProductId] = useState('')
   const [size, setSize] = useState<number>()
   const [color, setColor] = useState('')
-  
+
   const { data: OptionProductList, refetch } = useQuery({
     queryKey: ['product_id', product_id],
     queryFn: () => productApi.getOptionProduct(product_id as string)
@@ -71,12 +71,12 @@ export default function ListOptionProduct({ product_id }: Props) {
           { optionProduct_id },
           {
             onSuccess: () => {
-              swalAlert.notifySuccess('Thông báo', 'Bạn đã xóa bản ghi thành công')
+              swalAlert.notifySuccess('Bạn đã xóa bản ghi thành công')
               refetch()
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
                 toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
               }
@@ -96,12 +96,12 @@ export default function ListOptionProduct({ product_id }: Props) {
           { option_product_id, status },
           {
             onSuccess: (res) => {
-              swalAlert.notifySuccess('Thông báo', res.data.message)
+              swalAlert.notifySuccess(res.data.message)
               refetch()
             },
             onError: (error) => {
               if (isAxiosUnprocessableEntityError<ErrorResponseApi>(error)) {
-                swalAlert.notifyError('Thông báo', error.response?.data.message as string)
+                swalAlert.notifyError(error.response?.data.message as string)
               } else {
                 toast.error(MESSAGE.SERVER_ERROR, { autoClose: 1000 })
               }
@@ -134,7 +134,8 @@ export default function ListOptionProduct({ product_id }: Props) {
       width: 100,
       dataIndex: 'color',
       align: 'center',
-      key: '2'
+      key: '2',
+      sorter: (a, b) => a.color.localeCompare(b.color)
     },
 
     {
@@ -207,7 +208,7 @@ export default function ListOptionProduct({ product_id }: Props) {
           <Tooltip title='Kiểm tra tồn kho'>
             {' '}
             <Button
-              className='flex h-9 px-3 text-white bg-blue-500/90 text-sm hover:bg-blue-400 hover:text-white flex items-center justify-center rounded-md'
+              className='flex h-9 px-3 text-white bg-gray-400/90 text-sm hover:bg-gray-500 hover:text-white flex items-center justify-center rounded-md'
               onClick={() => {
                 setIsModalOpenCheckStock(true)
                 setOptionProductId(record.key)
