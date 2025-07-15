@@ -1,5 +1,5 @@
 import { DatePicker, Form, Input, Modal, Select } from 'antd'
-import { RangePickerProps } from 'antd/es/date-picker'
+// import { RangePickerProps } from 'antd/es/date-picker'
 import { PromotionPriceType, StatusScheduleProduct } from 'src/constants/enum'
 import dayjs from 'dayjs'
 import scheduleProductApi from 'src/apis/scheduleProduct.api'

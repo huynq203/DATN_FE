@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Popover from '../Popover'
 
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa'
-import { MdMail, MdOutlineDoneAll } from 'react-icons/md'
+import { MdMail } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 import { paths } from 'src/constants'
 import authApi from 'src/apis/auth.api'

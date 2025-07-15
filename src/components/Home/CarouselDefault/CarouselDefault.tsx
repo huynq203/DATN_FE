@@ -7,7 +7,7 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { useEffect } from 'react'
 export function CarouselDefault() {
-  const { data: imageSliders, isLoading } = useQuery({
+  const { data: imageSliders } = useQuery({
     queryKey: ['imageSliders'],
     queryFn: () => {
       return imageSliderApi.getAllImageSlider()

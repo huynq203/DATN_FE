@@ -30,7 +30,7 @@ export default function ModalGetAllAdresses({ isModalOpen, setIsModalOpen }: Pro
     setAddressDefaultMutation.mutate(
       { address_id },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           refetch()
         }
       }
