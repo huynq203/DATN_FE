@@ -4,7 +4,7 @@ import momo from '../assets/images/momo.png'
 import vnpay from '../assets/images/vnpay.png'
 import cod from '../assets/images/cod.png'
 import logo from '../assets/images/logo.png'
-import slideImage1 from '../assets/images/slideImage1.png'
+import slideImage1 from '../assets/images/slideImage1.png' 
 const resources = {
   Images: {
     THUMBNAIL: thumbnail,
