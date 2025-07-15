@@ -8,13 +8,11 @@ import { paths } from 'src/constants'
 import authApi from 'src/apis/auth.api'
 import { toast } from 'react-toastify'
 import { CartStatus } from 'src/constants/enum'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { MESSAGE } from 'src/constants/messages'
-import Button from '../Button'
-import ChangePassword from './components/ChangePassword'
 
 export default function NavHeader() {
   const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)

@@ -1,8 +1,6 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+
 import { Link } from 'react-router-dom'
-import wishListApi from 'src/apis/wishlist.api'
-import Button from 'src/components/Button'
-import ProductRating from 'src/components/ProductRating'
+
 import { paths } from 'src/constants'
 import { Product as ProductType } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, generateNameId, rateSale } from 'src/utils/utils'

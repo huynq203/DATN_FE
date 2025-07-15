@@ -1,12 +1,12 @@
 import classNames from 'classnames'
-import path from 'path'
-import React, { useContext, useState } from 'react'
+
+import  { useContext, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import Button from 'src/components/Button'
 import ChangePassword from 'src/components/NavHeader/components/ChangePassword'
 import { paths } from 'src/constants'
 import { AppContext } from 'src/contexts/app.context'
-import { getProfileFromLS } from 'src/utils/auth'
+
 
 export default function CustomerSideNav() {
   const [isModalOpen, setIsModalOpen] = useState(false)

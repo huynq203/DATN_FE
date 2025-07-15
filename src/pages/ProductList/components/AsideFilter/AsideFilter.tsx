@@ -1,4 +1,4 @@
-import { createSearchParams, Link, NavLink, useNavigate } from 'react-router-dom'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button'
 import { paths } from 'src/constants'
 import { Category } from 'src/types/category.type'
@@ -9,9 +9,8 @@ import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { NoUnderfinedField } from 'src/types/utils.type'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
-import { Checkbox, Collapse, CollapseProps } from 'antd'
-import { hover } from 'framer-motion'
-import { useState } from 'react'
+import {  Collapse, CollapseProps } from 'antd'
+
 import { GenderType } from 'src/constants/enum'
 interface Props {
   queryConfig: QueryConfig

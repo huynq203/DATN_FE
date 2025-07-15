@@ -1,14 +1,12 @@
-import { useMutation } from '@tanstack/react-query'
-import { Table, TableColumnsType, Tag, theme, Tooltip } from 'antd'
+import { Table, TableColumnsType, Tag, Tooltip } from 'antd'
 import { createStyles } from 'antd-style'
-import { result } from 'lodash'
+
 import { useState } from 'react'
-import { toast } from 'react-toastify'
-import orderApi from 'src/apis/order.api'
+
 import Button from 'src/components/Button'
 import { OrderStatus, PaymentMethod, PaymentStatus } from 'src/constants/enum'
 import { OrderResponse } from 'src/types/order.type'
-import swalAlert from 'src/utils/SwalAlert'
+
 import { formatCurrency } from 'src/utils/utils'
 import ModalOrderDetail from '../ModalOrderDetail'
 interface DataType {

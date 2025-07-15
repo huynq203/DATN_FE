@@ -6,7 +6,7 @@ import orderApi from 'src/apis/order.api'
 import { paths } from 'src/constants'
 import Loading from '../Loading'
 import { Helmet } from 'react-helmet-async'
-import { CartStatus, PaymentMethod, VnPayStatus } from 'src/constants/enum'
+import { CartStatus, VnPayStatus } from 'src/constants/enum'
 import cartApi from 'src/apis/cart.api'
 import productApi from 'src/apis/product.api'
 

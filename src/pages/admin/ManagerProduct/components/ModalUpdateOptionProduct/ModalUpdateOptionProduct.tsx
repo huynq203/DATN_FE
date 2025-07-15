@@ -3,7 +3,6 @@ import { Button, Form, GetProp, Input, Modal, Upload, UploadFile, UploadProps } 
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import productApi from 'src/apis/product.api'
-import { MESSAGE } from 'src/constants/messages'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import swalAlert from 'src/utils/SwalAlert'
 import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'

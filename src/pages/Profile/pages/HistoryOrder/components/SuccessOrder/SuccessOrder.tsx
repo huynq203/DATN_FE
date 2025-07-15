@@ -26,7 +26,7 @@ interface Props {
   listOrder: OrderResponse[]
 }
 export default function SuccessOrder({ listOrder }: Props) {
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

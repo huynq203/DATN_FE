@@ -1,7 +1,6 @@
 import http from 'src/utils/http'
 import { AuthLoginBody, AuthRegisterBody, AuthResetPasswordBody, AuthRespone } from 'src/types/auth.type'
 import { paths } from 'src/constants'
-
 class AuthApi {
   registerCustomer(body: AuthRegisterBody) {
     return http.post<AuthRespone>(paths.ApiPath.CUSTOMER_REGISTER, body)

@@ -1,11 +1,7 @@
-import React, { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { paths, resources } from 'src/constants'
-import Loading from '../../Loading'
-import { Link } from 'react-router-dom'
-import SideBar from 'src/components/Home/SideBar'
+import { paths } from 'src/constants'
 
-import DiscoverFootwearSection from 'src/components/Home/DiscoverFootwearSection/DiscoverFootwearSection'
 import RecommendedSection from 'src/components/Home/RecommendedSection'
 import { AppContext } from 'src/contexts/app.context'
 import Men from 'src/components/Home/Men'

@@ -1,6 +1,5 @@
 import PieChart from '@ant-design/plots/es/components/pie'
 import { useQuery } from '@tanstack/react-query'
-import React from 'react'
 import orderApi from 'src/apis/order.api'
 
 export default function PieComponent() {

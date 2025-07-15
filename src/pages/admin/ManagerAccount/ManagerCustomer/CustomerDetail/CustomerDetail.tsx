@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { Breadcrumb, Table, TableColumnsType, theme } from 'antd'
+import {  Table, TableColumnsType, theme } from 'antd'
 import { createStyles } from 'antd-style'
 import { Content } from 'antd/es/layout/layout'
 import { Helmet } from 'react-helmet-async'
 import { Link, useParams } from 'react-router-dom'
 import customerApi from 'src/apis/customer.api'
 import { paths, resources } from 'src/constants'
-import { FaUser, FaPhone, FaBirthdayCake, FaIdBadge } from 'react-icons/fa'
 import addressApi from 'src/apis/address.api'
 
 interface DataType {

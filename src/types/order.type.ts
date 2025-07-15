@@ -1,4 +1,4 @@
-import { PaymentMethod } from 'src/constants/enum'
+
 
 export interface Order {
   address: string

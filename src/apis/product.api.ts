@@ -1,6 +1,5 @@
 import { paths } from 'src/constants'
 import {
-  CheckStockOptionProduct,
   CheckStockOptionProductList,
   Media,
   OptionProduct,

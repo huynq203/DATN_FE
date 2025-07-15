@@ -31,7 +31,7 @@ interface DataType {
   updated_at: string
 }
 export default function ListOptionProduct({ product_id }: Props) {
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

@@ -42,7 +42,7 @@ export default function ListUsers() {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {
@@ -199,7 +199,7 @@ export default function ListUsers() {
     }
   }
   const rowSelection: TableProps<DataType>['rowSelection'] = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+    onChange: (selectedRowKeys: React.Key[]) => {
       setRowSelectionIds(selectedRowKeys as string[])
     }
   }

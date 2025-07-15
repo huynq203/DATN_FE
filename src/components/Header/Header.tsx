@@ -1,5 +1,5 @@
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
-import { paths, resources } from 'src/constants'
+import { paths } from 'src/constants'
 
 import Popover from '../Popover'
 
@@ -8,16 +8,15 @@ import useQueryConfig from 'src/hooks/useQueryConfig'
 import { useForm } from 'react-hook-form'
 import { schema, Schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { omit, set } from 'lodash'
+import { omit } from 'lodash'
 import cartApi from 'src/apis/cart.api'
 import { formatCurrency } from 'src/utils/utils'
 import Menu from '../Menu'
 
 import { CartStatus } from 'src/constants/enum'
 import NavHeader from '../NavHeader'
-import { Button, Drawer, DrawerProps, Space } from 'antd'
-import { useContext, useEffect, useState } from 'react'
-import { AppContext } from 'src/contexts/app.context'
+import { Button, Drawer } from 'antd'
+import { useState } from 'react'
 type FormData = Pick<Schema, 'search_name'>
 const nameSearchSchema = schema.pick(['search_name'])
 export default function Header() {
@@ -47,7 +46,6 @@ export default function Header() {
     queryFn: () => cartApi.getCart({ status: CartStatus.InCart })
   })
   const cartDataByCustomer = CartData?.data.result
-
 
   const onSubmitSearch = handleSubmit((data) => {
     navigate({

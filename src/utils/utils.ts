@@ -28,9 +28,9 @@ export function formatNumberToSocialStyle(value: number) {
     .replace('.', ',')
     .toLowerCase()
 }
-const removeSpecialCharacter = (str: string) =>
-  // eslint-disable-next-line no-useless-escape
-  str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, '')
+// const removeSpecialCharacter = (str: string) =>
+//   // eslint-disable-next-line no-useless-escape
+//   str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, '')
 
 export const generateNameId = ({ name, id }: { name: string; id: string }) => {
   return name + `-i.${id}`

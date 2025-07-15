@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { DatePicker, Form, Input, Modal } from 'antd'
-import { RangePickerProps } from 'antd/es/date-picker'
+// import { RangePickerProps } from 'antd/es/date-picker'
 import dayjs from 'dayjs'
 
 import { toast } from 'react-toastify'
@@ -28,9 +28,9 @@ export default function ModalCreateVoucher({ isModalOpen, setIsModalOpen }: Prop
       return voucherApi.getAllVoucher()
     }
   })
-  const disabledDate: RangePickerProps['disabledDate'] = (current) => {
-    return current && current < dayjs().endOf('day')
-  }
+  // const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+  //   return current && current < dayjs().endOf('day')
+  // }
   const handleOk = () => {
     form.submit()
   }

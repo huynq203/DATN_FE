@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react'
-import { AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { Layout, Menu } from 'antd'
 const { Sider } = Layout

@@ -31,7 +31,7 @@ export default function ModalOrderDetail({ isModalOpen, setIsModalOpen, orderId,
     token: {}
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

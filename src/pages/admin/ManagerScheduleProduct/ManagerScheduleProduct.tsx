@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Modal, Spin, Table, TableColumnsType, Tag, theme, Tooltip } from 'antd'
+import {  Spin, Table, TableColumnsType, Tag, theme, Tooltip } from 'antd'
 import { createStyles } from 'antd-style'
 import { Content } from 'antd/es/layout/layout'
 import { useState } from 'react'
@@ -7,7 +7,7 @@ import { Helmet } from 'react-helmet-async'
 import scheduleProductApi from 'src/apis/scheduleProduct.api'
 import Button from 'src/components/Button'
 import { resources } from 'src/constants'
-import { PromotionPriceType, StatusScheduleProduct, StatusType } from 'src/constants/enum'
+import { PromotionPriceType, StatusScheduleProduct } from 'src/constants/enum'
 import ModalProductDetail from './components/ModalProductDetail'
 import ModalUpdateScheduleProduct from './components/ModalUpdateScheduleProduct/ModalUpdateScheduleProduct'
 interface DataType {
@@ -27,7 +27,7 @@ export default function ManagerScheduleProduct() {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

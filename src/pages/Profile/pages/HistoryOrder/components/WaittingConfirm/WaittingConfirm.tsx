@@ -1,8 +1,8 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { Table, TableColumnsType, Tag, Tooltip } from 'antd'
 import { createStyles } from 'antd-style'
 import { useState } from 'react'
-import { toast } from 'react-toastify'
+
 import orderApi from 'src/apis/order.api'
 import Button from 'src/components/Button'
 import { PaymentMethod, PaymentStatus } from 'src/constants/enum'
@@ -30,7 +30,7 @@ interface Props {
   listOrder: OrderResponse[]
 }
 export default function WaittingConfirm({ listOrder }: Props) {
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {
@@ -60,10 +60,10 @@ export default function WaittingConfirm({ listOrder }: Props) {
         cancelOrderMutation.mutate(
           { order_id: orderId },
           {
-            onSuccess: (res) => {
+            onSuccess: () => {
               window.location.reload()
             },
-            onError: (error) => {}
+            onError: () => {}
           }
         )
       }
@@ -242,7 +242,7 @@ export default function WaittingConfirm({ listOrder }: Props) {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         orderId={orderId}
-        order_code={orderCode}
+        orderCode={orderCode}
       />
     </div>
   )

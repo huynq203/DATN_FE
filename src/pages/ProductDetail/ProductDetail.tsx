@@ -6,7 +6,6 @@ import ProductRating from 'src/components/ProductRating'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/utils'
 
 import { useState } from 'react'
-
 import classNames from 'classnames'
 
 import QuantityController from 'src/components/QuantityController'
@@ -35,6 +34,7 @@ export default function ProductDetail() {
   const [activeFlagColor, setActiveFlagColor] = useState('')
   const [imageVariantColor, setImageVariantColor] = useState('')
   const [listImageVariantColor, setListImageVariantColor] = useState<string[]>([])
+  console.log(imageVariantColor)
 
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -194,6 +194,7 @@ export default function ProductDetail() {
       { product_id: productId },
       {
         onSuccess: (res) => {
+          console.log(res)
           refetch()
         },
         onError: (error) => {

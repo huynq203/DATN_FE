@@ -1,4 +1,4 @@
-import { profile } from 'console'
+
 import { Customer } from 'src/types/customer.type'
 export const LocalStorageEventTarget = new EventTarget()
 export const saveAccessToken = (access_token: string) => {

@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Modal, Table, TableColumnsType, Tag, theme, Tooltip } from 'antd'
+import { Modal, Table, TableColumnsType, Tag,  Tooltip } from 'antd'
 import { createStyles } from 'antd-style'
 import { useMemo, useState } from 'react'
 import productApi from 'src/apis/product.api'
 import Button from 'src/components/Button'
-import { formatCurrency, isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import {  isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import ModalCreateInventoryNew from '../ModalCreateInventoryNew'
 import purchaseOrderApi from 'src/apis/purchaseOrder.api'
 import swalAlert from 'src/utils/SwalAlert'
@@ -40,7 +40,7 @@ export default function ModalCheckStock({
   size,
   color
 }: Props) {
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

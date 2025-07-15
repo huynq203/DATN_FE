@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Input, Spin, Table, TableColumnsType, theme, Tooltip } from 'antd'
+import {  Spin, Table, TableColumnsType, theme, Tooltip } from 'antd'
 import { createStyles } from 'antd-style'
 import { Content } from 'antd/es/layout/layout'
 import { useState } from 'react'
@@ -26,7 +26,7 @@ export default function ManagerRole() {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

@@ -1,12 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { DatePicker, Form, Input, Modal, Select, theme } from 'antd'
-import { createStyles } from 'antd-style'
+
 import scheduleProductApi from 'src/apis/scheduleProduct.api'
-import { PromotionPriceType, StatusScheduleProduct } from 'src/constants/enum'
+import { PromotionPriceType } from 'src/constants/enum'
 import dayjs from 'dayjs'
 import { useEffect } from 'react'
 import swalAlert from 'src/utils/SwalAlert'
-import { result } from 'lodash'
 import { isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { toast } from 'react-toastify'
@@ -28,23 +27,8 @@ export default function ModalUpdateScheduleProduct({ isModalOpen, setIsModalOpen
     token: {}
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
-    return {
-      customTable: css`
-        .ant-table {
-          .ant-table-container {
-            .ant-table-body,
-            .ant-table-content {
-              scrollbar-width: thin;
-              scrollbar-color: #eaeaea transparent;
-              scrollbar-gutter: stable;
-            }
-          }
-        }
-      `
-    }
-  })
-  const { styles } = useStyle()
+
+
 
   const { data: ListScheduleProduct, refetch: refetchScheduleProduct } = useQuery({
     queryKey: ['scheduleProductDetail', { scheduleProductId: scheduleProduct_id as string }],

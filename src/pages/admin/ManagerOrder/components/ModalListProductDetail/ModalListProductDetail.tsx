@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { Modal, Spin, Table, TableColumnsType, TableProps, theme } from 'antd'
+import { Modal, Spin, Table, TableColumnsType, theme } from 'antd'
 import { createStyles } from 'antd-style'
-import { useState } from 'react'
+
 import orderApi from 'src/apis/order.api'
 
 interface Props {
@@ -28,7 +28,7 @@ export default function ModalListProductDetail({ isModalOpen, setIsModalOpen, or
     token: {}
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

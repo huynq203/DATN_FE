@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import Button from 'src/components/Button'
 import { resources } from 'src/constants'
-import { Media } from 'src/types/product.type'
 import ModalCreateImageSlider from './components/ModalCreateImageSlider'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import imageSliderApi from 'src/apis/imageSlider.api'
@@ -24,7 +23,7 @@ export default function ManagerImageSlider() {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

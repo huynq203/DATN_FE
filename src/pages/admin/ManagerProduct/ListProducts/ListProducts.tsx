@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Table, TableColumnsType, theme, Tag, Select, Input, Spin, Drawer, TableProps, Tooltip } from 'antd'
 import { Content } from 'antd/es/layout/layout'
-import { JSX, useEffect, useState } from 'react'
+import {  useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import { paths, resources } from 'src/constants'
@@ -9,7 +9,7 @@ import { createStyles } from 'antd-style'
 import Button from 'src/components/Button'
 import swalAlert from 'src/utils/SwalAlert'
 import { Helmet } from 'react-helmet-async'
-import { formatCurrency, isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import {  isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { saveAs } from 'file-saver'
 import { GenderType, StatusType, TargetType } from 'src/constants/enum'
 import { ErrorResponseApi } from 'src/types/utils.type'
@@ -259,7 +259,7 @@ export default function ListProducts() {
   }
 
   const rowSelection: TableProps<DataType>['rowSelection'] = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+    onChange: (selectedRowKeys: React.Key[]) => {
       setRowSelectionIds(selectedRowKeys as string[])
     }
   }

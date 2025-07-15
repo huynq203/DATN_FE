@@ -77,9 +77,9 @@ export default function ModalAutoScheduleDiscount({
       }
     )
   }
-  const disabledDate: RangePickerProps['disabledDate'] = (current) => {
-    return current && current.valueOf() <= dayjs().endOf('day').valueOf() - 1
-  }
+  // const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+  //   return current && current.valueOf() <= dayjs().endOf('day').valueOf() - 1
+  // }
   const dataSourcePromotionType = [
     { value: PromotionPriceType.Percentage, label: 'Giảm giá theo phần trăm %' },
     { value: PromotionPriceType.Fixed, label: 'Giảm giá theo số tiền cố định' },

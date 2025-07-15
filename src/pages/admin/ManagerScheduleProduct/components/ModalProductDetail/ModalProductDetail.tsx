@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { Modal, Spin, Table, TableColumnsType, theme } from 'antd'
+import { Modal, Table, TableColumnsType, theme } from 'antd'
 import { createStyles } from 'antd-style'
-import { useEffect } from 'react'
+
 import scheduleProductApi from 'src/apis/scheduleProduct.api'
-import { PromotionPriceType } from 'src/constants/enum'
+
 
 interface Props {
   isModalOpen: boolean
@@ -22,7 +22,7 @@ export default function ModalProductDetail({ isModalOpen, setIsModalOpen, schedu
     token: {}
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

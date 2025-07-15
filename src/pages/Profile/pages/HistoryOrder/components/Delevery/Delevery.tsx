@@ -4,6 +4,8 @@ import Button from 'src/components/Button'
 import { OrderStatus, PaymentMethod, PaymentStatus } from 'src/constants/enum'
 import { OrderResponse } from 'src/types/order.type'
 import { formatCurrency } from 'src/utils/utils'
+import ModalOrderDetail from '../ModalOrderDetail'
+import { useState } from 'react'
 
 interface DataType {
   key: string
@@ -24,7 +26,7 @@ interface Props {
   listOrder: OrderResponse[]
 }
 export default function Delevery({ listOrder }: Props) {
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {
@@ -40,8 +42,12 @@ export default function Delevery({ listOrder }: Props) {
       `
     }
   })
-  const { styles } = useStyle()
 
+  const { styles } = useStyle()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [orderId, setOrderId] = useState<string>('')
+  const [orderCode, setOrderCode] = useState<string>('')
+  const [orderStatus, setOrderStatus] = useState<number>()
   const columns: TableColumnsType<DataType> = [
     {
       title: 'Mã đơn hàng',
@@ -146,7 +152,15 @@ export default function Delevery({ listOrder }: Props) {
         <div className='flex gap-2 justify-center'>
           <Tooltip title='Xem chi tiết đơn hàng'>
             {' '}
-            <Button className='flex h-9 px-3 text-white bg-blue-500/90 text-sm hover:bg-blue-400 hover:text-white items-center justify-center rounded-md '>
+            <Button
+              className='flex h-9 px-3 text-white bg-blue-500/90 text-sm hover:bg-blue-400 hover:text-white items-center justify-center rounded-md'
+              onClick={() => {
+                setIsModalOpen(true)
+                setOrderId(record.key)
+                setOrderCode(record.code_order)
+                setOrderStatus(record.order_status)
+              }}
+            >
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
@@ -195,12 +209,21 @@ export default function Delevery({ listOrder }: Props) {
       })
     })) || []
   return (
-    <Table<DataType>
-      className={styles.customTable}
-      pagination={false}
-      columns={columns}
-      dataSource={dataSource}
-      scroll={{ x: 'max-content' }}
-    />
+    <>
+      <Table<DataType>
+        className={styles.customTable}
+        pagination={false}
+        columns={columns}
+        dataSource={dataSource}
+        scroll={{ x: 'max-content' }}
+      />
+      <ModalOrderDetail
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        orderId={orderId}
+        orderCode={orderCode}
+        orderStatus={orderStatus}
+      />
+    </>
   )
 }

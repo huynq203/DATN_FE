@@ -1,7 +1,6 @@
-import { Table, TableColumnsType, Tag, Tooltip } from 'antd'
+import { Table, TableColumnsType, Tag } from 'antd'
 import { createStyles } from 'antd-style'
-import Button from 'src/components/Button'
-import { OrderStatus, PaymentMethod, PaymentStatus } from 'src/constants/enum'
+import { PaymentMethod } from 'src/constants/enum'
 import { OrderResponse } from 'src/types/order.type'
 import { formatCurrency } from 'src/utils/utils'
 
@@ -24,7 +23,7 @@ interface Props {
   listOrder: OrderResponse[]
 }
 export default function CancelOrder({ listOrder }: Props) {
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

@@ -1,7 +1,6 @@
 import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { paths } from 'src/constants'
 import { HttpStatusCode } from 'src/constants/httpStatusCode'
-import { toast } from 'react-toastify'
 import { AuthRespone, UserRespone } from 'src/types/auth.type'
 import {
   clearLS,
@@ -84,10 +83,12 @@ class Http {
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
           const data: any | undefined = error.response?.data
           const message = data.message || error.message
+          console.log(message)
+
           //toast.error(message, { autoClose: 1000 })
         }
         if (error.response?.status === HttpStatusCode.Unauthorized) {
-          swalAlert.notifyError( MESSAGE.TOKEN_IS_EXPIRED)
+          swalAlert.notifyError(MESSAGE.TOKEN_IS_EXPIRED)
           clearLS()
           // window.location.href = paths.Screens.AUTH_LOGIN
         }

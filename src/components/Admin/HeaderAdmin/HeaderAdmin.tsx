@@ -1,8 +1,6 @@
 import { useContext, useState } from 'react'
 import { Dropdown, Layout, Menu, theme } from 'antd'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
-
 import { AppContext } from 'src/contexts/app.context'
 import { useMutation } from '@tanstack/react-query'
 import userApi from 'src/apis/user.api'

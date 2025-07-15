@@ -1,9 +1,9 @@
-import { Breadcrumb, Table, TableColumnsType, theme, Space, Tag, Input, Spin, Tooltip } from 'antd'
+import {  Table, TableColumnsType, theme,Input, Spin, Tooltip } from 'antd'
 import { Content } from 'antd/es/layout/layout'
 import { createStyles } from 'antd-style'
 import { Helmet } from 'react-helmet-async'
 import Button from 'src/components/Button'
-import { paths, resources } from 'src/constants'
+import { resources } from 'src/constants'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import categoryApi from 'src/apis/category.api'
 import { useEffect, useState } from 'react'
@@ -29,7 +29,7 @@ export default function ListCategories() {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken()
 
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {

@@ -9,7 +9,7 @@ import Button from 'src/components/Button'
 import { resources } from 'src/constants'
 import { OrderStatus, PaymentMethod, PaymentStatus } from 'src/constants/enum'
 import { OrderResponse } from 'src/types/order.type'
-import { formatCurrency, isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import {  isAxiosForbiddenError, isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { DatePickerProps, RangePickerProps } from 'antd/es/date-picker'
 import dayjs from 'dayjs'
 import ModalListProductDetail from './components/ModalListProductDetail'
@@ -39,7 +39,7 @@ export default function ManagerOrder() {
   const {
     token: { colorBgContainer, borderRadiusLG }
   } = theme.useToken()
-  const useStyle = createStyles(({ css, token }) => {
+  const useStyle = createStyles(({ css }) => {
     return {
       customTable: css`
         .ant-table {
@@ -178,7 +178,7 @@ export default function ManagerOrder() {
     }
   }
   const rowSelection: TableProps<DataType>['rowSelection'] = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+    onChange: (selectedRowKeys: React.Key[]) => {
       setRowSelectionIds(selectedRowKeys as string[])
     }
   }

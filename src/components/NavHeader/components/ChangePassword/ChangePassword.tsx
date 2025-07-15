@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
 import { Form, Input, Modal } from 'antd'
-import { useState } from 'react'
 import { toast } from 'react-toastify'
 import customerApi from 'src/apis/customer.api'
 import { MESSAGE } from 'src/constants/messages'

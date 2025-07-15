@@ -1,4 +1,4 @@
-import { use, useEffect, useMemo, useState } from 'react'
+import {  useEffect, useMemo, useState } from 'react'
 import { Product as ProductType } from 'src/types/product.type'
 interface Props {
   product: ProductType

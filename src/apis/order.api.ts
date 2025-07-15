@@ -3,7 +3,6 @@ import {
   ChangeOrderStatus,
   MomoStatusType,
   Order,
-  OrderDetail,
   OrderDetailResponse,
   OrderDetailResponseItem,
   OrderFilter,

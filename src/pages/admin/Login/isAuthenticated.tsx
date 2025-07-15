@@ -6,7 +6,7 @@ import { clearLS } from 'src/utils/auth'
 
 // nếu đã đăng nhập thì vào trang home còn không thì vào trang login
 export function ProtectedRouteAdmin() {
-  const { isAuthenticated, profile, role } = useContext(AppContext)
+  const { isAuthenticated, role } = useContext(AppContext)
 
   if (role === 'customer') {
     clearLS()

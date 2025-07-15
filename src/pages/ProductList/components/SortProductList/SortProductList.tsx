@@ -1,8 +1,8 @@
 import { sortBy, order as orderConstant } from 'src/constants/product'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
-import classNames from 'classnames'
+
 import { ProductListConfig } from 'src/types/product.type'
-import { createSearchParams, Link, useNavigate } from 'react-router-dom'
+import { createSearchParams, useNavigate } from 'react-router-dom'
 import { paths } from 'src/constants'
 import { omit } from 'lodash'
 import { Dropdown, MenuProps, Space } from 'antd'
@@ -13,11 +13,15 @@ interface Props {
 }
 
 export default function SortProductList({ queryConfig, total_page }: Props) {
-  const { sort_by = sortBy.created_at, order } = queryConfig
+  console.log(total_page)
+
+  const { sort_by = sortBy.created_at } = queryConfig
   const navigate = useNavigate()
   const isActiveSortBy = (sortByValue: Exclude<ProductListConfig['sort_by'], undefined>) => {
     return sort_by === sortByValue
   }
+  console.log(isActiveSortBy)
+
   const handleSort = (sortByValue: Exclude<ProductListConfig['sort_by'], undefined>) => {
     navigate({
       pathname: paths.Screens.PRODUCT,
@@ -98,7 +102,7 @@ export default function SortProductList({ queryConfig, total_page }: Props) {
       key: '5'
     }
   ]
-  
+
   return (
     <>
       <div className='hidden md:flex justify-between'>

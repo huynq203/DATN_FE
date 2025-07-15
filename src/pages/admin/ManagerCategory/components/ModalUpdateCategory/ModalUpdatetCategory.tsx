@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Form, Input, Modal } from 'antd'
-import React, { useEffect } from 'react'
+import  { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import categoryApi from 'src/apis/category.api'
 import { MESSAGE } from 'src/constants/messages'

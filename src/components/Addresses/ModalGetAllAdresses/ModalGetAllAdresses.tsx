@@ -5,7 +5,6 @@ import addressApi from 'src/apis/address.api'
 import { Addresses } from 'src/types/address.type'
 import ModalCreateAddress from '../ModalCreateAddress'
 import ModalUpdateAddress from '../ModalUpdateAddress'
-import { toast } from 'react-toastify'
 interface Props {
   isModalOpen: boolean
   setIsModalOpen: (isOpen: boolean) => void
