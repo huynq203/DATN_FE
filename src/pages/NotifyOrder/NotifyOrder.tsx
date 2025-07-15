@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { Result } from 'antd'
+import { Result, Spin } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import orderApi from 'src/apis/order.api'
 import { paths } from 'src/constants'
-import Loading from '../Loading'
+
 import { Helmet } from 'react-helmet-async'
 import { CartStatus, VnPayStatus } from 'src/constants/enum'
 import cartApi from 'src/apis/cart.api'
@@ -82,28 +82,29 @@ export default function NotifyOrder() {
   }, [searchParams, partnerCode, checkOrderMomo, checkOrderVnpay, payment_method_cod])
 
   return (
-    <div className='bg-white'>
-      <Helmet>
-        <title>Kiểm tra thanh toán</title>
-        <meta name='description' content='Thanh toán Yoyo' />
-      </Helmet>
-      <div className='container'>
-        <Loading loading={isLoading} color='black' top='50%' />
-        <Result
-          status={status}
-          title={title}
-          subTitle={subtitle}
-          extra={[
-            <Link
-              to={paths.Screens.HISTORY_ORDER}
-              className=' bg-red-500 text-white rounded-md p-3 hover:bg-red-500/90 hover:text-white/90 transition-all duration-300 '
-              key='check-order'
-            >
-              Kiểm tra đơn hàng
-            </Link>
-          ]}
-        />
+    <Spin spinning={isLoading} size='large'>
+      <div className='bg-white'>
+        <Helmet>
+          <title>Kiểm tra thanh toán</title>
+          <meta name='description' content='Thanh toán Yoyo' />
+        </Helmet>
+        <div className='container'>
+          <Result
+            status={status}
+            title={title}
+            subTitle={subtitle}
+            extra={[
+              <Link
+                to={paths.Screens.HISTORY_ORDER}
+                className=' bg-red-500 text-white rounded-md p-3 hover:bg-red-500/90 hover:text-white/90 transition-all duration-300 '
+                key='check-order'
+              >
+                Kiểm tra đơn hàng
+              </Link>
+            ]}
+          />
+        </div>
       </div>
-    </div>
+    </Spin>
   )
 }

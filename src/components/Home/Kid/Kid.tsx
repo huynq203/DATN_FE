@@ -32,7 +32,7 @@ export default function Kid() {
       </h2>
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 items-start'>
         {/* Left Image */}
-        <div className='relative w-full h-[500px] rounded-lg overflow-hidden'>
+        <div className='relative w-full h-[580px] rounded-lg overflow-hidden'>
           <img
             src='https://static.nike.com/a/images/f_auto/dpr_0.8,cs_srgb/h_568,c_limit/4c059e6c-7051-4a0c-9904-68604f788369/nike-kids.png'
             alt="Kid's Lifestyle"
