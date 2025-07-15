@@ -1,6 +1,5 @@
 import { paths } from 'src/constants'
 import { Addresses, UpdateAddressReq } from 'src/types/address.type'
-
 import { SuccessResponseApi } from 'src/types/utils.type'
 import http from 'src/utils/http'
 
