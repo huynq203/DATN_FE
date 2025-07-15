@@ -14,10 +14,11 @@ import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { toast } from 'react-toastify'
 import Button from 'src/components/Button'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { MESSAGE } from 'src/constants/messages'
-
+import AOS from 'aos'
+import 'aos/dist/aos.css'
 type FormData = Pick<Schema, 'name' | 'phone' | 'email' | 'password' | 'confirm_password'>
 const registerSchema = schema.pick(['name', 'phone', 'email', 'password', 'confirm_password'])
 export default function Register() {
@@ -60,6 +61,9 @@ export default function Register() {
       }
     })
   })
+  useEffect(() => {
+    AOS.init({ duration: 800 })
+  }, [])
   return (
     <div className='bg-amber-50 '>
       <Helmet>
@@ -72,11 +76,22 @@ export default function Register() {
           <div className='lg:col-span-3 flex justify-center'>
             <img
               src={resources.Images.THUMBNAIL}
-              alt='Thumbnail'
+              alt='Register Thumbnail'
               className='max-w-full h-auto object-contain rounded-md'
+              data-aos='fade-right'
+              data-aos-duration='800'
+              data-aos-once='true'
+              data-aos-easing='ease-in-out'
             />
           </div>
-          <div className='lg:col-span-2 lg:col-start-4 pt-10' onSubmit={onSubmit}>
+          <div
+            className='lg:col-span-2 lg:col-start-4 pt-10'
+            onSubmit={onSubmit}
+            data-aos='fade-left'
+            data-aos-duration='800'
+            data-aos-once='true'
+            data-aos-easing='ease-in-out'
+          >
             <form action='' className='p-10 rounded bg-white shadow-sm rounded-md' noValidate>
               <div className='text-3xl text-center'>Đăng ký</div>
               <Input

@@ -96,7 +96,7 @@ export default function Login() {
             <div className='lg:col-span-3 flex justify-center'>
               <img
                 src={resources.Images.THUMBNAIL}
-                alt='Login illustration'
+                alt='Login Thumbnail'
                 className='w-full h-auto object-contain rounded-lg shadow-xl'
                 data-aos='fade-right'
                 data-aos-duration='800'
